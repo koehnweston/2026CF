@@ -1,1 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CFB Pool 2026 - Master Scoreboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans">
+  <div class="max-w-6xl mx-auto px-4 py-8">
+    <!-- Header -->
+    <header class="flex flex-col md:flex-row justify-between items-center pb-6 border-b border-slate-800 mb-8 gap-4">
+      <div>
+        <h1 class="text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
+          🏈 CFB Pool Hub <span class="text-xs bg-indigo-600 text-white px-2 py-1 rounded-full uppercase">Week <span id="week-num">1</span></span>
+        </h1>
+        <p class="text-slate-400 text-sm mt-1">Live Standings & Weekly Picks Central</p>
+      </div>
+      <div id="quick-links" class="flex flex-wrap gap-2 justify-center">
+        <!-- Dynamic Player Pick Links -->
+      </div>
+    </header>
 
+    <!-- Standings Grid -->
+    <section class="mb-10">
+      <h2 class="text-xl font-bold text-white mb-4">🏆 League Leaderboard</h2>
+      <div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-900/60 shadow-xl">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-b border-slate-800 text-slate-400 text-xs uppercase bg-slate-900/80">
+              <th class="py-3 px-4">Rank</th>
+              <th class="py-3 px-4">Owner</th>
+              <th class="py-3 px-4 text-center">Record (W-L)</th>
+              <th class="py-3 px-4 text-center">Proj Wins</th>
+              <th class="py-3 px-4 text-center">Avg FPI</th>
+              <th class="py-3 px-4">Roster</th>
+              <th class="py-3 px-4 text-right">Pick Sheet</th>
+            </tr>
+          </thead>
+          <tbody id="standings-body" class="divide-y divide-slate-800 text-sm">
+            <!-- Populated via JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    async function loadLeague() {
+      const res = await fetch('league_data.json');
+      const data = await res.json();
+      
+      document.getElementById('week-num').innerText = data.current_week;
+      const quickLinks = document.getElementById('quick-links');
+      const tbody = document.getElementById('standings-body');
+      
+      // Sort members by wins descending
+      const sorted = Object.entries(data.members).sort((a, b) => b[1].wins - a[1].wins);
+
+      sorted.forEach(([name, info], idx) => {
+        // Quick Header Links
+        const link = document.createElement('a');
+        link.href = `pick.html?user=${encodeURIComponent(name)}`;
+        link.className = "text-xs bg-slate-800 hover:bg-indigo-600 border border-slate-700 hover:border-indigo-500 text-slate-200 hover:text-white px-2.5 py-1.5 rounded-md transition";
+        link.innerText = name;
+        quickLinks.appendChild(link);
+
+        // Table Rows
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-800/40 transition";
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-mono font-bold ${idx === 0 ? 'text-amber-400' : 'text-slate-400'}">#${idx + 1}</td>
+          <td class="py-3 px-4 font-semibold text-white">${name}</td>
+          <td class="py-3 px-4 text-center font-bold text-emerald-400">${info.wins} - ${info.losses}</td>
+          <td class="py-3 px-4 text-center text-slate-300 font-mono">${info.proj_wins}</td>
+          <td class="py-3 px-4 text-center text-slate-300 font-mono">${info.avg_fpi}</td>
+          <td class="py-3 px-4 text-xs text-slate-400 max-w-xs truncate">${info.teams.join(', ')}</td>
+          <td class="py-3 px-4 text-right">
+            <a href="pick.html?user=${encodeURIComponent(name)}" class="text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-3 py-1.5 rounded-lg transition">Make Picks</a>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+    loadLeague();
+  </script>
+</body>
+</html>
