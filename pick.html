@@ -1,1 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Make Picks - CFB Pool</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+  <div class="max-w-3xl mx-auto px-4 py-8">
+    <!-- Navigation -->
+    <div class="flex justify-between items-center mb-6">
+      <a href="index.html" class="text-sm text-indigo-400 hover:text-indigo-300 flex items-center gap-1">← Back to Master Scoreboard</a>
+      <select id="user-select" class="bg-slate-900 border border-slate-700 text-white text-sm rounded-lg px-3 py-1.5">
+        <!-- Populated via JS -->
+      </select>
+    </div>
 
+    <!-- User Pick Header -->
+    <header class="bg-slate-900 border border-slate-800 rounded-2xl p-6 mb-8 shadow-xl">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <span class="text-xs font-bold text-indigo-400 uppercase tracking-widest">Personal Pick Sheet</span>
+          <h1 id="user-title" class="text-3xl font-extrabold text-white">Select Player</h1>
+        </div>
+        <div class="text-right">
+          <span class="text-xs text-slate-400">Drafted Lineup</span>
+          <p id="user-teams-count" class="text-sm font-semibold text-emerald-400">8 Teams Active</p>
+        </div>
+      </div>
+    </header>
+
+    <!-- Picks Form -->
+    <form id="picks-form" class="space-y-4">
+      <div id="matchups-container" class="space-y-3">
+        <!-- Rendered dynamically for owner's 8 teams -->
+      </div>
+
+      <div class="mt-8 flex flex-col sm:flex-row gap-3">
+        <button type="button" onclick="submitPicks()" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 px-6 rounded-xl transition shadow-lg shadow-indigo-600/30">
+          📋 Copy Pick Summary
+        </button>
+      </div>
+      <p id="status-msg" class="text-center text-sm font-medium text-emerald-400 hidden mt-2">✓ Picks copied to clipboard! Paste in the group chat.</p>
+    </form>
+  </div>
+
+  <script>
+    let leagueData = null;
+    let currentUser = null;
+
+    async function init() {
+      const res = await fetch('league_data.json');
+      leagueData = await res.json();
+      
+      const params = new URLSearchParams(window.location.search);
+      currentUser = params.get('user') || Object.keys(leagueData.members)[0];
+
+      // Populate User Selector Dropdown
+      const select = document.getElementById('user-select');
+      Object.keys(leagueData.members).forEach(user => {
+        const opt = document.createElement('option');
+        opt.value = user;
+        opt.innerText = user;
+        if(user === currentUser) opt.selected = true;
+        select.appendChild(opt);
+      });
+
+      select.addEventListener('change', (e) => {
+        window.location.search = `?user=${e.target.value}`;
+      });
+
+      renderUserPicks();
+    }
+
+    function renderUserPicks() {
+      const userObj = leagueData.members[currentUser];
+      if (!userObj) return;
+
+      document.getElementById('user-title').innerText = `${currentUser}'s Week ${leagueData.current_week} Picks`;
+      const container = document.getElementById('matchups-container');
+      container.innerHTML = '';
+
+      userObj.teams.forEach(team => {
+        const game = leagueData.week_matchups.find(m => m.team === team) || {
+          opponent: "TBD / BYE",
+          spread: "N/A"
+        };
+
+        const card = document.createElement('div');
+        card.className = "bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-xl p-4 flex flex-col sm:flex-row justify-between items-center gap-4";
+        card.innerHTML = `
+          <div class="w-full sm:w-auto">
+            <h3 class="font-bold text-white text-lg">${team}</h3>
+            <p class="text-xs text-slate-400">vs ${game.opponent} (${game.spread})</p>
+          </div>
+          <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+            <label class="flex-1 sm:flex-initial text-center cursor-pointer bg-slate-800 hover:bg-slate-700 has-[:checked]:bg-emerald-600 has-[:checked]:text-white text-slate-300 px-4 py-2 rounded-lg text-xs font-bold transition">
+              <input type="radio" name="pick_${team}" value="WIN" class="hidden" checked> WIN
+            </label>
+            <label class="flex-1 sm:flex-initial text-center cursor-pointer bg-slate-800 hover:bg-slate-700 has-[:checked]:bg-rose-600 has-[:checked]:text-white text-slate-300 px-4 py-2 rounded-lg text-xs font-bold transition">
+              <input type="radio" name="pick_${team}" value="LOSS" class="hidden"> LOSS
+            </label>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function submitPicks() {
+      const userObj = leagueData.members[currentUser];
+      let summary = `🏈 ${currentUser}'s Week ${leagueData.current_week} Picks:\n`;
+      userObj.teams.forEach(team => {
+        const pick = document.querySelector(`input[name="pick_${team}"]:checked`)?.value || 'NO PICK';
+        summary += `• ${team}: ${pick}\n`;
+      });
+
+      navigator.clipboard.writeText(summary).then(() => {
+        const msg = document.getElementById('status-msg');
+        msg.classList.remove('hidden');
+        setTimeout(() => msg.classList.add('hidden'), 4000);
+      });
+    }
+
+    init();
+  </script>
+</body>
+</html>
