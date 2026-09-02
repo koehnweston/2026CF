@@ -1,1 +1,59 @@
 
+{
+  "current_week": 1,
+  "last_updated": "2026-08-26",
+  "members": {
+    "Jared": {
+      "teams": ["Texas Tech", "Boise State", "Oklahoma", "Virginia Tech", "Oklahoma State", "Tulsa", "California", "Rutgers"],
+      "wins": 0, "losses": 0, "proj_wins": 54.7, "avg_fpi": 5.7
+    },
+    "Cole": {
+      "teams": ["Oregon", "San Diego State", "Louisville", "Pittsburgh", "Florida", "West Virginia", "Fresno State", "Colorado"],
+      "wins": 0, "losses": 0, "proj_wins": 56.7, "avg_fpi": 8.5
+    },
+    "Tucker": {
+      "teams": ["Penn State", "Houston", "USC", "Oregon State", "Nebraska", "North Carolina", "Kansas", "Arkansas"],
+      "wins": 0, "losses": 0, "proj_wins": 51.8, "avg_fpi": 6.1
+    },
+    "Brayson": {
+      "teams": ["Notre Dame", "Alabama", "Clemson", "NC State", "Illinois", "Baylor", "UCF", "Mississippi State"],
+      "wins": 0, "losses": 0, "proj_wins": 57.5, "avg_fpi": 10.3
+    },
+    "Krystal": {
+      "teams": ["Miami", "Navy", "Utah", "Memphis", "Auburn", "Vanderbilt", "Washington State", "Iowa State"],
+      "wins": 0, "losses": 0, "proj_wins": 56.4, "avg_fpi": 5.5
+    },
+    "Weston": {
+      "teams": ["Texas", "LSU", "Virginia", "TCU", "UTSA", "Cincinnati", "Temple", "UCLA"],
+      "wins": 0, "losses": 0, "proj_wins": 56.1, "avg_fpi": 8.4
+    },
+    "Aaron": {
+      "teams": ["BYU", "Ole Miss", "Michigan", "Washington", "South Carolina", "Northwestern", "Maryland", "Kentucky"],
+      "wins": 0, "losses": 0, "proj_wins": 52.1, "avg_fpi": 9.9
+    },
+    "Andy": {
+      "teams": ["Ohio State", "South Florida", "SMU", "Arizona", "Arizona State", "Florida State", "Minnesota", "Duke"],
+      "wins": 0, "losses": 0, "proj_wins": 58.6, "avg_fpi": 8.0
+    },
+    "Rian": {
+      "teams": ["Indiana", "Kansas State", "Tulane", "Tennessee", "Wake Forest", "Missouri", "North Texas", "Florida Atlantic"],
+      "wins": 0, "losses": 0, "proj_wins": 56.9, "avg_fpi": 6.0
+    },
+    "Paul": {
+      "teams": ["Georgia", "Texas A&M", "East Carolina", "Iowa", "Wisconsin", "Army", "Georgia Tech", "Syracuse"],
+      "wins": 0, "losses": 0, "proj_wins": 56.4, "avg_fpi": 7.9
+    }
+  },
+  "week_matchups": [
+    { "team": "Texas Tech", "opponent": "Abilene Christian", "spread": "-31.5", "result": "PENDING" },
+    { "team": "Oregon", "opponent": "Idaho", "spread": "-44.5", "result": "PENDING" },
+    { "team": "Penn State", "opponent": "@ West Virginia", "spread": "-8.5", "result": "PENDING" },
+    { "team": "Notre Dame", "opponent": "@ Texas A&M", "spread": "+3.0", "result": "PENDING" },
+    { "team": "Miami", "opponent": "@ Florida", "spread": "-2.5", "result": "PENDING" },
+    { "team": "Texas", "opponent": "Colorado State", "spread": "-32.0", "result": "PENDING" },
+    { "team": "BYU", "opponent": "Southern Illinois", "spread": "-14.0", "result": "PENDING" },
+    { "team": "Ohio State", "opponent": "Akron", "spread": "-48.5", "result": "PENDING" },
+    { "team": "Indiana", "opponent": "FIU", "spread": "-21.5", "result": "PENDING" },
+    { "team": "Georgia", "opponent": "Clemson (Neutral)", "spread": "-13.5", "result": "PENDING" }
+  ]
+}
