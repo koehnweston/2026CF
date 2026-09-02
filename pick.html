@@ -3,77 +3,91 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Make Picks - CFB Pool</title>
+  <title>Make Picks (Pick 6) - CFB Pool</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen">
   <div class="max-w-3xl mx-auto px-4 py-8">
-    <!-- Navigation -->
+    
+    <!-- Top Navigation -->
     <div class="flex justify-between items-center mb-6">
-      <a href="index.html" class="text-sm text-indigo-400 hover:text-indigo-300 flex items-center gap-1">← Back to Master Scoreboard</a>
-      <select id="user-select" class="bg-slate-900 border border-slate-700 text-white text-sm rounded-lg px-3 py-1.5">
+      <a href="index.html" class="text-sm font-medium text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition">
+        ← Back to Scoreboard
+      </a>
+      <select id="user-select" class="bg-slate-900 border border-slate-700 text-white text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500">
         <!-- Populated via JS -->
       </select>
     </div>
 
-    <!-- User Pick Header -->
-    <header class="bg-slate-900 border border-slate-800 rounded-2xl p-6 mb-8 shadow-xl">
+    <!-- Header Banner -->
+    <header class="bg-slate-900 border border-slate-800 rounded-2xl p-6 mb-6 shadow-xl">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <span class="text-xs font-bold text-indigo-400 uppercase tracking-widest">Personal Pick Sheet</span>
+          <span class="text-xs font-bold text-indigo-400 uppercase tracking-widest">Weekly Pick Sheet</span>
           <h1 id="user-title" class="text-3xl font-extrabold text-white">Select Player</h1>
+          <p class="text-xs text-slate-400 mt-1">Select exactly <strong class="text-indigo-300">6 of your 8 teams</strong> to play this week.</p>
         </div>
-        <div class="text-right">
-          <span class="text-xs text-slate-400">Drafted Lineup</span>
-          <p id="user-teams-count" class="text-sm font-semibold text-emerald-400">8 Teams Active</p>
+        <div class="bg-slate-950/80 border border-slate-800 px-4 py-3 rounded-xl text-center sm:text-right">
+          <span class="text-xs uppercase tracking-wider text-slate-400 font-semibold block">Pick Counter</span>
+          <p id="pick-counter" class="text-2xl font-black text-amber-400">0 / 6</p>
         </div>
       </div>
     </header>
 
-    <!-- Picks Form -->
-    <form id="picks-form" class="space-y-4">
+    <!-- Matchups Form -->
+    <form id="picks-form" class="space-y-3">
       <div id="matchups-container" class="space-y-3">
-        <!-- Rendered dynamically for owner's 8 teams -->
+        <!-- 8 Teams rendered dynamically -->
       </div>
 
-      <div class="mt-8 flex flex-col sm:flex-row gap-3">
-        <button type="button" onclick="submitPicks()" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 px-6 rounded-xl transition shadow-lg shadow-indigo-600/30">
-          📋 Copy Pick Summary
+      <!-- Action Button -->
+      <div class="pt-6">
+        <button id="submit-btn" type="button" onclick="copyPicks()" disabled 
+          class="w-full bg-slate-800 text-slate-500 cursor-not-allowed font-bold py-3.5 px-6 rounded-xl transition duration-200 shadow-lg text-sm uppercase tracking-wider">
+          Select 6 Teams to Copy Picks
         </button>
+        <p id="status-msg" class="text-center text-sm font-semibold text-emerald-400 hidden mt-3 bg-emerald-950/40 border border-emerald-800/50 py-2 rounded-lg">
+          ✓ Picks copied to clipboard! Paste directly into your group chat.
+        </p>
       </div>
-      <p id="status-msg" class="text-center text-sm font-medium text-emerald-400 hidden mt-2">✓ Picks copied to clipboard! Paste in the group chat.</p>
     </form>
   </div>
 
   <script>
     let leagueData = null;
     let currentUser = null;
+    const MAX_PICKS = 6;
 
     async function init() {
-      const res = await fetch('league_data.json');
-      leagueData = await res.json();
-      
-      const params = new URLSearchParams(window.location.search);
-      currentUser = params.get('user') || Object.keys(leagueData.members)[0];
+      try {
+        const res = await fetch('league_data.json');
+        leagueData = await res.json();
+        
+        const params = new URLSearchParams(window.location.search);
+        currentUser = params.get('user') || Object.keys(leagueData.members)[0];
 
-      // Populate User Selector Dropdown
-      const select = document.getElementById('user-select');
-      Object.keys(leagueData.members).forEach(user => {
-        const opt = document.createElement('option');
-        opt.value = user;
-        opt.innerText = user;
-        if(user === currentUser) opt.selected = true;
-        select.appendChild(opt);
-      });
+        // Populate dropdown
+        const select = document.getElementById('user-select');
+        select.innerHTML = '';
+        Object.keys(leagueData.members).forEach(user => {
+          const opt = document.createElement('option');
+          opt.value = user;
+          opt.innerText = user;
+          if (user === currentUser) opt.selected = true;
+          select.appendChild(opt);
+        });
 
-      select.addEventListener('change', (e) => {
-        window.location.search = `?user=${e.target.value}`;
-      });
+        select.addEventListener('change', (e) => {
+          window.location.search = `?user=${encodeURIComponent(e.target.value)}`;
+        });
 
-      renderUserPicks();
+        renderTeams();
+      } catch (err) {
+        console.error("Failed loading league_data.json", err);
+      }
     }
 
-    function renderUserPicks() {
+    function renderTeams() {
       const userObj = leagueData.members[currentUser];
       if (!userObj) return;
 
@@ -82,43 +96,107 @@
       container.innerHTML = '';
 
       userObj.teams.forEach(team => {
-        const game = leagueData.week_matchups.find(m => m.team === team) || {
+        const game = (leagueData.week_matchups || []).find(m => m.team === team) || {
           opponent: "TBD / BYE",
           spread: "N/A"
         };
 
         const card = document.createElement('div');
-        card.className = "bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-xl p-4 flex flex-col sm:flex-row justify-between items-center gap-4";
+        card.id = `card_${team.replace(/\s+/g, '_')}`;
+        card.className = "team-card bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col sm:flex-row justify-between items-center gap-4 transition duration-150";
         card.innerHTML = `
-          <div class="w-full sm:w-auto">
-            <h3 class="font-bold text-white text-lg">${team}</h3>
-            <p class="text-xs text-slate-400">vs ${game.opponent} (${game.spread})</p>
+          <div class="flex items-center gap-3 w-full sm:w-auto">
+            <input type="checkbox" id="check_${team.replace(/\s+/g, '_')}" onchange="handleTeamToggle('${team}')" 
+              class="team-checkbox w-5 h-5 rounded border-slate-700 bg-slate-950 text-indigo-600 focus:ring-0 cursor-pointer">
+            <div>
+              <h3 class="font-bold text-white text-base">${team}</h3>
+              <p class="text-xs text-slate-400">vs ${game.opponent} (${game.spread})</p>
+            </div>
           </div>
-          <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
-            <label class="flex-1 sm:flex-initial text-center cursor-pointer bg-slate-800 hover:bg-slate-700 has-[:checked]:bg-emerald-600 has-[:checked]:text-white text-slate-300 px-4 py-2 rounded-lg text-xs font-bold transition">
+          
+          <div id="options_${team.replace(/\s+/g, '_')}" class="flex items-center gap-2 w-full sm:w-auto justify-end opacity-40 pointer-events-none transition">
+            <label class="flex-1 sm:flex-initial text-center cursor-pointer bg-slate-950 hover:bg-slate-800 has-[:checked]:bg-emerald-600 has-[:checked]:text-white text-slate-300 px-4 py-2 rounded-lg text-xs font-bold border border-slate-800 transition">
               <input type="radio" name="pick_${team}" value="WIN" class="hidden" checked> WIN
             </label>
-            <label class="flex-1 sm:flex-initial text-center cursor-pointer bg-slate-800 hover:bg-slate-700 has-[:checked]:bg-rose-600 has-[:checked]:text-white text-slate-300 px-4 py-2 rounded-lg text-xs font-bold transition">
+            <label class="flex-1 sm:flex-initial text-center cursor-pointer bg-slate-950 hover:bg-slate-800 has-[:checked]:bg-rose-600 has-[:checked]:text-white text-slate-300 px-4 py-2 rounded-lg text-xs font-bold border border-slate-800 transition">
               <input type="radio" name="pick_${team}" value="LOSS" class="hidden"> LOSS
             </label>
           </div>
         `;
         container.appendChild(card);
       });
+
+      updateState();
     }
 
-    function submitPicks() {
+    function handleTeamToggle(team) {
+      updateState();
+    }
+
+    function updateState() {
+      const checkboxes = document.querySelectorAll('.team-checkbox');
+      const checkedBoxes = document.querySelectorAll('.team-checkbox:checked');
+      const count = checkedBoxes.length;
+
+      // Update counter UI
+      const counter = document.getElementById('pick-counter');
+      counter.innerText = `${count} / ${MAX_PICKS}`;
+      if (count === MAX_PICKS) {
+        counter.className = "text-2xl font-black text-emerald-400";
+      } else {
+        counter.className = "text-2xl font-black text-amber-400";
+      }
+
+      // Enable/Disable radio pick buttons based on whether checkbox is checked
+      checkboxes.forEach(cb => {
+        const teamId = cb.id.replace('check_', '');
+        const options = document.getElementById(`options_${teamId}`);
+        const card = document.getElementById(`card_${teamId}`);
+
+        if (cb.checked) {
+          options.classList.remove('opacity-40', 'pointer-events-none');
+          card.classList.add('border-indigo-600/50', 'bg-slate-900/90');
+        } else {
+          options.classList.add('opacity-40', 'pointer-events-none');
+          card.classList.remove('border-indigo-600/50', 'bg-slate-900/90');
+          // If 6 are already picked, disable other unchecked boxes
+          cb.disabled = (count >= MAX_PICKS);
+        }
+      });
+
+      // Update Submit Button State
+      const submitBtn = document.getElementById('submit-btn');
+      if (count === MAX_PICKS) {
+        submitBtn.disabled = false;
+        submitBtn.className = "w-full bg-indigo-600 hover:bg-indigo-500 text-white cursor-pointer font-bold py-3.5 px-6 rounded-xl transition duration-200 shadow-lg shadow-indigo-600/30 text-sm uppercase tracking-wider";
+        submitBtn.innerText = "📋 Copy 6 Picks to Clipboard";
+      } else {
+        submitBtn.disabled = true;
+        submitBtn.className = "w-full bg-slate-800 text-slate-500 cursor-not-allowed font-bold py-3.5 px-6 rounded-xl transition duration-200 shadow-lg text-sm uppercase tracking-wider";
+        submitBtn.innerText = `Select ${MAX_PICKS - count} more team${MAX_PICKS - count === 1 ? '' : 's'}`;
+      }
+    }
+
+    function copyPicks() {
       const userObj = leagueData.members[currentUser];
-      let summary = `🏈 ${currentUser}'s Week ${leagueData.current_week} Picks:\n`;
+      let summary = `🏈 ${currentUser}'s Week ${leagueData.current_week} Picks (6 of 8):\n`;
+      summary += `────────────────────\n`;
+
       userObj.teams.forEach(team => {
-        const pick = document.querySelector(`input[name="pick_${team}"]:checked`)?.value || 'NO PICK';
-        summary += `• ${team}: ${pick}\n`;
+        const teamId = team.replace(/\s+/g, '_');
+        const cb = document.getElementById(`check_${teamId}`);
+        if (cb && cb.checked) {
+          const pick = document.querySelector(`input[name="pick_${team}"]:checked`)?.value || 'WIN';
+          const game = (leagueData.week_matchups || []).find(m => m.team === team);
+          const oppText = game ? `(vs ${game.opponent})` : '';
+          summary += `• ${team} ${oppText}: ${pick}\n`;
+        }
       });
 
       navigator.clipboard.writeText(summary).then(() => {
         const msg = document.getElementById('status-msg');
         msg.classList.remove('hidden');
-        setTimeout(() => msg.classList.add('hidden'), 4000);
+        setTimeout(() => msg.classList.add('hidden'), 4500);
       });
     }
 
