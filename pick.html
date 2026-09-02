@@ -6,17 +6,20 @@
   <title>Make Picks (Pick 6) - CFB Pool</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen">
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans">
   <div class="max-w-3xl mx-auto px-4 py-8">
     
     <!-- Top Navigation -->
     <div class="flex justify-between items-center mb-6">
       <a href="index.html" class="text-sm font-medium text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition">
-        ← Back to Scoreboard
+        ← Back to Master Scoreboard
       </a>
-      <select id="user-select" class="bg-slate-900 border border-slate-700 text-white text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500">
-        <!-- Populated via JS -->
-      </select>
+      <div class="flex items-center gap-2">
+        <label for="user-select" class="text-xs text-slate-400 uppercase font-semibold">Player:</label>
+        <select id="user-select" class="bg-slate-900 border border-slate-700 text-white text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500">
+          <!-- Populated dynamically via JS -->
+        </select>
+      </div>
     </div>
 
     <!-- Header Banner -->
@@ -24,10 +27,10 @@
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <span class="text-xs font-bold text-indigo-400 uppercase tracking-widest">Weekly Pick Sheet</span>
-          <h1 id="user-title" class="text-3xl font-extrabold text-white">Select Player</h1>
+          <h1 id="user-title" class="text-3xl font-extrabold text-white">Loading...</h1>
           <p class="text-xs text-slate-400 mt-1">Select exactly <strong class="text-indigo-300">6 of your 8 teams</strong> to play this week.</p>
         </div>
-        <div class="bg-slate-950/80 border border-slate-800 px-4 py-3 rounded-xl text-center sm:text-right">
+        <div class="bg-slate-950/80 border border-slate-800 px-5 py-3 rounded-xl text-center sm:text-right min-w-[120px]">
           <span class="text-xs uppercase tracking-wider text-slate-400 font-semibold block">Pick Counter</span>
           <p id="pick-counter" class="text-2xl font-black text-amber-400">0 / 6</p>
         </div>
@@ -46,7 +49,7 @@
           class="w-full bg-slate-800 text-slate-500 cursor-not-allowed font-bold py-3.5 px-6 rounded-xl transition duration-200 shadow-lg text-sm uppercase tracking-wider">
           Select 6 Teams to Copy Picks
         </button>
-        <p id="status-msg" class="text-center text-sm font-semibold text-emerald-400 hidden mt-3 bg-emerald-950/40 border border-emerald-800/50 py-2 rounded-lg">
+        <p id="status-msg" class="text-center text-sm font-semibold text-emerald-400 hidden mt-3 bg-emerald-950/40 border border-emerald-800/50 py-2.5 rounded-lg shadow">
           ✓ Picks copied to clipboard! Paste directly into your group chat.
         </p>
       </div>
@@ -96,30 +99,42 @@
       container.innerHTML = '';
 
       userObj.teams.forEach(team => {
-        const game = (leagueData.week_matchups || []).find(m => m.team === team) || {
-          opponent: "TBD / BYE",
-          spread: "N/A"
+        const game = (leagueData.week_matchups || []).find(m => m.team.toLowerCase() === team.toLowerCase()) || {
+          opponent: "BYE / TBD",
+          spread: "N/A",
+          over_under: ""
         };
 
+        const safeId = team.replace(/[^a-zA-Z0-9]/g, '_');
+
         const card = document.createElement('div');
-        card.id = `card_${team.replace(/\s+/g, '_')}`;
+        card.id = `card_${safeId}`;
         card.className = "team-card bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col sm:flex-row justify-between items-center gap-4 transition duration-150";
         card.innerHTML = `
           <div class="flex items-center gap-3 w-full sm:w-auto">
-            <input type="checkbox" id="check_${team.replace(/\s+/g, '_')}" onchange="handleTeamToggle('${team}')" 
+            <input type="checkbox" id="check_${safeId}" onchange="handleTeamToggle('${team}')" 
               class="team-checkbox w-5 h-5 rounded border-slate-700 bg-slate-950 text-indigo-600 focus:ring-0 cursor-pointer">
             <div>
-              <h3 class="font-bold text-white text-base">${team}</h3>
-              <p class="text-xs text-slate-400">vs ${game.opponent} (${game.spread})</p>
+              <div class="flex items-center gap-2">
+                <h3 class="font-bold text-white text-base">${team}</h3>
+                ${game.spread && game.spread !== 'N/A' ? `
+                  <span class="text-xs font-mono font-semibold bg-indigo-950 text-indigo-300 border border-indigo-800/60 px-2 py-0.5 rounded">
+                    ${game.spread}
+                  </span>` : ''}
+              </div>
+              <p class="text-xs text-slate-400 mt-0.5">
+                vs <span class="text-slate-200 font-medium">${game.opponent}</span> 
+                ${game.over_under ? `<span class="text-slate-500 ml-1">(${game.over_under})</span>` : ''}
+              </p>
             </div>
           </div>
           
-          <div id="options_${team.replace(/\s+/g, '_')}" class="flex items-center gap-2 w-full sm:w-auto justify-end opacity-40 pointer-events-none transition">
+          <div id="options_${safeId}" class="flex items-center gap-2 w-full sm:w-auto justify-end opacity-40 pointer-events-none transition">
             <label class="flex-1 sm:flex-initial text-center cursor-pointer bg-slate-950 hover:bg-slate-800 has-[:checked]:bg-emerald-600 has-[:checked]:text-white text-slate-300 px-4 py-2 rounded-lg text-xs font-bold border border-slate-800 transition">
-              <input type="radio" name="pick_${team}" value="WIN" class="hidden" checked> WIN
+              <input type="radio" name="pick_${safeId}" value="WIN" class="hidden" checked> WIN
             </label>
             <label class="flex-1 sm:flex-initial text-center cursor-pointer bg-slate-950 hover:bg-slate-800 has-[:checked]:bg-rose-600 has-[:checked]:text-white text-slate-300 px-4 py-2 rounded-lg text-xs font-bold border border-slate-800 transition">
-              <input type="radio" name="pick_${team}" value="LOSS" class="hidden"> LOSS
+              <input type="radio" name="pick_${safeId}" value="LOSS" class="hidden"> LOSS
             </label>
           </div>
         `;
@@ -149,9 +164,9 @@
 
       // Enable/Disable radio pick buttons based on whether checkbox is checked
       checkboxes.forEach(cb => {
-        const teamId = cb.id.replace('check_', '');
-        const options = document.getElementById(`options_${teamId}`);
-        const card = document.getElementById(`card_${teamId}`);
+        const safeId = cb.id.replace('check_', '');
+        const options = document.getElementById(`options_${safeId}`);
+        const card = document.getElementById(`card_${safeId}`);
 
         if (cb.checked) {
           options.classList.remove('opacity-40', 'pointer-events-none');
@@ -159,7 +174,7 @@
         } else {
           options.classList.add('opacity-40', 'pointer-events-none');
           card.classList.remove('border-indigo-600/50', 'bg-slate-900/90');
-          // If 6 are already picked, disable other unchecked boxes
+          // If 6 are already picked, disable unchecked boxes to prevent over-picking
           cb.disabled = (count >= MAX_PICKS);
         }
       });
@@ -173,34 +188,15 @@
       } else {
         submitBtn.disabled = true;
         submitBtn.className = "w-full bg-slate-800 text-slate-500 cursor-not-allowed font-bold py-3.5 px-6 rounded-xl transition duration-200 shadow-lg text-sm uppercase tracking-wider";
-        submitBtn.innerText = `Select ${MAX_PICKS - count} more team${MAX_PICKS - count === 1 ? '' : 's'}`;
+        submitBtn.innerText = `Select ${MAX_PICKS - count} more team${MAX_PICKS - count === 1 ? '' : 's'} (${count}/6)`;
       }
     }
 
     function copyPicks() {
       const userObj = leagueData.members[currentUser];
       let summary = `🏈 ${currentUser}'s Week ${leagueData.current_week} Picks (6 of 8):\n`;
-      summary += `────────────────────\n`;
+      summary += `─────────────────────────\n`;
 
       userObj.teams.forEach(team => {
-        const teamId = team.replace(/\s+/g, '_');
-        const cb = document.getElementById(`check_${teamId}`);
-        if (cb && cb.checked) {
-          const pick = document.querySelector(`input[name="pick_${team}"]:checked`)?.value || 'WIN';
-          const game = (leagueData.week_matchups || []).find(m => m.team === team);
-          const oppText = game ? `(vs ${game.opponent})` : '';
-          summary += `• ${team} ${oppText}: ${pick}\n`;
-        }
-      });
-
-      navigator.clipboard.writeText(summary).then(() => {
-        const msg = document.getElementById('status-msg');
-        msg.classList.remove('hidden');
-        setTimeout(() => msg.classList.add('hidden'), 4500);
-      });
-    }
-
-    init();
-  </script>
-</body>
-</html>
+        const safeId = team.replace(/[^a-zA-Z0-9]/g, '_');
+        const cb = document.getElementById(`check_${safeId}`);
