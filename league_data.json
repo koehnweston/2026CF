@@ -1,6 +1,6 @@
 {
   "current_week": 1,
-  "last_updated": "2026-09-03 12:26:11 UTC",
+  "last_updated": "2026-09-03 12:36:42 UTC",
   "members": {
     "Jared": {
       "teams": [
@@ -165,643 +165,803 @@
   },
   "week_matchups": [
     {
-      "team": "Texas Tech",
-      "opponent": "Abilene Christian",
-      "spread": "-31.5",
-      "over_under": "O/U 58.5",
-      "game_time": "Sat 8/29 \u2022 6:30 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Boise State",
-      "opponent": "@ Georgia Southern",
-      "spread": "-13.0",
-      "over_under": "O/U 56.5",
-      "game_time": "Sat 8/29 \u2022 3:00 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Oklahoma",
-      "opponent": "Temple",
-      "spread": "-42.5",
-      "over_under": "O/U 59.5",
-      "game_time": "Fri 8/28 \u2022 6:00 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Virginia Tech",
-      "opponent": "@ Vanderbilt",
-      "spread": "-13.5",
-      "over_under": "O/U 48.5",
-      "game_time": "Sat 8/29 \u2022 11:00 AM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Oklahoma State",
-      "opponent": "South Dakota State",
-      "spread": "-10.0",
-      "over_under": "O/U 54.0",
-      "game_time": "Sat 8/29 \u2022 1:00 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Tulsa",
-      "opponent": "Northwestern State",
-      "spread": "-28.0",
-      "over_under": "O/U 55.0",
-      "game_time": "Thu 8/27 \u2022 7:00 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "California",
-      "opponent": "UC Davis",
-      "spread": "-20.5",
-      "over_under": "O/U 52.5",
-      "game_time": "Sat 8/29 \u2022 4:00 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Rutgers",
-      "opponent": "Howard",
-      "spread": "-36.5",
-      "over_under": "O/U 49.5",
-      "game_time": "Thu 8/27 \u2022 5:00 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Oregon",
-      "opponent": "Idaho",
-      "spread": "-44.5",
-      "over_under": "O/U 61.5",
-      "game_time": "Sat 8/29 \u2022 6:30 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "San Diego State",
-      "opponent": "Texas A&M-Commerce",
-      "spread": "-33.5",
-      "over_under": "O/U 50.5",
-      "game_time": "Sat 8/29 \u2022 7:00 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Louisville",
-      "opponent": "Austin Peay",
-      "spread": "-37.5",
-      "over_under": "O/U 54.0",
-      "game_time": "Sat 8/29 \u2022 11:00 AM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Pittsburgh",
-      "opponent": "Kent State",
-      "spread": "-24.0",
-      "over_under": "O/U 55.5",
-      "game_time": "Sat 8/29 \u2022 11:00 AM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Florida",
-      "opponent": "Miami",
-      "spread": "+2.5",
-      "over_under": "O/U 54.5",
-      "game_time": "Sat 8/29 \u2022 2:30 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "West Virginia",
-      "opponent": "Penn State",
-      "spread": "+8.5",
-      "over_under": "O/U 51.5",
-      "game_time": "Sat 8/29 \u2022 11:00 AM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Fresno State",
-      "opponent": "@ Michigan",
-      "spread": "+21.0",
-      "over_under": "O/U 45.5",
-      "game_time": "Sat 8/29 \u2022 6:30 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Colorado",
-      "opponent": "North Dakota State",
-      "spread": "-9.5",
-      "over_under": "O/U 60.5",
-      "game_time": "Thu 8/27 \u2022 7:00 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Penn State",
-      "opponent": "@ West Virginia",
-      "spread": "-8.5",
-      "over_under": "O/U 51.5",
-      "game_time": "Sat 8/29 \u2022 11:00 AM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Houston",
-      "opponent": "UNLV",
-      "spread": "-3.5",
-      "over_under": "O/U 53.5",
-      "game_time": "Sat 8/29 \u2022 6:00 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "USC",
-      "opponent": "BYE (Played W0 vs SJSU)",
-      "spread": "",
-      "over_under": "",
-      "game_time": "BYE WEEK",
-      "is_bye": true
-    },
-    {
-      "team": "Oregon State",
-      "opponent": "Idaho State",
-      "spread": "-27.5",
-      "over_under": "O/U 54.5",
-      "game_time": "Sat 8/29 \u2022 5:30 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Nebraska",
-      "opponent": "UTEP",
-      "spread": "-27.5",
-      "over_under": "O/U 49.0",
-      "game_time": "Sat 8/29 \u2022 2:30 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "North Carolina",
-      "opponent": "@ Minnesota",
-      "spread": "-1.5",
-      "over_under": "O/U 50.5",
-      "game_time": "Thu 8/27 \u2022 7:00 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Kansas",
-      "opponent": "Lindenwood",
-      "spread": "-44.5",
-      "over_under": "O/U 58.5",
-      "game_time": "Thu 8/27 \u2022 7:00 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Arkansas",
-      "opponent": "Arkansas-Pine Bluff",
-      "spread": "-49.5",
-      "over_under": "O/U 57.5",
-      "game_time": "Thu 8/27 \u2022 6:30 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Notre Dame",
-      "opponent": "@ Texas A&M",
-      "spread": "+3.0",
-      "over_under": "O/U 46.5",
-      "game_time": "Sat 8/29 \u2022 6:30 PM CT",
-      "is_bye": false
-    },
-    {
       "team": "Alabama",
-      "opponent": "Western Kentucky",
-      "spread": "-31.5",
-      "over_under": "O/U 59.5",
-      "game_time": "Sat 8/29 \u2022 6:00 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Clemson",
-      "opponent": "Georgia (Atlanta)",
-      "spread": "+13.5",
-      "over_under": "O/U 48.5",
-      "game_time": "Sat 8/29 \u2022 11:00 AM CT",
-      "is_bye": false
-    },
-    {
-      "team": "NC State",
-      "opponent": "Western Carolina",
-      "spread": "-32.5",
-      "over_under": "O/U 61.0",
-      "game_time": "Thu 8/27 \u2022 6:00 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Illinois",
-      "opponent": "Eastern Illinois",
-      "spread": "-27.5",
-      "over_under": "O/U 46.5",
-      "game_time": "Thu 8/27 \u2022 8:00 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Baylor",
-      "opponent": "Tarleton State",
-      "spread": "-29.5",
-      "over_under": "O/U 55.5",
-      "game_time": "Sat 8/29 \u2022 6:00 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "UCF",
-      "opponent": "New Hampshire",
-      "spread": "-39.5",
-      "over_under": "O/U 63.5",
-      "game_time": "Thu 8/27 \u2022 6:00 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Mississippi State",
-      "opponent": "Eastern Kentucky",
-      "spread": "-25.5",
-      "over_under": "O/U 60.5",
-      "game_time": "Sat 8/29 \u2022 5:00 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Miami",
-      "opponent": "@ Florida",
-      "spread": "-2.5",
-      "over_under": "O/U 54.5",
-      "game_time": "Sat 8/29 \u2022 2:30 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Navy",
-      "opponent": "Bucknell",
-      "spread": "-31.5",
-      "over_under": "O/U 48.5",
-      "game_time": "Sat 8/29 \u2022 11:00 AM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Utah",
-      "opponent": "Southern Utah",
-      "spread": "-38.5",
-      "over_under": "O/U 53.5",
-      "game_time": "Thu 8/27 \u2022 8:00 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Memphis",
-      "opponent": "BYE (Played W0 vs UNLV)",
-      "spread": "",
-      "over_under": "",
-      "game_time": "BYE WEEK",
-      "is_bye": true
-    },
-    {
-      "team": "Auburn",
-      "opponent": "Alabama A&M",
-      "spread": "-46.5",
-      "over_under": "O/U 56.5",
-      "game_time": "Sat 8/29 \u2022 6:30 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Vanderbilt",
-      "opponent": "Virginia Tech",
-      "spread": "+13.5",
-      "over_under": "O/U 48.5",
-      "game_time": "Sat 8/29 \u2022 11:00 AM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Washington State",
-      "opponent": "Portland State",
-      "spread": "-28.5",
-      "over_under": "O/U 57.0",
-      "game_time": "Sat 8/29 \u2022 2:00 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Iowa State",
-      "opponent": "North Dakota",
-      "spread": "-28.5",
-      "over_under": "O/U 46.5",
-      "game_time": "Sat 8/29 \u2022 2:30 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Texas",
-      "opponent": "Colorado State",
-      "spread": "-32.0",
-      "over_under": "O/U 60.0",
-      "game_time": "Sat 8/29 \u2022 2:30 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "LSU",
-      "opponent": "Clemson",
-      "spread": "-4.5",
-      "over_under": "O/U 64.5",
-      "game_time": "Sun 8/30 \u2022 6:30 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Virginia",
-      "opponent": "BYE",
-      "spread": "",
-      "over_under": "",
-      "game_time": "BYE WEEK",
-      "is_bye": true
-    },
-    {
-      "team": "TCU",
-      "opponent": "BYE (Played W0 vs UNC)",
-      "spread": "",
-      "over_under": "",
-      "game_time": "BYE WEEK",
-      "is_bye": true
-    },
-    {
-      "team": "UTSA",
-      "opponent": "Kennesaw State",
-      "spread": "-24.0",
-      "over_under": "O/U 49.5",
-      "game_time": "Sat 8/29 \u2022 2:30 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Cincinnati",
-      "opponent": "Towson",
-      "spread": "-31.0",
-      "over_under": "O/U 53.5",
-      "game_time": "Sat 8/29 \u2022 1:30 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Temple",
-      "opponent": "@ Oklahoma",
-      "spread": "+42.5",
-      "over_under": "O/U 59.5",
-      "game_time": "Fri 8/28 \u2022 6:00 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "UCLA",
-      "opponent": "@ Hawaii",
-      "spread": "-14.0",
-      "over_under": "O/U 54.0",
-      "game_time": "Sat 8/29 \u2022 6:30 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "BYU",
-      "opponent": "Southern Illinois",
-      "spread": "-14.0",
-      "over_under": "O/U 50.5",
-      "game_time": "Sat 8/29 \u2022 7:00 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Ole Miss",
-      "opponent": "Furman",
-      "spread": "-42.5",
-      "over_under": "O/U 60.5",
-      "game_time": "Sat 8/29 \u2022 6:00 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Michigan",
-      "opponent": "Fresno State",
-      "spread": "-21.0",
-      "over_under": "O/U 45.5",
-      "game_time": "Sat 8/29 \u2022 6:30 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Washington",
-      "opponent": "Weber State",
-      "spread": "-27.0",
+      "opponent": "East Carolina",
+      "spread": "ALA -28.5",
       "over_under": "O/U 52.5",
-      "game_time": "Sat 8/29 \u2022 10:00 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "South Carolina",
-      "opponent": "Old Dominion",
-      "spread": "-20.5",
-      "over_under": "O/U 51.5",
-      "game_time": "Sat 8/29 \u2022 3:15 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Northwestern",
-      "opponent": "Miami (OH)",
-      "spread": "-2.5",
-      "over_under": "O/U 39.5",
-      "game_time": "Sat 8/29 \u2022 2:30 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Maryland",
-      "opponent": "UConn",
-      "spread": "-20.5",
-      "over_under": "O/U 45.0",
-      "game_time": "Sat 8/29 \u2022 11:00 AM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Kentucky",
-      "opponent": "Southern Miss",
-      "spread": "-27.5",
-      "over_under": "O/U 50.5",
-      "game_time": "Sat 8/29 \u2022 6:45 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Ohio State",
-      "opponent": "Akron",
-      "spread": "-48.5",
-      "over_under": "O/U 58.5",
-      "game_time": "Sat 8/29 \u2022 2:30 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "South Florida",
-      "opponent": "Bethune-Cookman",
-      "spread": "-38.0",
-      "over_under": "O/U 59.5",
-      "game_time": "Sat 8/29 \u2022 6:00 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "SMU",
-      "opponent": "Houston Christian",
-      "spread": "-43.5",
-      "over_under": "O/U 57.5",
-      "game_time": "Sat 8/29 \u2022 7:00 PM CT",
+      "game_time": "Sat 09/05 • 11:00 AM CT",
+      "status": "STATUS_SCHEDULED",
+      "result": "PENDING",
       "is_bye": false
     },
     {
       "team": "Arizona",
-      "opponent": "New Mexico",
-      "spread": "-31.0",
-      "over_under": "O/U 58.5",
-      "game_time": "Sat 8/29 \u2022 9:30 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Arizona State",
-      "opponent": "Wyoming",
-      "spread": "-7.0",
-      "over_under": "O/U 47.5",
-      "game_time": "Sat 8/29 \u2022 9:30 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Florida State",
-      "opponent": "BYE (Played W0 vs NMSU)",
-      "spread": "",
+      "opponent": "BYE / TBD",
+      "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
+      "status": "STATUS_SCHEDULED",
+      "result": "BYE",
       "is_bye": true
     },
     {
-      "team": "Minnesota",
-      "opponent": "North Carolina",
-      "spread": "+1.5",
-      "over_under": "O/U 50.5",
-      "game_time": "Thu 8/27 \u2022 7:00 PM CT",
-      "is_bye": false
+      "team": "Arizona State",
+      "opponent": "BYE / TBD",
+      "spread": "N/A",
+      "over_under": "",
+      "game_time": "BYE WEEK",
+      "status": "STATUS_SCHEDULED",
+      "result": "BYE",
+      "is_bye": true
     },
     {
-      "team": "Duke",
-      "opponent": "Elon",
-      "spread": "-24.5",
-      "over_under": "O/U 49.5",
-      "game_time": "Fri 8/28 \u2022 6:30 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Indiana",
-      "opponent": "FIU",
-      "spread": "-21.5",
-      "over_under": "O/U 51.5",
-      "game_time": "Sat 8/29 \u2022 2:30 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Kansas State",
-      "opponent": "UT Martin",
-      "spread": "-37.5",
-      "over_under": "O/U 56.5",
-      "game_time": "Sat 8/29 \u2022 6:00 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Tulane",
-      "opponent": "Southeastern Louisiana",
-      "spread": "-28.5",
-      "over_under": "O/U 53.0",
-      "game_time": "Thu 8/27 \u2022 7:00 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Tennessee",
-      "opponent": "Chattanooga",
-      "spread": "-38.5",
-      "over_under": "O/U 56.5",
-      "game_time": "Sat 8/29 \u2022 11:45 AM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Wake Forest",
-      "opponent": "North Carolina A&T",
-      "spread": "-34.5",
-      "over_under": "O/U 50.5",
-      "game_time": "Thu 8/27 \u2022 6:00 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Missouri",
-      "opponent": "Murray State",
-      "spread": "-48.0",
-      "over_under": "O/U 58.0",
-      "game_time": "Thu 8/27 \u2022 7:00 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "North Texas",
-      "opponent": "@ South Alabama",
-      "spread": "+5.5",
-      "over_under": "O/U 64.5",
-      "game_time": "Sat 8/29 \u2022 4:00 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Florida Atlantic",
-      "opponent": "@ Michigan State",
-      "spread": "+14.0",
-      "over_under": "O/U 45.0",
-      "game_time": "Fri 8/28 \u2022 6:00 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Georgia",
-      "opponent": "Clemson (Atlanta)",
-      "spread": "-13.5",
-      "over_under": "O/U 48.5",
-      "game_time": "Sat 8/29 \u2022 11:00 AM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Texas A&M",
-      "opponent": "Notre Dame",
-      "spread": "-3.0",
-      "over_under": "O/U 46.5",
-      "game_time": "Sat 8/29 \u2022 6:30 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "East Carolina",
-      "opponent": "Norfolk State",
-      "spread": "-33.5",
-      "over_under": "O/U 52.5",
-      "game_time": "Sat 8/29 \u2022 5:00 PM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Iowa",
-      "opponent": "Illinois State",
-      "spread": "-22.5",
-      "over_under": "O/U 40.5",
-      "game_time": "Sat 8/29 \u2022 11:00 AM CT",
-      "is_bye": false
-    },
-    {
-      "team": "Wisconsin",
-      "opponent": "Western Michigan",
-      "spread": "-24.5",
-      "over_under": "O/U 56.5",
-      "game_time": "Fri 8/28 \u2022 8:00 PM CT",
+      "team": "Arkansas",
+      "opponent": "@Missouri",
+      "spread": "MIZ -54.5",
+      "over_under": "O/U 61.5",
+      "game_time": "Thu 09/03 • 07:00 PM CT",
+      "status": "STATUS_SCHEDULED",
+      "result": "PENDING",
       "is_bye": false
     },
     {
       "team": "Army",
-      "opponent": "Lehigh",
-      "spread": "-30.5",
-      "over_under": "O/U 47.0",
-      "game_time": "Fri 8/28 \u2022 5:00 PM CT",
+      "opponent": "BYE / TBD",
+      "spread": "N/A",
+      "over_under": "",
+      "game_time": "BYE WEEK",
+      "status": "STATUS_SCHEDULED",
+      "result": "BYE",
+      "is_bye": true
+    },
+    {
+      "team": "Auburn",
+      "opponent": "BYE / TBD",
+      "spread": "N/A",
+      "over_under": "",
+      "game_time": "BYE WEEK",
+      "status": "STATUS_SCHEDULED",
+      "result": "BYE",
+      "is_bye": true
+    },
+    {
+      "team": "BYU",
+      "opponent": "Utah Tech",
+      "spread": "BYU -51.5",
+      "over_under": "O/U 61.5",
+      "game_time": "Sat 09/05 • 07:00 PM CT",
+      "status": "STATUS_SCHEDULED",
+      "result": "PENDING",
+      "is_bye": false
+    },
+    {
+      "team": "Baylor",
+      "opponent": "BYE / TBD",
+      "spread": "N/A",
+      "over_under": "",
+      "game_time": "BYE WEEK",
+      "status": "STATUS_SCHEDULED",
+      "result": "BYE",
+      "is_bye": true
+    },
+    {
+      "team": "Boise State",
+      "opponent": "@Oregon",
+      "spread": "ORE -24.5",
+      "over_under": "O/U 51.5",
+      "game_time": "Sat 09/05 • 02:30 PM CT",
+      "status": "STATUS_SCHEDULED",
+      "result": "PENDING",
+      "is_bye": false
+    },
+    {
+      "team": "California",
+      "opponent": "BYE / TBD",
+      "spread": "N/A",
+      "over_under": "",
+      "game_time": "BYE WEEK",
+      "status": "STATUS_SCHEDULED",
+      "result": "BYE",
+      "is_bye": true
+    },
+    {
+      "team": "Cincinnati",
+      "opponent": "BYE / TBD",
+      "spread": "N/A",
+      "over_under": "",
+      "game_time": "BYE WEEK",
+      "status": "STATUS_SCHEDULED",
+      "result": "BYE",
+      "is_bye": true
+    },
+    {
+      "team": "Clemson",
+      "opponent": "@LSU",
+      "spread": "LSU -10",
+      "over_under": "O/U 50.5",
+      "game_time": "Sat 09/05 • 06:30 PM CT",
+      "status": "STATUS_SCHEDULED",
+      "result": "PENDING",
+      "is_bye": false
+    },
+    {
+      "team": "Colorado",
+      "opponent": "BYE / TBD",
+      "spread": "N/A",
+      "over_under": "",
+      "game_time": "BYE WEEK",
+      "status": "STATUS_SCHEDULED",
+      "result": "BYE",
+      "is_bye": true
+    },
+    {
+      "team": "Duke",
+      "opponent": "BYE / TBD",
+      "spread": "N/A",
+      "over_under": "",
+      "game_time": "BYE WEEK",
+      "status": "STATUS_SCHEDULED",
+      "result": "BYE",
+      "is_bye": true
+    },
+    {
+      "team": "East Carolina",
+      "opponent": "@Alabama",
+      "spread": "ALA -28.5",
+      "over_under": "O/U 52.5",
+      "game_time": "Sat 09/05 • 11:00 AM CT",
+      "status": "STATUS_SCHEDULED",
+      "result": "PENDING",
+      "is_bye": false
+    },
+    {
+      "team": "Florida",
+      "opponent": "SMU",
+      "spread": "SMU -3",
+      "over_under": "O/U 52.5",
+      "game_time": "Mon 09/07 • 06:30 PM CT",
+      "status": "STATUS_SCHEDULED",
+      "result": "PENDING",
+      "is_bye": false
+    },
+    {
+      "team": "Florida Atlantic",
+      "opponent": "BYE / TBD",
+      "spread": "N/A",
+      "over_under": "",
+      "game_time": "BYE WEEK",
+      "status": "STATUS_SCHEDULED",
+      "result": "BYE",
+      "is_bye": true
+    },
+    {
+      "team": "Florida State",
+      "opponent": "SMU",
+      "spread": "SMU -3",
+      "over_under": "O/U 52.5",
+      "game_time": "Mon 09/07 • 06:30 PM CT",
+      "status": "STATUS_SCHEDULED",
+      "result": "PENDING",
+      "is_bye": false
+    },
+    {
+      "team": "Fresno State",
+      "opponent": "@USC",
+      "spread": "USC -22.5",
+      "over_under": "O/U 51.5",
+      "game_time": "Fri 09/04 • 08:00 PM CT",
+      "status": "STATUS_SCHEDULED",
+      "result": "PENDING",
+      "is_bye": false
+    },
+    {
+      "team": "Georgia",
+      "opponent": "Tennessee State",
+      "spread": "UGA -46.5",
+      "over_under": "O/U 56.5",
+      "game_time": "Sat 09/05 • 02:00 PM CT",
+      "status": "STATUS_SCHEDULED",
+      "result": "PENDING",
       "is_bye": false
     },
     {
       "team": "Georgia Tech",
-      "opponent": "Georgia State",
-      "spread": "-21.5",
-      "over_under": "O/U 56.0",
-      "game_time": "Sat 8/29 \u2022 7:00 PM CT",
+      "opponent": "BYE / TBD",
+      "spread": "N/A",
+      "over_under": "",
+      "game_time": "BYE WEEK",
+      "status": "STATUS_SCHEDULED",
+      "result": "BYE",
+      "is_bye": true
+    },
+    {
+      "team": "Houston",
+      "opponent": "Oregon State",
+      "spread": "HOU -20.5",
+      "over_under": "O/U 49.5",
+      "game_time": "Sat 09/05 • 11:00 AM CT",
+      "status": "STATUS_SCHEDULED",
+      "result": "PENDING",
       "is_bye": false
     },
     {
+      "team": "Illinois",
+      "opponent": "@Iowa",
+      "spread": "IOWA -31.5",
+      "over_under": "O/U 44.5",
+      "game_time": "Sat 09/05 • 03:15 PM CT",
+      "status": "STATUS_SCHEDULED",
+      "result": "PENDING",
+      "is_bye": false
+    },
+    {
+      "team": "Indiana",
+      "opponent": "North Texas",
+      "spread": "IU -40.5",
+      "over_under": "O/U 55.5",
+      "game_time": "Sat 09/05 • 11:00 AM CT",
+      "status": "STATUS_SCHEDULED",
+      "result": "PENDING",
+      "is_bye": false
+    },
+    {
+      "team": "Iowa",
+      "opponent": "Northern Illinois",
+      "spread": "IOWA -31.5",
+      "over_under": "O/U 44.5",
+      "game_time": "Sat 09/05 • 03:15 PM CT",
+      "status": "STATUS_SCHEDULED",
+      "result": "PENDING",
+      "is_bye": false
+    },
+    {
+      "team": "Iowa State",
+      "opponent": "BYE / TBD",
+      "spread": "N/A",
+      "over_under": "",
+      "game_time": "BYE WEEK",
+      "status": "STATUS_SCHEDULED",
+      "result": "BYE",
+      "is_bye": true
+    },
+    {
+      "team": "Kansas",
+      "opponent": "@Missouri",
+      "spread": "MIZ -54.5",
+      "over_under": "O/U 61.5",
+      "game_time": "Thu 09/03 • 07:00 PM CT",
+      "status": "STATUS_SCHEDULED",
+      "result": "PENDING",
+      "is_bye": false
+    },
+    {
+      "team": "Kansas State",
+      "opponent": "BYE / TBD",
+      "spread": "N/A",
+      "over_under": "",
+      "game_time": "BYE WEEK",
+      "status": "STATUS_SCHEDULED",
+      "result": "BYE",
+      "is_bye": true
+    },
+    {
+      "team": "Kentucky",
+      "opponent": "BYE / TBD",
+      "spread": "N/A",
+      "over_under": "",
+      "game_time": "BYE WEEK",
+      "status": "STATUS_SCHEDULED",
+      "result": "BYE",
+      "is_bye": true
+    },
+    {
+      "team": "LSU",
+      "opponent": "Clemson",
+      "spread": "LSU -10",
+      "over_under": "O/U 50.5",
+      "game_time": "Sat 09/05 • 06:30 PM CT",
+      "status": "STATUS_SCHEDULED",
+      "result": "PENDING",
+      "is_bye": false
+    },
+    {
+      "team": "Louisville",
+      "opponent": "@Ole Miss",
+      "spread": "MISS -6.5",
+      "over_under": "O/U 55.5",
+      "game_time": "Sun 09/06 • 06:30 PM CT",
+      "status": "STATUS_SCHEDULED",
+      "result": "PENDING",
+      "is_bye": false
+    },
+    {
+      "team": "Maryland",
+      "opponent": "BYE / TBD",
+      "spread": "N/A",
+      "over_under": "",
+      "game_time": "BYE WEEK",
+      "status": "STATUS_SCHEDULED",
+      "result": "BYE",
+      "is_bye": true
+    },
+    {
+      "team": "Memphis",
+      "opponent": "BYE / TBD",
+      "spread": "N/A",
+      "over_under": "",
+      "game_time": "BYE WEEK",
+      "status": "STATUS_SCHEDULED",
+      "result": "BYE",
+      "is_bye": true
+    },
+    {
+      "team": "Miami",
+      "opponent": "@Stanford",
+      "spread": "MIA -24.5",
+      "over_under": "O/U 48.5",
+      "game_time": "Fri 09/04 • 08:00 PM CT",
+      "status": "STATUS_SCHEDULED",
+      "result": "PENDING",
+      "is_bye": false
+    },
+    {
+      "team": "Michigan",
+      "opponent": "Western Michigan",
+      "spread": "MICH -27.5",
+      "over_under": "O/U 49.5",
+      "game_time": "Sat 09/05 • 06:30 PM CT",
+      "status": "STATUS_SCHEDULED",
+      "result": "PENDING",
+      "is_bye": false
+    },
+    {
+      "team": "Minnesota",
+      "opponent": "BYE / TBD",
+      "spread": "N/A",
+      "over_under": "",
+      "game_time": "BYE WEEK",
+      "status": "STATUS_SCHEDULED",
+      "result": "BYE",
+      "is_bye": true
+    },
+    {
+      "team": "Mississippi State",
+      "opponent": "BYE / TBD",
+      "spread": "N/A",
+      "over_under": "",
+      "game_time": "BYE WEEK",
+      "status": "STATUS_SCHEDULED",
+      "result": "BYE",
+      "is_bye": true
+    },
+    {
+      "team": "Missouri",
+      "opponent": "Arkansas-Pine Bluff",
+      "spread": "MIZ -54.5",
+      "over_under": "O/U 61.5",
+      "game_time": "Thu 09/03 • 07:00 PM CT",
+      "status": "STATUS_SCHEDULED",
+      "result": "PENDING",
+      "is_bye": false
+    },
+    {
+      "team": "NC State",
+      "opponent": "BYE / TBD",
+      "spread": "N/A",
+      "over_under": "",
+      "game_time": "BYE WEEK",
+      "status": "STATUS_SCHEDULED",
+      "result": "BYE",
+      "is_bye": true
+    },
+    {
+      "team": "Navy",
+      "opponent": "BYE / TBD",
+      "spread": "N/A",
+      "over_under": "",
+      "game_time": "BYE WEEK",
+      "status": "STATUS_SCHEDULED",
+      "result": "BYE",
+      "is_bye": true
+    },
+    {
+      "team": "Nebraska",
+      "opponent": "BYE / TBD",
+      "spread": "N/A",
+      "over_under": "",
+      "game_time": "BYE WEEK",
+      "status": "STATUS_SCHEDULED",
+      "result": "BYE",
+      "is_bye": true
+    },
+    {
+      "team": "North Carolina",
+      "opponent": "BYE / TBD",
+      "spread": "N/A",
+      "over_under": "",
+      "game_time": "BYE WEEK",
+      "status": "STATUS_SCHEDULED",
+      "result": "BYE",
+      "is_bye": true
+    },
+    {
+      "team": "North Texas",
+      "opponent": "@Indiana",
+      "spread": "IU -40.5",
+      "over_under": "O/U 55.5",
+      "game_time": "Sat 09/05 • 11:00 AM CT",
+      "status": "STATUS_SCHEDULED",
+      "result": "PENDING",
+      "is_bye": false
+    },
+    {
+      "team": "Northwestern",
+      "opponent": "BYE / TBD",
+      "spread": "N/A",
+      "over_under": "",
+      "game_time": "BYE WEEK",
+      "status": "STATUS_SCHEDULED",
+      "result": "BYE",
+      "is_bye": true
+    },
+    {
+      "team": "Notre Dame",
+      "opponent": "Wisconsin",
+      "spread": "ND -20.5",
+      "over_under": "O/U 47.5",
+      "game_time": "Sun 09/06 • 06:30 PM CT",
+      "status": "STATUS_SCHEDULED",
+      "result": "PENDING",
+      "is_bye": false
+    },
+    {
+      "team": "Ohio State",
+      "opponent": "Ball State",
+      "spread": "OSU -50.5",
+      "over_under": "O/U 56.5",
+      "game_time": "Sat 09/05 • 11:30 AM CT",
+      "status": "STATUS_SCHEDULED",
+      "result": "PENDING",
+      "is_bye": false
+    },
+    {
+      "team": "Oklahoma",
+      "opponent": "UTEP",
+      "spread": "OU -40.5",
+      "over_under": "O/U 51.5",
+      "game_time": "Fri 09/04 • 07:00 PM CT",
+      "status": "STATUS_SCHEDULED",
+      "result": "PENDING",
+      "is_bye": false
+    },
+    {
+      "team": "Oklahoma State",
+      "opponent": "BYE / TBD",
+      "spread": "N/A",
+      "over_under": "",
+      "game_time": "BYE WEEK",
+      "status": "STATUS_SCHEDULED",
+      "result": "BYE",
+      "is_bye": true
+    },
+    {
+      "team": "Ole Miss",
+      "opponent": "Louisville",
+      "spread": "MISS -6.5",
+      "over_under": "O/U 55.5",
+      "game_time": "Sun 09/06 • 06:30 PM CT",
+      "status": "STATUS_SCHEDULED",
+      "result": "PENDING",
+      "is_bye": false
+    },
+    {
+      "team": "Oregon",
+      "opponent": "@Houston",
+      "spread": "HOU -20.5",
+      "over_under": "O/U 49.5",
+      "game_time": "Sat 09/05 • 11:00 AM CT",
+      "status": "STATUS_SCHEDULED",
+      "result": "PENDING",
+      "is_bye": false
+    },
+    {
+      "team": "Oregon State",
+      "opponent": "@Houston",
+      "spread": "HOU -20.5",
+      "over_under": "O/U 49.5",
+      "game_time": "Sat 09/05 • 11:00 AM CT",
+      "status": "STATUS_SCHEDULED",
+      "result": "PENDING",
+      "is_bye": false
+    },
+    {
+      "team": "Penn State",
+      "opponent": "Marshall",
+      "spread": "PSU -24.5",
+      "over_under": "O/U 52.5",
+      "game_time": "Sat 09/05 • 02:30 PM CT",
+      "status": "STATUS_SCHEDULED",
+      "result": "PENDING",
+      "is_bye": false
+    },
+    {
+      "team": "Pittsburgh",
+      "opponent": "BYE / TBD",
+      "spread": "N/A",
+      "over_under": "",
+      "game_time": "BYE WEEK",
+      "status": "STATUS_SCHEDULED",
+      "result": "BYE",
+      "is_bye": true
+    },
+    {
+      "team": "Rutgers",
+      "opponent": "BYE / TBD",
+      "spread": "N/A",
+      "over_under": "",
+      "game_time": "BYE WEEK",
+      "status": "STATUS_SCHEDULED",
+      "result": "BYE",
+      "is_bye": true
+    },
+    {
+      "team": "SMU",
+      "opponent": "@Florida State",
+      "spread": "SMU -3",
+      "over_under": "O/U 52.5",
+      "game_time": "Mon 09/07 • 06:30 PM CT",
+      "status": "STATUS_SCHEDULED",
+      "result": "PENDING",
+      "is_bye": false
+    },
+    {
+      "team": "San Diego State",
+      "opponent": "BYE / TBD",
+      "spread": "N/A",
+      "over_under": "",
+      "game_time": "BYE WEEK",
+      "status": "STATUS_SCHEDULED",
+      "result": "BYE",
+      "is_bye": true
+    },
+    {
+      "team": "South Carolina",
+      "opponent": "BYE / TBD",
+      "spread": "N/A",
+      "over_under": "",
+      "game_time": "BYE WEEK",
+      "status": "STATUS_SCHEDULED",
+      "result": "BYE",
+      "is_bye": true
+    },
+    {
+      "team": "South Florida",
+      "opponent": "BYE / TBD",
+      "spread": "N/A",
+      "over_under": "",
+      "game_time": "BYE WEEK",
+      "status": "STATUS_SCHEDULED",
+      "result": "BYE",
+      "is_bye": true
+    },
+    {
       "team": "Syracuse",
-      "opponent": "Ohio",
-      "spread": "-17.0",
-      "over_under": "O/U 46.5",
-      "game_time": "Sat 8/29 \u2022 2:30 PM CT",
+      "opponent": "BYE / TBD",
+      "spread": "N/A",
+      "over_under": "",
+      "game_time": "BYE WEEK",
+      "status": "STATUS_SCHEDULED",
+      "result": "BYE",
+      "is_bye": true
+    },
+    {
+      "team": "TCU",
+      "opponent": "BYE / TBD",
+      "spread": "N/A",
+      "over_under": "",
+      "game_time": "BYE WEEK",
+      "status": "STATUS_SCHEDULED",
+      "result": "BYE",
+      "is_bye": true
+    },
+    {
+      "team": "Temple",
+      "opponent": "BYE / TBD",
+      "spread": "N/A",
+      "over_under": "",
+      "game_time": "BYE WEEK",
+      "status": "STATUS_SCHEDULED",
+      "result": "BYE",
+      "is_bye": true
+    },
+    {
+      "team": "Tennessee",
+      "opponent": "@Georgia",
+      "spread": "UGA -46.5",
+      "over_under": "O/U 56.5",
+      "game_time": "Sat 09/05 • 02:00 PM CT",
+      "status": "STATUS_SCHEDULED",
+      "result": "PENDING",
+      "is_bye": false
+    },
+    {
+      "team": "Texas",
+      "opponent": "@Indiana",
+      "spread": "IU -40.5",
+      "over_under": "O/U 55.5",
+      "game_time": "Sat 09/05 • 11:00 AM CT",
+      "status": "STATUS_SCHEDULED",
+      "result": "PENDING",
+      "is_bye": false
+    },
+    {
+      "team": "Texas A&M",
+      "opponent": "Missouri State",
+      "spread": "TA&M -40.5",
+      "over_under": "O/U 53.5",
+      "game_time": "Sat 09/05 • 06:00 PM CT",
+      "status": "STATUS_SCHEDULED",
+      "result": "PENDING",
+      "is_bye": false
+    },
+    {
+      "team": "Texas Tech",
+      "opponent": "Abilene Christian",
+      "spread": "TTU -42.5",
+      "over_under": "O/U 59.5",
+      "game_time": "Sat 09/05 • 06:00 PM CT",
+      "status": "STATUS_SCHEDULED",
+      "result": "PENDING",
+      "is_bye": false
+    },
+    {
+      "team": "Tulane",
+      "opponent": "BYE / TBD",
+      "spread": "N/A",
+      "over_under": "",
+      "game_time": "BYE WEEK",
+      "status": "STATUS_SCHEDULED",
+      "result": "BYE",
+      "is_bye": true
+    },
+    {
+      "team": "Tulsa",
+      "opponent": "BYE / TBD",
+      "spread": "N/A",
+      "over_under": "",
+      "game_time": "BYE WEEK",
+      "status": "STATUS_SCHEDULED",
+      "result": "BYE",
+      "is_bye": true
+    },
+    {
+      "team": "UCF",
+      "opponent": "BYE / TBD",
+      "spread": "N/A",
+      "over_under": "",
+      "game_time": "BYE WEEK",
+      "status": "STATUS_SCHEDULED",
+      "result": "BYE",
+      "is_bye": true
+    },
+    {
+      "team": "UCLA",
+      "opponent": "BYE / TBD",
+      "spread": "N/A",
+      "over_under": "",
+      "game_time": "BYE WEEK",
+      "status": "STATUS_SCHEDULED",
+      "result": "BYE",
+      "is_bye": true
+    },
+    {
+      "team": "USC",
+      "opponent": "San José State",
+      "spread": "Line TBD",
+      "over_under": "",
+      "game_time": "Sat 08/29 • 02:00 PM CT",
+      "status": "STATUS_FINAL",
+      "result": "WIN",
+      "is_bye": false
+    },
+    {
+      "team": "UTSA",
+      "opponent": "BYE / TBD",
+      "spread": "N/A",
+      "over_under": "",
+      "game_time": "BYE WEEK",
+      "status": "STATUS_SCHEDULED",
+      "result": "BYE",
+      "is_bye": true
+    },
+    {
+      "team": "Utah",
+      "opponent": "Idaho",
+      "spread": "UTAH -35.5",
+      "over_under": "O/U 57.5",
+      "game_time": "Thu 09/03 • 08:00 PM CT",
+      "status": "STATUS_SCHEDULED",
+      "result": "PENDING",
+      "is_bye": false
+    },
+    {
+      "team": "Vanderbilt",
+      "opponent": "BYE / TBD",
+      "spread": "N/A",
+      "over_under": "",
+      "game_time": "BYE WEEK",
+      "status": "STATUS_SCHEDULED",
+      "result": "BYE",
+      "is_bye": true
+    },
+    {
+      "team": "Virginia",
+      "opponent": "BYE / TBD",
+      "spread": "N/A",
+      "over_under": "",
+      "game_time": "BYE WEEK",
+      "status": "STATUS_SCHEDULED",
+      "result": "BYE",
+      "is_bye": true
+    },
+    {
+      "team": "Virginia Tech",
+      "opponent": "BYE / TBD",
+      "spread": "N/A",
+      "over_under": "",
+      "game_time": "BYE WEEK",
+      "status": "STATUS_SCHEDULED",
+      "result": "BYE",
+      "is_bye": true
+    },
+    {
+      "team": "Wake Forest",
+      "opponent": "BYE / TBD",
+      "spread": "N/A",
+      "over_under": "",
+      "game_time": "BYE WEEK",
+      "status": "STATUS_SCHEDULED",
+      "result": "BYE",
+      "is_bye": true
+    },
+    {
+      "team": "Washington",
+      "opponent": "Washington State",
+      "spread": "WASH -23.5",
+      "over_under": "O/U 50.5",
+      "game_time": "Sun 09/06 • 03:00 PM CT",
+      "status": "STATUS_SCHEDULED",
+      "result": "PENDING",
+      "is_bye": false
+    },
+    {
+      "team": "Washington State",
+      "opponent": "@Washington",
+      "spread": "WASH -23.5",
+      "over_under": "O/U 50.5",
+      "game_time": "Sun 09/06 • 03:00 PM CT",
+      "status": "STATUS_SCHEDULED",
+      "result": "PENDING",
+      "is_bye": false
+    },
+    {
+      "team": "West Virginia",
+      "opponent": "BYE / TBD",
+      "spread": "N/A",
+      "over_under": "",
+      "game_time": "BYE WEEK",
+      "status": "STATUS_SCHEDULED",
+      "result": "BYE",
+      "is_bye": true
+    },
+    {
+      "team": "Wisconsin",
+      "opponent": "@Notre Dame",
+      "spread": "ND -20.5",
+      "over_under": "O/U 47.5",
+      "game_time": "Sun 09/06 • 06:30 PM CT",
+      "status": "STATUS_SCHEDULED",
+      "result": "PENDING",
       "is_bye": false
     }
   ],
