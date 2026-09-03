@@ -16,9 +16,11 @@
     .font-mono {
       font-family: 'JetBrains Mono', monospace;
     }
-    /* Ambient Glow Effects */
-    .glow-indigo {
-      box-shadow: 0 0 50px -12px rgba(99, 102, 241, 0.25);
+    /* Dynamic scaling wrapper that fits window */
+    #zoom-container {
+      transition: zoom 0.15s ease-out;
+      width: 100%;
+      margin: 0 auto;
     }
     /* Custom scrollbars */
     ::-webkit-scrollbar {
@@ -37,15 +39,15 @@
     }
   </style>
 </head>
-<body class="bg-[#07090e] text-slate-100 min-h-screen selection:bg-indigo-500 selection:text-white relative overflow-x-hidden antialiased">
+<body class="bg-[#07090e] text-slate-100 min-h-screen selection:bg-indigo-500 selection:text-white relative overflow-x-hidden antialiased flex flex-col items-center">
 
-  <!-- Ambient Light Orbs -->
+  <!-- Ambient Lighting Effects -->
   <div class="fixed top-[-10%] left-[-5%] w-[45rem] h-[45rem] bg-indigo-600/10 rounded-full blur-[140px] pointer-events-none -z-10"></div>
   <div class="fixed top-[30%] right-[-10%] w-[40rem] h-[40rem] bg-fuchsia-600/10 rounded-full blur-[160px] pointer-events-none -z-10"></div>
   <div class="fixed bottom-[-10%] left-[20%] w-[50rem] h-[50rem] bg-cyan-600/10 rounded-full blur-[150px] pointer-events-none -z-10"></div>
 
-  <!-- Dynamic Zoom Container -->
-  <div id="zoom-container" class="max-w-6xl mx-auto px-4 sm:px-6 py-6 transition-all duration-150 origin-top">
+  <!-- Dynamic Zoom & Auto-Fitting Main Container -->
+  <div id="zoom-container" class="max-w-6xl px-4 sm:px-6 py-6">
     
     <!-- Top Header -->
     <header class="flex flex-col md:flex-row justify-between items-center pb-6 border-b border-slate-800/80 mb-6 gap-4">
@@ -110,7 +112,7 @@
         <div class="px-6 py-4 border-b border-slate-800/80 flex justify-between items-center bg-slate-900/60">
           <div>
             <h2 class="text-sm font-bold uppercase tracking-wider text-slate-300">Official Leaderboard</h2>
-            <p class="text-xs text-slate-500">Click any owner's card to inspect drafted roster</p>
+            <p class="text-xs text-slate-500">Click any owner to view their 8 drafted teams</p>
           </div>
           <span class="text-xs font-mono bg-indigo-950/80 text-indigo-400 border border-indigo-800/50 px-3 py-1 rounded-full font-bold">
             Ranked by Wins
@@ -138,14 +140,14 @@
       </div>
     </div>
 
-    <!-- ================= TAB 2: WEEKLY PICKS WITH ODDS & SPREAD ================= -->
+    <!-- ================= TAB 2: WEEKLY PICKS ================= -->
     <div id="tab-content-picks" class="tab-pane hidden">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 bg-slate-900/50 border border-slate-800/80 p-5 rounded-2xl backdrop-blur-md">
         <div>
           <h2 class="text-xl font-black text-white flex items-center gap-2">
             Weekly Locked Picks
           </h2>
-          <p class="text-xs text-slate-400 mt-0.5">Showing all 6 game picks, current point spreads, and estimated Moneyline (ML) odds.</p>
+          <p class="text-xs text-slate-400 mt-0.5">Showing all 6 game picks, current point spreads, and Moneyline (ML) odds.</p>
         </div>
         <div class="flex items-center gap-3">
           <span id="submitted-badge" class="px-3 py-1.5 rounded-xl text-xs font-mono font-bold bg-slate-950 border border-slate-800 text-slate-300">
@@ -215,23 +217,23 @@
     let leagueData = null;
     let currentZoom = 1.0;
 
-    // Helper: Estimate Moneyline from Point Spread
+    // Helper: Clean Moneyline without leading negative signs
     function getMoneyline(spreadStr) {
       if (!spreadStr || spreadStr === 'N/A') return 'ML N/A';
       const spread = parseFloat(spreadStr);
       if (isNaN(spread)) return 'ML N/A';
-      if (spread === 0) return 'ML -110';
+      if (spread === 0) return 'ML 110';
       
       if (spread < 0) {
-        // Favorite
+        // Favorite (displayed cleanly without minus)
         const abs = Math.abs(spread);
-        if (abs <= 3) return `ML -${Math.round(110 + abs * 20)}`;
-        if (abs <= 7) return `ML -${Math.round(180 + (abs - 3) * 35)}`;
-        if (abs <= 14) return `ML -${Math.round(320 + (abs - 7) * 55)}`;
-        if (abs <= 21) return `ML -${Math.round(750 + (abs - 14) * 80)}`;
-        return `ML -1500+`;
+        if (abs <= 3) return `ML ${Math.round(110 + abs * 20)}`;
+        if (abs <= 7) return `ML ${Math.round(180 + (abs - 3) * 35)}`;
+        if (abs <= 14) return `ML ${Math.round(320 + (abs - 7) * 55)}`;
+        if (abs <= 21) return `ML ${Math.round(750 + (abs - 14) * 80)}`;
+        return `ML 1500+`;
       } else {
-        // Underdog
+        // Underdog (displayed with +)
         if (spread <= 3) return `ML +${Math.round(100 + spread * 18)}`;
         if (spread <= 7) return `ML +${Math.round(160 + (spread - 3) * 30)}`;
         if (spread <= 14) return `ML +${Math.round(280 + (spread - 7) * 45)}`;
@@ -240,9 +242,9 @@
       }
     }
 
-    // Zoom Controls
+    // Zoom Controls & Auto-Fit
     function changeZoom(delta) {
-      currentZoom = Math.min(Math.max(0.75, currentZoom + delta), 1.35);
+      currentZoom = Math.min(Math.max(0.70, currentZoom + delta), 1.40);
       applyZoom();
     }
     function resetZoom() {
@@ -250,9 +252,18 @@
       applyZoom();
     }
     function applyZoom() {
-      document.getElementById('zoom-container').style.transform = `scale(${currentZoom})`;
+      const container = document.getElementById('zoom-container');
+      container.style.zoom = currentZoom;
       document.getElementById('zoom-text').innerText = `${Math.round(currentZoom * 100)}%`;
     }
+
+    // Ctrl + Scroll Wheel Zoom Listener
+    window.addEventListener('wheel', (e) => {
+      if (e.ctrlKey) {
+        e.preventDefault();
+        changeZoom(e.deltaY < 0 ? 0.03 : -0.03);
+      }
+    }, { passive: false });
 
     // Tab Switching
     function switchTab(tab) {
