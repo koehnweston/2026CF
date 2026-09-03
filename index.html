@@ -3,86 +3,214 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CFB Pool 2026 - Master Scoreboard</title>
+  <title>CFB Pool 2026 - Master Standings & Picks</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen font-sans">
   <div class="max-w-6xl mx-auto px-4 py-8">
-    <!-- Header -->
+    
+    <!-- Top Bar -->
     <header class="flex flex-col md:flex-row justify-between items-center pb-6 border-b border-slate-800 mb-8 gap-4">
       <div>
         <h1 class="text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
-          🏈 CFB Pool Hub <span class="text-xs bg-indigo-600 text-white px-2 py-1 rounded-full uppercase">Week <span id="week-num">1</span></span>
+          🏈 College Football Pool <span class="text-xs bg-indigo-600 text-white px-2.5 py-1 rounded-full uppercase font-bold">Week <span id="week-display">1</span></span>
         </h1>
-        <p class="text-slate-400 text-sm mt-1">Live Standings & Weekly Picks Central</p>
+        <p class="text-slate-400 text-sm mt-1">Official Season Standings & Live Pick Tracker</p>
       </div>
-      <div id="quick-links" class="flex flex-wrap gap-2 justify-center">
-        <!-- Dynamic Player Pick Links -->
-      </div>
+      <div id="quick-links" class="flex flex-wrap gap-2 justify-center"></div>
     </header>
 
-    <!-- Standings Grid -->
-    <section class="mb-10">
-      <h2 class="text-xl font-bold text-white mb-4">🏆 League Leaderboard</h2>
-      <div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-900/60 shadow-xl">
+    <!-- 1. Season-Long Standings Leaderboard -->
+    <section class="mb-12">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+          🏆 Season-Long Leaderboard
+        </h2>
+        <span class="text-xs text-slate-400 font-mono">Ranked by Total Wins</span>
+      </div>
+      <div class="overflow-x-auto rounded-2xl border border-slate-800 bg-slate-900/70 shadow-2xl">
         <table class="w-full text-left border-collapse">
           <thead>
-            <tr class="border-b border-slate-800 text-slate-400 text-xs uppercase bg-slate-900/80">
-              <th class="py-3 px-4">Rank</th>
-              <th class="py-3 px-4">Owner</th>
-              <th class="py-3 px-4 text-center">Record (W-L)</th>
-              <th class="py-3 px-4 text-center">Proj Wins</th>
-              <th class="py-3 px-4 text-center">Avg FPI</th>
-              <th class="py-3 px-4">Roster</th>
-              <th class="py-3 px-4 text-right">Pick Sheet</th>
+            <tr class="border-b border-slate-800 text-slate-400 text-xs uppercase tracking-wider bg-slate-900/90">
+              <th class="py-3.5 px-4 text-center">Rank</th>
+              <th class="py-3.5 px-4">Owner</th>
+              <th class="py-3.5 px-4 text-center">Record (W-L)</th>
+              <th class="py-3.5 px-4 text-center">Win %</th>
+              <th class="py-3.5 px-4 text-center">Proj Wins</th>
+              <th class="py-3.5 px-4">Drafted Roster (8 Teams)</th>
+              <th class="py-3.5 px-4 text-right">Pick Sheet</th>
             </tr>
           </thead>
-          <tbody id="standings-body" class="divide-y divide-slate-800 text-sm">
+          <tbody id="standings-body" class="divide-y divide-slate-800/60 text-sm">
             <!-- Populated via JS -->
           </tbody>
         </table>
       </div>
     </section>
+
+    <!-- 2. Live Weekly Picks Dashboard -->
+    <section>
+      <div class="flex justify-between items-center mb-4">
+        <div>
+          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+            📋 Live Week <span id="picks-week-display">1</span> Picks
+          </h2>
+          <p class="text-xs text-slate-400">See all 6 picks made by each owner once submitted.</p>
+        </div>
+        <button onclick="loadData()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 transition">
+          🔄 Refresh Picks
+        </button>
+      </div>
+
+      <div id="weekly-picks-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
   </div>
 
   <script>
-    async function loadLeague() {
-      const res = await fetch('league_data.json');
-      const data = await res.json();
-      
-      document.getElementById('week-num').innerText = data.current_week;
-      const quickLinks = document.getElementById('quick-links');
-      const tbody = document.getElementById('standings-body');
-      
-      // Sort members by wins descending
-      const sorted = Object.entries(data.members).sort((a, b) => b[1].wins - a[1].wins);
+    // PASTE YOUR GOOGLE SCRIPT WEB APP URL HERE:
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec";
 
-      sorted.forEach(([name, info], idx) => {
-        // Quick Header Links
+    const LEAGUE_ROSTERS = {
+      "Jared": { "teams": ["Texas Tech", "Boise State", "Oklahoma", "Virginia Tech", "Oklahoma State", "Tulsa", "California", "Rutgers"], "proj_wins": 54.7 },
+      "Cole": { "teams": ["Oregon", "San Diego State", "Louisville", "Pittsburgh", "Florida", "West Virginia", "Fresno State", "Colorado"], "proj_wins": 56.7 },
+      "Tucker": { "teams": ["Penn State", "Houston", "USC", "Oregon State", "Nebraska", "North Carolina", "Kansas", "Arkansas"], "proj_wins": 51.8 },
+      "Brayson": { "teams": ["Notre Dame", "Alabama", "Clemson", "NC State", "Illinois", "Baylor", "UCF", "Mississippi State"], "proj_wins": 57.5 },
+      "Krystal": { "teams": ["Miami", "Navy", "Utah", "Memphis", "Auburn", "Vanderbilt", "Washington State", "Iowa State"], "proj_wins": 56.4 },
+      "Weston": { "teams": ["Texas", "LSU", "Virginia", "TCU", "UTSA", "Cincinnati", "Temple", "UCLA"], "proj_wins": 56.1 },
+      "Aaron": { "teams": ["BYU", "Ole Miss", "Michigan", "Washington", "South Carolina", "Northwestern", "Maryland", "Kentucky"], "proj_wins": 52.1 },
+      "Andy": { "teams": ["Ohio State", "South Florida", "SMU", "Arizona", "Arizona State", "Florida State", "Minnesota", "Duke"], "proj_wins": 58.6 },
+      "Rian": { "teams": ["Indiana", "Kansas State", "Tulane", "Tennessee", "Wake Forest", "Missouri", "North Texas", "Florida Atlantic"], "proj_wins": 56.9 },
+      "Paul": { "teams": ["Georgia", "Texas A&M", "East Carolina", "Iowa", "Wisconsin", "Army", "Georgia Tech", "Syracuse"], "proj_wins": 56.4 }
+    };
+
+    let leagueData = null;
+
+    async function loadData() {
+      // 1. Fetch league_data.json
+      try {
+        const res = await fetch('league_data.json?t=' + new Date().getTime());
+        leagueData = await res.json();
+      } catch (e) {
+        leagueData = { current_week: 1, members: LEAGUE_ROSTERS };
+      }
+
+      const curWeek = leagueData.current_week || 1;
+      document.getElementById('week-display').innerText = curWeek;
+      document.getElementById('picks-week-display').innerText = curWeek;
+
+      // 2. Fetch live picks from Google Sheet
+      let sheetPicks = [];
+      if (GOOGLE_SCRIPT_URL && !GOOGLE_SCRIPT_URL.includes("YOUR_DEPLOYMENT_ID")) {
+        try {
+          const resSheet = await fetch(GOOGLE_SCRIPT_URL);
+          sheetPicks = await resSheet.json();
+        } catch(err) {
+          console.warn("Could not fetch Google Sheet picks", err);
+        }
+      }
+
+      renderStandings(sheetPicks);
+      renderLivePicksGrid(sheetPicks, curWeek);
+    }
+
+    function renderStandings(picks) {
+      const tbody = document.getElementById('standings-body');
+      const quickLinks = document.getElementById('quick-links');
+      tbody.innerHTML = '';
+      quickLinks.innerHTML = '';
+
+      // Calculate record per member (from sheet picks or static baseline)
+      const memberStats = Object.keys(LEAGUE_ROSTERS).map(name => {
+        const userPicks = picks.filter(p => p.owner && p.owner.toLowerCase() === name.toLowerCase());
+        const wins = userPicks.filter(p => p.result === 'WIN').length;
+        const losses = userPicks.filter(p => p.result === 'LOSS').length;
+        const total = wins + losses;
+        const winPct = total > 0 ? ((wins / total) * 100).toFixed(1) + '%' : '0.0%';
+
+        return {
+          name,
+          wins,
+          losses,
+          winPct,
+          proj_wins: LEAGUE_ROSTERS[name].proj_wins,
+          teams: LEAGUE_ROSTERS[name].teams
+        };
+      });
+
+      // Sort by Wins descending
+      memberStats.sort((a, b) => b.wins - a.wins);
+
+      memberStats.forEach((m, idx) => {
+        // Quick Header Link
         const link = document.createElement('a');
-        link.href = `pick.html?user=${encodeURIComponent(name)}`;
-        link.className = "text-xs bg-slate-800 hover:bg-indigo-600 border border-slate-700 hover:border-indigo-500 text-slate-200 hover:text-white px-2.5 py-1.5 rounded-md transition";
-        link.innerText = name;
+        link.href = `pick.html?user=${encodeURIComponent(m.name)}`;
+        link.className = "text-xs bg-slate-900 hover:bg-indigo-600 border border-slate-700 hover:border-indigo-500 text-slate-300 hover:text-white px-2.5 py-1.5 rounded-lg transition";
+        link.innerText = m.name;
         quickLinks.appendChild(link);
 
-        // Table Rows
+        // Standings Row
         const tr = document.createElement('tr');
         tr.className = "hover:bg-slate-800/40 transition";
         tr.innerHTML = `
-          <td class="py-3 px-4 font-mono font-bold ${idx === 0 ? 'text-amber-400' : 'text-slate-400'}">#${idx + 1}</td>
-          <td class="py-3 px-4 font-semibold text-white">${name}</td>
-          <td class="py-3 px-4 text-center font-bold text-emerald-400">${info.wins} - ${info.losses}</td>
-          <td class="py-3 px-4 text-center text-slate-300 font-mono">${info.proj_wins}</td>
-          <td class="py-3 px-4 text-center text-slate-300 font-mono">${info.avg_fpi}</td>
-          <td class="py-3 px-4 text-xs text-slate-400 max-w-xs truncate">${info.teams.join(', ')}</td>
-          <td class="py-3 px-4 text-right">
-            <a href="pick.html?user=${encodeURIComponent(name)}" class="text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-3 py-1.5 rounded-lg transition">Make Picks</a>
+          <td class="py-3.5 px-4 text-center font-mono font-bold ${idx === 0 ? 'text-amber-400' : 'text-slate-400'}">#${idx + 1}</td>
+          <td class="py-3.5 px-4 font-bold text-white">${m.name}</td>
+          <td class="py-3.5 px-4 text-center font-bold text-emerald-400 font-mono">${m.wins} - ${m.losses}</td>
+          <td class="py-3.5 px-4 text-center font-mono text-slate-300">${m.winPct}</td>
+          <td class="py-3.5 px-4 text-center font-mono text-slate-400">${m.proj_wins}</td>
+          <td class="py-3.5 px-4 text-xs text-slate-400 max-w-xs truncate">${m.teams.join(', ')}</td>
+          <td class="py-3.5 px-4 text-right">
+            <a href="pick.html?user=${encodeURIComponent(m.name)}" class="text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-3 py-1.5 rounded-lg transition shadow">Make Picks</a>
           </td>
         `;
         tbody.appendChild(tr);
       });
     }
-    loadLeague();
+
+    function renderLivePicksGrid(picks, week) {
+      const grid = document.getElementById('weekly-picks-grid');
+      grid.innerHTML = '';
+
+      Object.keys(LEAGUE_ROSTERS).forEach(owner => {
+        const ownerPicks = picks.filter(p => p.owner && p.owner.toLowerCase() === owner.toLowerCase() && String(p.week) === String(week));
+        const card = document.createElement('div');
+        card.className = "bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col justify-between";
+
+        let picksListHtml = '';
+        if (ownerPicks.length === 0) {
+          picksListHtml = `<p class="text-xs text-slate-500 italic py-4 text-center">No picks submitted yet for Week ${week}.</p>`;
+        } else {
+          picksListHtml = `<ul class="space-y-2 mt-3">` + ownerPicks.map(p => `
+            <li class="flex justify-between items-center text-xs bg-slate-950/80 px-3 py-2 rounded-lg border border-slate-800/80">
+              <span class="font-semibold text-white">${p.team}</span>
+              <span class="font-bold px-2 py-0.5 rounded text-[10px] ${p.pick === 'WIN' ? 'bg-emerald-950 text-emerald-300 border border-emerald-800' : 'bg-rose-950 text-rose-300 border border-rose-800'}">
+                ${p.pick}
+              </span>
+            </li>
+          `).join('') + `</ul>`;
+        }
+
+        card.innerHTML = `
+          <div>
+            <div class="flex justify-between items-center pb-2 border-b border-slate-800">
+              <h3 class="font-bold text-white text-base">${owner}</h3>
+              <span class="text-xs font-mono font-bold ${ownerPicks.length === 6 ? 'text-emerald-400' : 'text-amber-400'}">
+                ${ownerPicks.length}/6 Picks
+              </span>
+            </div>
+            ${picksListHtml}
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-800/60 flex justify-end">
+            <a href="pick.html?user=${encodeURIComponent(owner)}" class="text-xs text-indigo-400 hover:text-indigo-300 font-medium">Edit Picks →</a>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    loadData();
   </script>
 </body>
 </html>
