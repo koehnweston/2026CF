@@ -7,7 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&family=VT323&display=swap" rel="stylesheet">
   
   <style>
     body {
@@ -16,24 +16,33 @@
     .font-mono {
       font-family: 'JetBrains Mono', monospace;
     }
+    .font-terminal {
+      font-family: 'VT323', monospace;
+    }
     #zoom-container {
       transition: zoom 0.15s ease-out;
       width: 100%;
       margin: 0 auto;
     }
-    ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
+    /* Wagging finger animation */
+    @keyframes wag {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(-25deg); }
+      75% { transform: rotate(25deg); }
     }
-    ::-webkit-scrollbar-track {
-      background: #090d16;
+    .animate-wag {
+      display: inline-block;
+      animation: wag 0.35s infinite ease-in-out;
+      transform-origin: bottom center;
     }
-    ::-webkit-scrollbar-thumb {
-      background: #1e293b;
-      border-radius: 9999px;
+    /* Draggable items styling */
+    .draggable-name {
+      cursor: grab;
+      user-select: none;
+      touch-action: none;
     }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #334155;
+    .draggable-name:active {
+      cursor: grabbing;
     }
   </style>
 </head>
@@ -70,7 +79,6 @@
 
       <!-- Controls: Zoom & Refresh -->
       <div class="flex items-center gap-3">
-        <!-- Visual Zoom Widget -->
         <div class="flex items-center bg-slate-900/90 border border-slate-800 rounded-xl p-1 shadow-inner">
           <button onclick="changeZoom(-0.05)" class="w-7 h-7 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg text-sm font-bold transition">－</button>
           <span id="zoom-text" class="text-[11px] font-mono font-bold text-slate-300 px-2 min-w-[45px] text-center">100%</span>
@@ -85,27 +93,26 @@
       </div>
     </header>
 
-    <!-- Tab Bar Navigation -->
-    <nav class="flex space-x-2 p-1.5 bg-slate-900/80 border border-slate-800/80 rounded-2xl mb-8 max-w-md backdrop-blur-md shadow-xl">
+    <!-- 3-Tab Bar Navigation -->
+    <nav class="flex space-x-2 p-1.5 bg-slate-900/80 border border-slate-800/80 rounded-2xl mb-8 max-w-xl backdrop-blur-md shadow-xl">
       <button id="tab-btn-standings" onclick="switchTab('standings')" 
-        class="flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow-lg shadow-indigo-600/30">
-        <span>🏆</span> Season Standings
+        class="flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow-lg shadow-indigo-600/30">
+        <span>🏆</span> Standings
       </button>
       <button id="tab-btn-picks" onclick="switchTab('picks')" 
-        class="flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/60">
+        class="flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-800/60">
         <span>📋</span> Weekly Picks
+      </button>
+      <button id="tab-btn-prank" onclick="switchTab('prank')" 
+        class="flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 text-rose-400 hover:text-rose-200 hover:bg-rose-950/40 border border-transparent hover:border-rose-800/50">
+        <span>🔒</span> Circle of Trust
       </button>
     </nav>
 
     <!-- ================= TAB 1: SEASON STANDINGS ================= -->
     <div id="tab-content-standings" class="tab-pane">
-      
-      <!-- Top 3 Podium Cards Banner -->
-      <div id="podium-cards" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <!-- Rendered dynamically -->
-      </div>
+      <div id="podium-cards" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8"></div>
 
-      <!-- Full Standings Table -->
       <div class="rounded-3xl border border-slate-800/90 bg-slate-900/40 backdrop-blur-xl shadow-2xl overflow-hidden">
         <div class="px-6 py-4 border-b border-slate-800/80 flex justify-between items-center bg-slate-900/60">
           <div>
@@ -130,44 +137,104 @@
                 <th class="py-4 px-6 text-right">Roster</th>
               </tr>
             </thead>
-            <tbody id="standings-body" class="divide-y divide-slate-800/50 text-sm">
-              <!-- Rendered via JS -->
-            </tbody>
+            <tbody id="standings-body" class="divide-y divide-slate-800/50 text-sm"></tbody>
           </table>
         </div>
       </div>
     </div>
 
-    <!-- ================= TAB 2: WEEKLY PICKS (WITH WEEK FILTER) ================= -->
+    <!-- ================= TAB 2: WEEKLY PICKS ================= -->
     <div id="tab-content-picks" class="tab-pane hidden">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 bg-slate-900/50 border border-slate-800/80 p-5 rounded-2xl backdrop-blur-md">
         <div>
-          <h2 class="text-xl font-black text-white flex items-center gap-2">
-            Weekly Locked Picks
-          </h2>
+          <h2 class="text-xl font-black text-white flex items-center gap-2">Weekly Locked Picks</h2>
           <p class="text-xs text-slate-400 mt-0.5">Showing all 6 game picks, current point spreads, and Moneyline (ML) odds.</p>
         </div>
         
-        <!-- Filter Controls: Week Selector Dropdown & Status Badge -->
         <div class="flex items-center gap-3">
           <div class="flex items-center gap-2 bg-slate-950 border border-slate-800 px-3 py-1.5 rounded-xl shadow-inner">
             <label for="week-filter-select" class="text-xs text-slate-400 font-bold uppercase">View Week:</label>
-            <select id="week-filter-select" onchange="onWeekFilterChange()" class="bg-slate-900 border border-slate-700 text-indigo-300 font-bold text-xs rounded-lg px-2.5 py-1 focus:outline-none focus:border-indigo-500 cursor-pointer">
-              <!-- Weeks 1 through 15 populated via JS -->
-            </select>
+            <select id="week-filter-select" onchange="onWeekFilterChange()" class="bg-slate-900 border border-slate-700 text-indigo-300 font-bold text-xs rounded-lg px-2.5 py-1 focus:outline-none focus:border-indigo-500 cursor-pointer"></select>
           </div>
-
           <span id="submitted-badge" class="px-3 py-2 rounded-xl text-xs font-mono font-bold bg-slate-950 border border-slate-800 text-slate-300">
             0/10 Submitted
           </span>
         </div>
       </div>
 
-      <div id="weekly-picks-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        <!-- Rendered via JS -->
+      <div id="weekly-picks-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+    </div>
+
+    <!-- ================= TAB 3: CIRCLE OF TRUST (PRANK TAB) ================= -->
+    <div id="tab-content-prank" class="tab-pane hidden">
+      <div class="bg-slate-900/60 border border-slate-800 rounded-3xl p-6 backdrop-blur-xl shadow-2xl relative overflow-hidden">
+        
+        <div class="text-center max-w-xl mx-auto mb-6">
+          <span class="text-[10px] font-mono uppercase tracking-widest bg-rose-950 text-rose-300 border border-rose-800/60 px-2.5 py-1 rounded-full font-bold">Security Level: Maximum</span>
+          <h2 class="text-2xl sm:text-3xl font-black text-white mt-2">The Official Circle of Trust</h2>
+          <p class="text-xs text-slate-400 mt-1">Due to excessive office complaints, trust is currently restricted. Drag your name inside to apply for entry.</p>
+        </div>
+
+        <!-- Drag Sandbox Arena -->
+        <div id="arena" class="relative w-full h-[520px] bg-slate-950/90 border border-slate-800/80 rounded-2xl overflow-hidden flex items-center justify-center">
+          
+          <!-- Inner Sanctum Circle of Trust -->
+          <div id="trust-circle" class="w-64 h-64 sm:w-72 sm:h-72 rounded-full border-2 border-dashed border-emerald-500/40 bg-emerald-950/20 flex flex-col items-center justify-center text-center p-4 relative shadow-[0_0_60px_-10px_rgba(16,185,129,0.25)] transition">
+            <span class="text-2xl mb-1">👑</span>
+            <span class="text-xs font-black uppercase tracking-wider text-emerald-400">Circle of Trust</span>
+            <span class="text-[10px] text-emerald-500/70 font-mono mt-0.5">Commissioner Only</span>
+            
+            <!-- Weston Permanent Tag -->
+            <div class="mt-3 bg-emerald-500/20 border border-emerald-500/60 text-emerald-200 text-xs font-black px-4 py-1.5 rounded-full shadow-lg">
+              ★ Weston ★
+            </div>
+          </div>
+
+          <!-- Draggable Members (Scattered outside) -->
+          <div id="draggables-layer" class="absolute inset-0 pointer-events-auto">
+            <!-- Rendered by JS around the perimeter -->
+          </div>
+
+        </div>
       </div>
     </div>
 
+  </div>
+
+  <!-- JURASSIC PARK NEDRY POPUP MODAL -->
+  <div id="nedry-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-[#0b140d] border-2 border-emerald-500/80 rounded-2xl max-w-lg w-full p-6 shadow-[0_0_80px_rgba(16,185,129,0.4)] text-center relative font-terminal">
+      
+      <!-- Window Title Bar -->
+      <div class="flex justify-between items-center pb-3 border-b border-emerald-500/40 text-emerald-400 text-sm tracking-wider">
+        <span>SECURITY PROTOCOL 1993 // ACCESS DENIED</span>
+        <button onclick="closeNedryModal()" class="text-emerald-400 hover:text-white font-bold text-lg">✕</button>
+      </div>
+
+      <!-- Animated Finger Wagging Nedry -->
+      <div class="my-6 flex flex-col items-center justify-center">
+        <div class="text-7xl sm:text-8xl select-none animate-wag mb-2">
+          ☝️🤓
+        </div>
+        <h3 class="text-3xl sm:text-4xl font-extrabold text-emerald-400 tracking-wider">
+          AH AH AH!
+        </h3>
+        <p class="text-xl sm:text-2xl text-emerald-300 mt-2">
+          YOU DIDN'T SAY THE MAGIC WORD!
+        </p>
+      </div>
+
+      <!-- Retro Terminal Text -->
+      <div class="bg-black/80 border border-emerald-500/30 p-3 rounded-lg text-left text-xs font-mono text-emerald-400 space-y-1 mb-6">
+        <p>> ATTEMPTING ENTRY INTO CIRCLE OF TRUST...</p>
+        <p class="text-rose-400">> ERROR 403: COMMISSIONER PRIVILEGE REQUIRED</p>
+        <p class="text-amber-300">> ACCESS VIOLATION LOGGED: STOP NEEDLING WESTON</p>
+      </div>
+
+      <button onclick="closeNedryModal()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-black font-extrabold py-3 rounded-xl text-lg font-terminal tracking-widest uppercase transition shadow-lg shadow-emerald-600/30">
+        [ RETURN TO SHAME ZONE ]
+      </button>
+    </div>
   </div>
 
   <!-- Player Roster Profile Modal -->
@@ -193,9 +260,7 @@
       </div>
 
       <h4 class="text-xs font-extrabold uppercase tracking-wider text-slate-400 mb-3">8 Drafted Teams</h4>
-      <ul id="modal-teams-list" class="space-y-2 text-sm max-h-64 overflow-y-auto pr-1">
-        <!-- Teams populated here -->
-      </ul>
+      <ul id="modal-teams-list" class="space-y-2 text-sm max-h-64 overflow-y-auto pr-1"></ul>
 
       <div class="mt-6">
         <button onclick="closeModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 rounded-xl text-xs uppercase tracking-wider transition">
@@ -226,7 +291,7 @@
     let selectedWeek = 1;
     let currentZoom = 1.0;
 
-    // Helper: Clean Moneyline without negative minus sign
+    // Helper: Clean Moneyline
     function getMoneyline(spreadStr) {
       if (!spreadStr || spreadStr === 'N/A') return 'ML N/A';
       const spread = parseFloat(spreadStr);
@@ -275,19 +340,31 @@
     function switchTab(tab) {
       const standingsPane = document.getElementById('tab-content-standings');
       const picksPane = document.getElementById('tab-content-picks');
+      const prankPane = document.getElementById('tab-content-prank');
+      
       const btnStandings = document.getElementById('tab-btn-standings');
       const btnPicks = document.getElementById('tab-btn-picks');
+      const btnPrank = document.getElementById('tab-btn-prank');
+
+      standingsPane.classList.add('hidden');
+      picksPane.classList.add('hidden');
+      prankPane.classList.add('hidden');
+
+      const defaultBtn = "flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-800/60";
+      btnStandings.className = defaultBtn;
+      btnPicks.className = defaultBtn;
+      btnPrank.className = defaultBtn;
 
       if (tab === 'standings') {
         standingsPane.classList.remove('hidden');
-        picksPane.classList.add('hidden');
-        btnStandings.className = "flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow-lg shadow-indigo-600/30";
-        btnPicks.className = "flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/60";
-      } else {
-        standingsPane.classList.add('hidden');
+        btnStandings.className = "flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow-lg shadow-indigo-600/30";
+      } else if (tab === 'picks') {
         picksPane.classList.remove('hidden');
-        btnPicks.className = "flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow-lg shadow-indigo-600/30";
-        btnStandings.className = "flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/60";
+        btnPicks.className = "flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow-lg shadow-indigo-600/30";
+      } else if (tab === 'prank') {
+        prankPane.classList.remove('hidden');
+        btnPrank.className = "flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 bg-gradient-to-r from-rose-600 to-red-700 text-white shadow-lg shadow-rose-600/30";
+        initPrankArena();
       }
     }
 
@@ -359,7 +436,6 @@
 
       memberStats.sort((a, b) => b.wins - a.wins);
 
-      // Render Top 3 Podium
       const top3 = memberStats.slice(0, 3);
       const podiumColors = [
         { border: 'border-amber-500/60', bg: 'bg-gradient-to-b from-amber-950/30 to-slate-900/60', badge: 'bg-amber-500 text-slate-950', label: '👑 1st Place' },
@@ -388,7 +464,6 @@
         podium.appendChild(card);
       });
 
-      // Render Full Leaderboard Rows
       memberStats.forEach((m, idx) => {
         const tr = document.createElement('tr');
         tr.className = "hover:bg-slate-800/40 transition group";
@@ -480,6 +555,146 @@
       });
 
       document.getElementById('submitted-badge').innerText = `${submittedCount}/10 Submitted`;
+    }
+
+    // ================= PRANK JURASSIC PARK DRAGGABLE LOGIC =================
+    const excludedCoworkers = ["Jared", "Cole", "Tucker", "Brayson", "Krystal", "Aaron", "Andy", "Rian", "Paul"];
+
+    function initPrankArena() {
+      const layer = document.getElementById('draggables-layer');
+      layer.innerHTML = '';
+      
+      const positions = [
+        { top: '30px', left: '40px' },
+        { top: '30px', right: '40px' },
+        { top: '160px', left: '20px' },
+        { top: '160px', right: '20px' },
+        { top: '300px', left: '30px' },
+        { top: '300px', right: '30px' },
+        { bottom: '40px', left: '80px' },
+        { bottom: '40px', right: '80px' },
+        { bottom: '30px', left: '45%' }
+      ];
+
+      excludedCoworkers.forEach((name, i) => {
+        const badge = document.createElement('div');
+        const pos = positions[i] || { top: '50px', left: '50px' };
+        
+        badge.id = `drag-${name}`;
+        badge.className = "draggable-name absolute z-20 bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 font-extrabold text-xs px-4 py-2.5 rounded-2xl shadow-xl flex items-center gap-2 cursor-grab active:cursor-grabbing transition-shadow hover:border-indigo-500";
+        badge.innerHTML = `<span>🚫</span> <span>${name}</span>`;
+
+        Object.assign(badge.style, pos);
+        layer.appendChild(badge);
+        makeDraggable(badge);
+      });
+    }
+
+    function makeDraggable(el) {
+      let isDragging = false;
+      let startX, startY, origX, origY;
+
+      el.addEventListener('pointerdown', (e) => {
+        isDragging = true;
+        el.setPointerCapture(e.pointerId);
+        startX = e.clientX;
+        startY = e.clientY;
+        
+        const rect = el.getBoundingClientRect();
+        const arenaRect = document.getElementById('arena').getBoundingClientRect();
+        
+        origX = rect.left - arenaRect.left;
+        origY = rect.top - arenaRect.top;
+        
+        el.style.left = `${origX}px`;
+        el.style.top = `${origY}px`;
+        el.style.right = 'auto';
+        el.style.bottom = 'auto';
+        el.style.zIndex = '50';
+      });
+
+      el.addEventListener('pointermove', (e) => {
+        if (!isDragging) return;
+        
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        
+        const newLeft = origX + dx;
+        const newTop = origY + dy;
+        
+        el.style.left = `${newLeft}px`;
+        el.style.top = `${newTop}px`;
+
+        // Check collision with the Center Circle of Trust
+        const arena = document.getElementById('arena');
+        const circle = document.getElementById('trust-circle');
+        
+        const elRect = el.getBoundingClientRect();
+        const circleRect = circle.getBoundingClientRect();
+
+        const elCenterX = elRect.left + elRect.width / 2;
+        const elCenterY = elRect.top + elRect.height / 2;
+        
+        const circleCenterX = circleRect.left + circleRect.width / 2;
+        const circleCenterY = circleRect.top + circleRect.height / 2;
+
+        const distance = Math.hypot(elCenterX - circleCenterX, elCenterY - circleCenterY);
+        const circleRadius = circleRect.width / 2;
+
+        // If border is crossed!
+        if (distance < circleRadius) {
+          isDragging = false;
+          el.releasePointerCapture(e.pointerId);
+          triggerNedryAlarm(el, origX, origY);
+        }
+      });
+
+      el.addEventListener('pointerup', (e) => {
+        isDragging = false;
+        el.style.zIndex = '20';
+      });
+    }
+
+    function triggerNedryAlarm(el, resetX, resetY) {
+      // Snap element back to outer boundary
+      el.style.left = `${resetX}px`;
+      el.style.top = `${resetY}px`;
+
+      // Open Jurassic Park Nedry Modal
+      document.getElementById('nedry-modal').classList.remove('hidden');
+
+      // Synthesize a retro Dennis Nedry 8-bit alarm sound
+      playNedryBeep();
+    }
+
+    function closeNedryModal() {
+      document.getElementById('nedry-modal').classList.add('hidden');
+    }
+
+    // Web Audio API Retro Alarm
+    function playNedryBeep() {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+        osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.1);
+        osc.frequency.setValueAtTime(440, audioCtx.currentTime + 0.2);
+        osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.3);
+
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.45);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.5);
+      } catch (e) {
+        // Audio ignored if autoplay restricted
+      }
     }
 
     function openModal(owner) {
