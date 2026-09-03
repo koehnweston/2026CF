@@ -14,11 +14,10 @@
       <a href="index.html" class="text-sm font-medium text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition">
         ← Back to Master Scoreboard
       </a>
-      <div class="flex items-center gap-2">
-        <label for="user-select" class="text-xs text-slate-400 uppercase font-semibold">Player:</label>
-        <select id="user-select" class="bg-slate-900 border border-slate-700 text-white text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500 cursor-pointer">
-          <!-- Dynamic -->
-        </select>
+      <!-- Locked Player Badge -->
+      <div class="flex items-center gap-2 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg">
+        <span class="text-xs text-slate-400 uppercase font-semibold">User:</span>
+        <span id="locked-user-display" class="text-sm font-bold text-indigo-300">Loading...</span>
       </div>
     </div>
 
@@ -62,7 +61,7 @@
 
   <script>
     // PASTE YOUR GOOGLE SCRIPT WEB APP URL HERE:
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwC1NpT8vKqmfsMFUxsPjc_23YhRPQAdMvEtz8GN05NVrm7IOtxnB9tu45ML4HgtLVD/exec";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec";
 
     const DEFAULT_DATA = {
       current_week: 1,
@@ -104,19 +103,8 @@
         currentUser = memberNames[0];
       }
 
-      const select = document.getElementById('user-select');
-      select.innerHTML = '';
-      memberNames.forEach(user => {
-        const opt = document.createElement('option');
-        opt.value = user;
-        opt.innerText = user;
-        if (user === currentUser) opt.selected = true;
-        select.appendChild(opt);
-      });
-
-      select.addEventListener('change', (e) => {
-        window.location.search = `?user=${encodeURIComponent(e.target.value)}`;
-      });
+      // Set locked user display badge
+      document.getElementById('locked-user-display').innerText = currentUser;
 
       renderTeams();
     }
