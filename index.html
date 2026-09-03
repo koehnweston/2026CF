@@ -46,12 +46,10 @@
 </head>
 <body class="bg-[#07090e] text-slate-100 min-h-screen selection:bg-indigo-500 selection:text-white relative overflow-x-hidden antialiased flex flex-col items-center">
 
-  <!-- Ambient Glow Effects -->
   <div class="fixed top-[-10%] left-[-5%] w-[45rem] h-[45rem] bg-indigo-600/10 rounded-full blur-[140px] pointer-events-none -z-10"></div>
   <div class="fixed top-[30%] right-[-10%] w-[40rem] h-[40rem] bg-fuchsia-600/10 rounded-full blur-[160px] pointer-events-none -z-10"></div>
   <div class="fixed bottom-[-10%] left-[20%] w-[50rem] h-[50rem] bg-cyan-600/10 rounded-full blur-[150px] pointer-events-none -z-10"></div>
 
-  <!-- Dynamic Zoom Container -->
   <div id="zoom-container" class="max-w-6xl px-4 sm:px-6 py-6">
     
     <!-- Top Header -->
@@ -71,7 +69,7 @@
               Week <span id="week-display">1</span>
             </span>
           </div>
-          <p class="text-slate-400 text-xs mt-0.5 font-medium">10 Owners • 80 Drafted Teams • Pick 6 Weekly</p>
+          <p class="text-slate-400 text-xs mt-0.5 font-medium">10 Owners • 80 Drafted Teams • Pick 6 to Win Weekly</p>
         </div>
       </div>
 
@@ -140,13 +138,13 @@
         </div>
       </div>
 
-      <!-- Week 0 Historical Adjustment Note -->
+      <!-- Week 0 Bye-Week Shift Rule Notice -->
       <div class="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-4 text-xs text-slate-400 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div class="flex items-center gap-2">
           <span class="text-base">📌</span>
-          <span><strong>Week 0 Adjustments:</strong> FSU 34-17 (Andy +1W), Memphis 27-21 (Krystal +1W), USC 42-26 (Tucker +1W), TCU 10-15 (Weston +1L).</span>
+          <span><strong>Week 0 Shift Rule:</strong> Week 0 results (FSU: 34-17 W, Memphis: 27-21 W, USC: 42-26 W, TCU: 10-15 L) will automatically apply to standings in the respective week each team has their BYE.</span>
         </div>
-        <span class="text-[10px] font-mono text-indigo-400 uppercase tracking-wider bg-indigo-950/60 border border-indigo-800/50 px-2 py-0.5 rounded">Baseline Active</span>
+        <span class="text-[10px] font-mono text-indigo-400 uppercase tracking-wider bg-indigo-950/60 border border-indigo-800/50 px-2 py-0.5 rounded">Shift Active</span>
       </div>
     </div>
 
@@ -155,7 +153,7 @@
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 bg-slate-900/50 border border-slate-800/80 p-5 rounded-2xl backdrop-blur-md">
         <div>
           <h2 class="text-xl font-black text-white flex items-center gap-2">Weekly Pick Grid</h2>
-          <p class="text-xs text-slate-400 mt-0.5">Showing all 6 active game picks submitted by each participant.</p>
+          <p class="text-xs text-slate-400 mt-0.5">Showing all 6 active teams picked to win by each participant.</p>
         </div>
         
         <div class="flex items-center gap-3">
@@ -255,20 +253,6 @@
 
   <script>
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwC1NpT8vKqmfsMFUxsPjc_23YhRPQAdMvEtz8GN05NVrm7IOtxnB9tu45ML4HgtLVD/exec";
-
-    // 2026 Season Base Adjustments
-    const MANUAL_ADJUSTMENTS = {
-      "Andy": { wins: 1, losses: 0 },
-      "Krystal": { wins: 1, losses: 0 },
-      "Tucker": { wins: 1, losses: 0 },
-      "Weston": { wins: 0, losses: 1 },
-      "Jared": { wins: 0, losses: 0 },
-      "Cole": { wins: 0, losses: 0 },
-      "Brayson": { wins: 0, losses: 0 },
-      "Aaron": { wins: 0, losses: 0 },
-      "Rian": { wins: 0, losses: 0 },
-      "Paul": { wins: 0, losses: 0 }
-    };
 
     const LEAGUE_ROSTERS = {
       "Jared": { "teams": ["Texas Tech", "Boise State", "Oklahoma", "Virginia Tech", "Oklahoma State", "Tulsa", "California", "Rutgers"], "proj_wins": 54.7, "avg_fpi": 5.7 },
@@ -412,12 +396,8 @@
 
       const memberStats = Object.keys(LEAGUE_ROSTERS).map(name => {
         const userPicks = (picks || []).filter(p => p.owner && p.owner.toLowerCase() === name.toLowerCase());
-        const sheetWins = userPicks.filter(p => p.result === 'WIN').length;
-        const sheetLosses = userPicks.filter(p => p.result === 'LOSS').length;
-
-        const manual = MANUAL_ADJUSTMENTS[name] || { wins: 0, losses: 0 };
-        const wins = sheetWins + manual.wins;
-        const losses = sheetLosses + manual.losses;
+        const wins = userPicks.filter(p => p.result === 'WIN').length;
+        const losses = userPicks.filter(p => p.result === 'LOSS').length;
         const total = wins + losses;
         const winPct = total > 0 ? ((wins / total) * 100).toFixed(1) + '%' : '0.0%';
 
@@ -526,7 +506,7 @@
             } else if (p.result === 'LOSS') {
               resultBadge = `<span class="font-mono font-black px-2 py-0.5 rounded text-[10px] bg-rose-600 text-white">LOSS ✕</span>`;
             } else {
-              resultBadge = `<span class="font-mono font-black px-2.5 py-1 rounded-lg text-[10px] ${p.pick === 'WIN' ? 'bg-emerald-950 text-emerald-300 border border-emerald-800/60' : 'bg-rose-950 text-rose-300 border border-rose-800/60'}">${p.pick}</span>`;
+              resultBadge = `<span class="font-mono font-black px-2.5 py-1 rounded-lg text-[10px] bg-emerald-950 text-emerald-300 border border-emerald-800/60">TO WIN</span>`;
             }
 
             return `
