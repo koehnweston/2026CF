@@ -16,18 +16,21 @@
       </a>
       <div class="flex items-center gap-2">
         <label for="user-select" class="text-xs text-slate-400 uppercase font-semibold">Player:</label>
-        <select id="user-select" class="bg-slate-900 border border-slate-700 text-white text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500">
+        <select id="user-select" class="bg-slate-900 border border-slate-700 text-white text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500 cursor-pointer">
           <!-- Populated dynamically via JS -->
         </select>
       </div>
     </div>
+
+    <!-- Error/Notice Alert (Hidden by default) -->
+    <div id="notice-box" class="hidden mb-4 p-3 bg-amber-950/50 border border-amber-800 text-amber-200 text-xs rounded-xl"></div>
 
     <!-- Header Banner -->
     <header class="bg-slate-900 border border-slate-800 rounded-2xl p-6 mb-6 shadow-xl">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <span class="text-xs font-bold text-indigo-400 uppercase tracking-widest">Weekly Pick Sheet</span>
-          <h1 id="user-title" class="text-3xl font-extrabold text-white">Loading...</h1>
+          <h1 id="user-title" class="text-3xl font-extrabold text-white">Select Player</h1>
           <p class="text-xs text-slate-400 mt-1">Select exactly <strong class="text-indigo-300">6 of your 8 teams</strong> to play this week.</p>
         </div>
         <div class="bg-slate-950/80 border border-slate-800 px-5 py-3 rounded-xl text-center sm:text-right min-w-[120px]">
@@ -57,50 +60,80 @@
   </div>
 
   <script>
-    let leagueData = null;
+    // Embedded fallback rosters so the app NEVER hangs on "Loading..."
+    const DEFAULT_DATA = {
+      current_week: 1,
+      members: {
+        "Jared": { "teams": ["Texas Tech", "Boise State", "Oklahoma", "Virginia Tech", "Oklahoma State", "Tulsa", "California", "Rutgers"] },
+        "Cole": { "teams": ["Oregon", "San Diego State", "Louisville", "Pittsburgh", "Florida", "West Virginia", "Fresno State", "Colorado"] },
+        "Tucker": { "teams": ["Penn State", "Houston", "USC", "Oregon State", "Nebraska", "North Carolina", "Kansas", "Arkansas"] },
+        "Brayson": { "teams": ["Notre Dame", "Alabama", "Clemson", "NC State", "Illinois", "Baylor", "UCF", "Mississippi State"] },
+        "Krystal": { "teams": ["Miami", "Navy", "Utah", "Memphis", "Auburn", "Vanderbilt", "Washington State", "Iowa State"] },
+        "Weston": { "teams": ["Texas", "LSU", "Virginia", "TCU", "UTSA", "Cincinnati", "Temple", "UCLA"] },
+        "Aaron": { "teams": ["BYU", "Ole Miss", "Michigan", "Washington", "South Carolina", "Northwestern", "Maryland", "Kentucky"] },
+        "Andy": { "teams": ["Ohio State", "South Florida", "SMU", "Arizona", "Arizona State", "Florida State", "Minnesota", "Duke"] },
+        "Rian": { "teams": ["Indiana", "Kansas State", "Tulane", "Tennessee", "Wake Forest", "Missouri", "North Texas", "Florida Atlantic"] },
+        "Paul": { "teams": ["Georgia", "Texas A&M", "East Carolina", "Iowa", "Wisconsin", "Army", "Georgia Tech", "Syracuse"] }
+      },
+      week_matchups: []
+    };
+
+    let leagueData = DEFAULT_DATA;
     let currentUser = null;
     const MAX_PICKS = 6;
 
     async function init() {
+      // Try to fetch live league_data.json (with cache busting)
       try {
-        const res = await fetch('league_data.json');
-        leagueData = await res.json();
-        
-        const params = new URLSearchParams(window.location.search);
-        currentUser = params.get('user') || Object.keys(leagueData.members)[0];
-
-        // Populate dropdown
-        const select = document.getElementById('user-select');
-        select.innerHTML = '';
-        Object.keys(leagueData.members).forEach(user => {
-          const opt = document.createElement('option');
-          opt.value = user;
-          opt.innerText = user;
-          if (user === currentUser) opt.selected = true;
-          select.appendChild(opt);
-        });
-
-        select.addEventListener('change', (e) => {
-          window.location.search = `?user=${encodeURIComponent(e.target.value)}`;
-        });
-
-        renderTeams();
+        const res = await fetch('league_data.json?t=' + new Date().getTime());
+        if (res.ok) {
+          leagueData = await res.json();
+        }
       } catch (err) {
-        console.error("Failed loading league_data.json", err);
+        console.warn("Using embedded fallback roster data.", err);
       }
+
+      const params = new URLSearchParams(window.location.search);
+      const requestedUser = params.get('user');
+
+      // Case-insensitive user matching
+      const memberNames = Object.keys(leagueData.members);
+      if (requestedUser) {
+        const matched = memberNames.find(n => n.toLowerCase() === requestedUser.toLowerCase());
+        currentUser = matched || memberNames[0];
+      } else {
+        currentUser = memberNames[0];
+      }
+
+      // Populate user dropdown
+      const select = document.getElementById('user-select');
+      select.innerHTML = '';
+      memberNames.forEach(user => {
+        const opt = document.createElement('option');
+        opt.value = user;
+        opt.innerText = user;
+        if (user === currentUser) opt.selected = true;
+        select.appendChild(opt);
+      });
+
+      select.addEventListener('change', (e) => {
+        window.location.search = `?user=${encodeURIComponent(e.target.value)}`;
+      });
+
+      renderTeams();
     }
 
     function renderTeams() {
       const userObj = leagueData.members[currentUser];
       if (!userObj) return;
 
-      document.getElementById('user-title').innerText = `${currentUser}'s Week ${leagueData.current_week} Picks`;
+      document.getElementById('user-title').innerText = `${currentUser}'s Week ${leagueData.current_week || 1} Picks`;
       const container = document.getElementById('matchups-container');
       container.innerHTML = '';
 
       userObj.teams.forEach(team => {
-        const game = (leagueData.week_matchups || []).find(m => m.team.toLowerCase() === team.toLowerCase()) || {
-          opponent: "BYE / TBD",
+        const game = (leagueData.week_matchups || []).find(m => m.team && m.team.toLowerCase() === team.toLowerCase()) || {
+          opponent: "TBD / BYE",
           spread: "N/A",
           over_under: ""
         };
@@ -174,7 +207,6 @@
         } else {
           options.classList.add('opacity-40', 'pointer-events-none');
           card.classList.remove('border-indigo-600/50', 'bg-slate-900/90');
-          // If 6 are already picked, disable unchecked boxes to prevent over-picking
           cb.disabled = (count >= MAX_PICKS);
         }
       });
@@ -194,9 +226,34 @@
 
     function copyPicks() {
       const userObj = leagueData.members[currentUser];
-      let summary = `🏈 ${currentUser}'s Week ${leagueData.current_week} Picks (6 of 8):\n`;
+      let summary = `🏈 ${currentUser}'s Week ${leagueData.current_week || 1} Picks (6 of 8):\n`;
       summary += `─────────────────────────\n`;
 
       userObj.teams.forEach(team => {
         const safeId = team.replace(/[^a-zA-Z0-9]/g, '_');
         const cb = document.getElementById(`check_${safeId}`);
+        if (cb && cb.checked) {
+          const pick = document.querySelector(`input[name="pick_${safeId}"]:checked`)?.value || 'WIN';
+          const game = (leagueData.week_matchups || []).find(m => m.team && m.team.toLowerCase() === team.toLowerCase());
+          
+          let lineDetails = '';
+          if (game && game.opponent && game.opponent !== 'TBD / BYE') {
+            lineDetails = ` (vs ${game.opponent}${game.spread && game.spread !== 'N/A' ? ` [${game.spread}]` : ''})`;
+          }
+
+          summary += `• ${team}${lineDetails}: ${pick}\n`;
+        }
+      });
+
+      navigator.clipboard.writeText(summary).then(() => {
+        const msg = document.getElementById('status-msg');
+        msg.classList.remove('hidden');
+        setTimeout(() => msg.classList.add('hidden'), 4500);
+      });
+    }
+
+    // Execute immediately on page load
+    init();
+  </script>
+</body>
+</html>
