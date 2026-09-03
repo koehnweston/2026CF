@@ -17,11 +17,14 @@ def get_current_week():
             calendar = res.json()
             now = datetime.utcnow().isoformat()
             for c in calendar:
-                if c.get("firstGameStart") and c.get("lastGameEnd"):
-                    if c.get("firstGameStart") <= now <= c.get("lastGameEnd"):
+                start = c.get("firstGameStart")
+                end = c.get("lastGameEnd")
+                # Ensure both dates are valid strings (not None) before comparison
+                if start and end and isinstance(start, str) and isinstance(end, str):
+                    if start <= now <= end:
                         return c.get("week", 1)
     except Exception as e:
-        print(f"Notice: Calendar lookup exception ({e}), defaulting to Week 1.")
+        print(f"Notice: Calendar lookup ({e}), defaulting to Week 1.")
     return 1
 
 def get_week_data(week):
@@ -36,9 +39,9 @@ def get_week_data(week):
             games = res.json()
             print(f"Retrieved {len(games)} games for 2026 Week {week}.")
         else:
-            print(f"Warning: Games endpoint returned status {res.status_code}.")
+            print(f"Notice: Games endpoint returned status {res.status_code}.")
     except Exception as e:
-        print(f"Games fetch exception: {e}")
+        print(f"Games fetch notice: {e}")
 
     # 2. Fetch 2026 Betting Lines
     try:
@@ -58,7 +61,7 @@ def get_week_data(week):
                     }
             print(f"Retrieved betting lines for {len(lines_map)} games.")
         else:
-            print(f"Notice: Betting lines returned status {res.status_code}.")
+            print(f"Notice: Lines endpoint returned status {res.status_code}.")
     except Exception as e:
         print(f"Lines fetch notice: {e}")
 
@@ -66,7 +69,7 @@ def get_week_data(week):
 
 def run_update():
     if not os.path.exists("league_data.json"):
-        print("Error: league_data.json not found in repository root!")
+        print("Error: league_data.json not found!")
         sys.exit(1)
 
     with open("league_data.json", "r") as f:
@@ -89,13 +92,13 @@ def run_update():
         is_home = False
 
         for g in games:
-            home = g.get("home_team", "") or ""
-            away = g.get("away_team", "") or ""
-            if home.lower() == team.lower():
+            home = (g.get("home_team") or "").lower()
+            away = (g.get("away_team") or "").lower()
+            if home == team.lower():
                 matched_game = g
                 is_home = True
                 break
-            elif away.lower() == team.lower():
+            elif away == team.lower():
                 matched_game = g
                 is_home = False
                 break
@@ -105,7 +108,6 @@ def run_update():
             game_id = matched_game.get("id")
             line_info = lines_map.get(game_id, {"spread": "Line TBD", "over_under": "N/A"})
 
-            # Parse start date to Central Time display if present
             raw_date = matched_game.get("start_date", "")
             time_display = "Sat • Time TBD CT"
             if raw_date:
@@ -124,7 +126,7 @@ def run_update():
                 "is_bye": False
             })
         else:
-            # Preserve existing manual matchup if API returns empty schedule
+            # Preserve existing entry if present
             existing = next((m for m in data.get("week_matchups", []) if m.get("team") == team), None)
             if existing:
                 updated_matchups.append(existing)
@@ -143,7 +145,7 @@ def run_update():
     with open("league_data.json", "w") as f:
         json.dump(data, f, indent=2)
 
-    print(f"Update completed successfully for 2026 Week {week}.")
+    print(f"Successfully processed 2026 Week {week} data for all {len(all_teams)} teams.")
 
 if __name__ == "__main__":
     run_update()
