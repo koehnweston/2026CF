@@ -5,34 +5,96 @@ import requests
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
-ESPN_URL = "https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard"
+# ESPN API endpoints to capture all FBS and Non-Conf matchups
+ESPN_URLS = [
+    "https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?groups=80&limit=300",
+    "https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?groups=81&limit=300"
+]
 
-def fetch_espn_data():
-    try:
-        res = requests.get(ESPN_URL, timeout=15)
-        if res.status_code == 200:
-            return res.json()
-        print(f"ESPN API returned status code {res.status_code}")
-    except Exception as e:
-        print(f"Error connecting to ESPN API: {e}")
-    return None
-
-def parse_espn_events(espn_json):
-    if not espn_json:
-        return 1, []
-
-    week_info = espn_json.get("week", {})
-    current_week = week_info.get("number", 1)
-    events = espn_json.get("events", [])
+def fetch_all_espn_games():
+    events = []
+    current_week = 1
     
+    for url in ESPN_URLS:
+        try:
+            res = requests.get(url, timeout=15)
+            if res.status_code == 200:
+                data = res.json()
+                week_info = data.get("week", {})
+                current_week = week_info.get("number", current_week)
+                events.extend(data.get("events", []))
+        except Exception as e:
+            print(f"Error fetching from {url}: {e}")
+            
+    return current_week, events
+
+def normalize(text):
+    if not text:
+        return ""
+    return text.lower().replace("&", "and").replace(".", "").replace("'", "").strip()
+
+# Alias map for teams with unique ESPN naming conventions
+ALIASES = {
+    "texas": ["texas longhorns", "texas"],
+    "north texas": ["north texas mean green", "north texas", "unt"],
+    "texas tech": ["texas tech red raiders", "texas tech"],
+    "texas a&m": ["texas a&m aggies", "texas a&m", "tamu"],
+    "washington": ["washington huskies", "washington"],
+    "washington state": ["washington state cougars", "washington state", "wazzu"],
+    "florida": ["florida gators", "florida"],
+    "florida state": ["florida state seminoles", "florida state", "fsu"],
+    "south florida": ["south florida bulls", "south florida", "usf"],
+    "florida atlantic": ["florida atlantic owls", "florida atlantic", "fau"],
+    "ole miss": ["ole miss rebels", "ole miss", "mississippi"],
+    "mississippi state": ["mississippi state bulldogs", "mississippi state"],
+    "notre dame": ["notre dame fighting irish", "notre dame"],
+    "utsa": ["utsa roadrunners", "utsa", "texas-san antonio"],
+    "smu": ["smu mustangs", "smu", "southern methodist"],
+    "tcu": ["tcu horned frogs", "tcu", "texas christian"],
+    "usc": ["usc trojans", "usc", "southern california"],
+    "army": ["army black knights", "army", "army west point"],
+    "navy": ["navy midshipmen", "navy"],
+    "ucf": ["ucf knights", "ucf", "central florida"],
+    "byu": ["byu cougars", "byu", "brigham young"],
+    "penn state": ["penn state nittany lions", "penn state"],
+    "ohio state": ["ohio state buckeyes", "ohio state"]
+}
+
+def matches_team(target_name, espn_team_obj):
+    t_norm = normalize(target_name)
+    
+    loc = normalize(espn_team_obj.get("location", ""))
+    disp = normalize(espn_team_obj.get("displayName", ""))
+    short_disp = normalize(espn_team_obj.get("shortDisplayName", ""))
+    name = normalize(espn_team_obj.get("name", ""))
+
+    # 1. Check Alias Map
+    if target_name.lower() in ALIASES:
+        aliases = [normalize(a) for a in ALIASES[target_name.lower()]]
+        if loc in aliases or disp in aliases or short_disp in aliases:
+            return True
+        return False
+
+    # 2. Strict Exact Name / Display Checks
+    if t_norm == loc or t_norm == disp or t_norm == short_disp:
+        return True
+
+    return False
+
+def parse_events(events):
     parsed_games = []
     central_tz = ZoneInfo("America/Chicago")
+    seen_game_ids = set()
 
     for ev in events:
+        game_id = ev.get("id")
+        if game_id in seen_game_ids:
+            continue
+        seen_game_ids.add(game_id)
+
         competitions = ev.get("competitions", [])
         if not competitions:
             continue
-        
         comp = competitions[0]
         competitors = comp.get("competitors", [])
         if len(competitors) < 2:
@@ -40,9 +102,6 @@ def parse_espn_events(espn_json):
 
         home_team = next((c for c in competitors if c.get("homeAway") == "home"), competitors[0])
         away_team = next((c for c in competitors if c.get("homeAway") == "away"), competitors[1])
-
-        home_name = home_team.get("team", {}).get("location", "")
-        away_name = away_team.get("team", {}).get("location", "")
 
         odds_list = comp.get("odds", [])
         spread_str = "Line TBD"
@@ -68,8 +127,11 @@ def parse_espn_events(espn_json):
         away_score = away_team.get("score")
 
         parsed_games.append({
-            "home": home_name,
-            "away": away_name,
+            "id": game_id,
+            "home_obj": home_team.get("team", {}),
+            "away_obj": away_team.get("team", {}),
+            "home_loc": home_team.get("team", {}).get("location", ""),
+            "away_loc": away_team.get("team", {}).get("location", ""),
             "spread": spread_str,
             "over_under": ou_str,
             "game_time": time_display,
@@ -78,7 +140,7 @@ def parse_espn_events(espn_json):
             "away_score": away_score
         })
 
-    return current_week, parsed_games
+    return parsed_games
 
 def run_update():
     if not os.path.exists("league_data.json"):
@@ -88,8 +150,8 @@ def run_update():
     with open("league_data.json", "r", encoding="utf-8") as f:
         data = json.load(f)
 
-    espn_json = fetch_espn_data()
-    current_week, espn_games = parse_espn_events(espn_json)
+    current_week, events = fetch_all_espn_games()
+    games = parse_events(events)
 
     data["current_week"] = current_week
     data["last_updated"] = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
@@ -104,18 +166,18 @@ def run_update():
         matched = None
         is_home = False
 
-        for g in espn_games:
-            if g["home"].lower() == team.lower() or team.lower() in g["home"].lower():
+        for g in games:
+            if matches_team(team, g["home_obj"]):
                 matched = g
                 is_home = True
                 break
-            elif g["away"].lower() == team.lower() or team.lower() in g["away"].lower():
+            elif matches_team(team, g["away_obj"]):
                 matched = g
                 is_home = False
                 break
 
         if matched:
-            opponent = matched["away"] if is_home else f"@{matched['home']}"
+            opponent = matched["away_loc"] if is_home else f"@{matched['home_loc']}"
             res_str = "PENDING"
             if "FINAL" in matched["status"]:
                 try:
@@ -155,7 +217,7 @@ def run_update():
     with open("league_data.json", "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
-    print(f"Successfully updated ESPN live matchups for Week {current_week} ({len(updated_matchups)} teams processed).")
+    print(f"Successfully processed ESPN live data for Week {current_week} ({len(updated_matchups)} teams).")
 
 if __name__ == "__main__":
     run_update()
