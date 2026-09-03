@@ -60,8 +60,8 @@
   </div>
 
   <script>
-    // PASTE YOUR GOOGLE SCRIPT WEB APP URL HERE:
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyC-OAsZvzWXGZyJMUgkXHu5geFm2lszdMHfHQtYL0/dev";
+    // Your exact live Google Apps Script endpoint:
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwC1NpT8vKqmfsMFUxsPjc_23YhRPQAdMvEtz8GN05NVrm7IOtxnB9tu45ML4HgtLVD/exec";
 
     const DEFAULT_DATA = {
       current_week: 1,
@@ -103,9 +103,7 @@
         currentUser = memberNames[0];
       }
 
-      // Set locked user display badge
       document.getElementById('locked-user-display').innerText = currentUser;
-
       renderTeams();
     }
 
@@ -228,21 +226,19 @@
         }
       });
 
-      if (GOOGLE_SCRIPT_URL && !GOOGLE_SCRIPT_URL.includes("YOUR_DEPLOYMENT_ID")) {
-        try {
-          await fetch(GOOGLE_SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              week: leagueData.current_week || 1,
-              owner: currentUser,
-              picks: picks
-            })
-          });
-        } catch(err) {
-          console.error("Error submitting to Google Sheet", err);
-        }
+      try {
+        await fetch(GOOGLE_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            week: leagueData.current_week || 1,
+            owner: currentUser,
+            picks: picks
+          })
+        });
+      } catch(err) {
+        console.error("Error submitting to Google Sheet", err);
       }
 
       const msg = document.getElementById('status-msg');
