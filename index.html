@@ -103,8 +103,8 @@
   </div>
 
   <script>
-    // PASTE YOUR GOOGLE SCRIPT WEB APP URL HERE:
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyC-OAsZvzWXGZyJMUgkXHu5geFm2lszdMHfHQtYL0/dev";
+    // Your exact live Google Apps Script endpoint:
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwC1NpT8vKqmfsMFUxsPjc_23YhRPQAdMvEtz8GN05NVrm7IOtxnB9tu45ML4HgtLVD/exec";
 
     const LEAGUE_ROSTERS = {
       "Jared": { "teams": ["Texas Tech", "Boise State", "Oklahoma", "Virginia Tech", "Oklahoma State", "Tulsa", "California", "Rutgers"], "proj_wins": 54.7, "avg_fpi": 5.7 },
@@ -134,13 +134,11 @@
       document.getElementById('picks-week-display').innerText = curWeek;
 
       let sheetPicks = [];
-      if (GOOGLE_SCRIPT_URL && !GOOGLE_SCRIPT_URL.includes("AKfycbx0q60h3m4f9dG8n9k8k8w4n8k8")) {
-        try {
-          const resSheet = await fetch(GOOGLE_SCRIPT_URL);
-          sheetPicks = await resSheet.json();
-        } catch(err) {
-          console.warn("Could not fetch Google Sheet picks", err);
-        }
+      try {
+        const resSheet = await fetch(GOOGLE_SCRIPT_URL);
+        sheetPicks = await resSheet.json();
+      } catch(err) {
+        console.warn("Could not fetch Google Sheet picks", err);
       }
 
       renderStandings(sheetPicks);
@@ -168,7 +166,6 @@
         };
       });
 
-      // Sort by total wins descending
       memberStats.sort((a, b) => b.wins - a.wins);
 
       memberStats.forEach((m, idx) => {
@@ -253,7 +250,6 @@
       document.getElementById('roster-modal').classList.add('hidden');
     }
 
-    // Close modal on click outside
     document.getElementById('roster-modal').addEventListener('click', (e) => {
       if (e.target.id === 'roster-modal') closeModal();
     });
