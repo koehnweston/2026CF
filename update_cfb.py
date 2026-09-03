@@ -4,7 +4,6 @@ import json
 import requests
 from datetime import datetime
 
-# Enforce 2026 Season
 CURRENT_YEAR = 2026
 CFBD_API_KEY = os.environ.get("CFBD_API_KEY", "")
 HEADERS = {"Authorization": f"Bearer {CFBD_API_KEY}"} if CFBD_API_KEY else {}
@@ -19,31 +18,28 @@ def get_current_week():
             for c in calendar:
                 start = c.get("firstGameStart")
                 end = c.get("lastGameEnd")
-                # Ensure both dates are valid strings (not None) before comparison
-                if start and end and isinstance(start, str) and isinstance(end, str):
+                if isinstance(start, str) and isinstance(end, str):
                     if start <= now <= end:
                         return c.get("week", 1)
     except Exception as e:
-        print(f"Notice: Calendar lookup ({e}), defaulting to Week 1.")
+        print(f"Notice: Calendar lookup exception ({e}), defaulting to Week 1.")
     return 1
 
 def get_week_data(week):
     games = []
     lines_map = {}
 
-    # 1. Fetch 2026 Games
     try:
         games_url = f"https://api.collegefootballdata.com/games?year={CURRENT_YEAR}&week={week}&seasonType=regular"
         res = requests.get(games_url, headers=HEADERS, timeout=15)
         if res.status_code == 200:
             games = res.json()
-            print(f"Retrieved {len(games)} games for 2026 Week {week}.")
+            print(f"Retrieved {len(games)} games for {CURRENT_YEAR} Week {week}.")
         else:
             print(f"Notice: Games endpoint returned status {res.status_code}.")
     except Exception as e:
         print(f"Games fetch notice: {e}")
 
-    # 2. Fetch 2026 Betting Lines
     try:
         lines_url = f"https://api.collegefootballdata.com/lines?year={CURRENT_YEAR}&week={week}&seasonType=regular"
         res = requests.get(lines_url, headers=HEADERS, timeout=15)
@@ -125,27 +121,4 @@ def run_update():
                 "game_time": time_display,
                 "is_bye": False
             })
-        else:
-            # Preserve existing entry if present
-            existing = next((m for m in data.get("week_matchups", []) if m.get("team") == team), None)
-            if existing:
-                updated_matchups.append(existing)
-            else:
-                updated_matchups.append({
-                    "team": team,
-                    "opponent": "BYE / TBD",
-                    "spread": "N/A",
-                    "over_under": "",
-                    "game_time": "BYE WEEK",
-                    "is_bye": True
-                })
-
-    data["week_matchups"] = updated_matchups
-
-    with open("league_data.json", "w") as f:
-        json.dump(data, f, indent=2)
-
-    print(f"Successfully processed 2026 Week {week} data for all {len(all_teams)} teams.")
-
-if __name__ == "__main__":
-    run_update()
+        els
