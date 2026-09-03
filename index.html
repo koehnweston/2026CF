@@ -24,7 +24,6 @@
       width: 100%;
       margin: 0 auto;
     }
-    /* Wagging finger animation */
     @keyframes wag {
       0%, 100% { transform: rotate(0deg); }
       25% { transform: rotate(-28deg); }
@@ -47,7 +46,7 @@
 </head>
 <body class="bg-[#07090e] text-slate-100 min-h-screen selection:bg-indigo-500 selection:text-white relative overflow-x-hidden antialiased flex flex-col items-center">
 
-  <!-- Ambient Glow Effects -->
+  <!-- Ambient Lighting Effects -->
   <div class="fixed top-[-10%] left-[-5%] w-[45rem] h-[45rem] bg-indigo-600/10 rounded-full blur-[140px] pointer-events-none -z-10"></div>
   <div class="fixed top-[30%] right-[-10%] w-[40rem] h-[40rem] bg-fuchsia-600/10 rounded-full blur-[160px] pointer-events-none -z-10"></div>
   <div class="fixed bottom-[-10%] left-[20%] w-[50rem] h-[50rem] bg-cyan-600/10 rounded-full blur-[150px] pointer-events-none -z-10"></div>
@@ -116,7 +115,7 @@
         <div class="px-6 py-4 border-b border-slate-800/80 flex justify-between items-center bg-slate-900/60">
           <div>
             <h2 class="text-sm font-bold uppercase tracking-wider text-slate-300">Official Leaderboard</h2>
-            <p class="text-xs text-slate-500">Click any owner to view their 8 drafted teams</p>
+            <p class="text-xs text-slate-500">2026 Season Standings (Includes Week 0 Results)</p>
           </div>
           <span class="text-xs font-mono bg-indigo-950/80 text-indigo-400 border border-indigo-800/50 px-3 py-1 rounded-full font-bold">
             Ranked by Wins
@@ -174,26 +173,16 @@
           <p class="text-xs text-slate-400 mt-1">Due to excessive office complaints, trust is currently restricted. Drag your name inside to apply for entry.</p>
         </div>
 
-        <!-- Drag Sandbox Arena -->
         <div id="arena" class="relative w-full h-[520px] bg-slate-950/90 border border-slate-800/80 rounded-2xl overflow-hidden flex items-center justify-center">
-          
-          <!-- Inner Sanctum Circle of Trust -->
           <div id="trust-circle" class="w-64 h-64 sm:w-72 sm:h-72 rounded-full border-2 border-dashed border-emerald-500/40 bg-emerald-950/20 flex flex-col items-center justify-center text-center p-4 relative shadow-[0_0_60px_-10px_rgba(16,185,129,0.25)] transition">
             <span class="text-2xl mb-1">👑</span>
             <span class="text-xs font-black uppercase tracking-wider text-emerald-400">Circle of Trust</span>
             <span class="text-[10px] text-emerald-500/70 font-mono mt-0.5">Commissioner Only</span>
-            
-            <!-- Weston Permanent Tag -->
             <div class="mt-3 bg-emerald-500/20 border border-emerald-500/60 text-emerald-200 text-xs font-black px-4 py-1.5 rounded-full shadow-lg">
               ★ Weston ★
             </div>
           </div>
-
-          <!-- Draggable Members (Scattered outside) -->
-          <div id="draggables-layer" class="absolute inset-0 pointer-events-auto">
-            <!-- Rendered by JS around the perimeter -->
-          </div>
-
+          <div id="draggables-layer" class="absolute inset-0 pointer-events-auto"></div>
         </div>
       </div>
     </div>
@@ -203,33 +192,20 @@
   <!-- JURASSIC PARK NEDRY POPUP MODAL (WITH SOUND) -->
   <div id="nedry-modal" class="fixed inset-0 bg-black/95 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
     <div class="bg-[#0b140d] border-2 border-emerald-500 rounded-2xl max-w-lg w-full p-6 shadow-[0_0_90px_rgba(16,185,129,0.5)] text-center relative font-terminal animate-pulse">
-      
-      <!-- Window Title Bar -->
       <div class="flex justify-between items-center pb-3 border-b border-emerald-500/40 text-emerald-400 text-sm tracking-wider">
         <span>SECURITY PROTOCOL 1993 // ACCESS DENIED</span>
         <button onclick="closeNedryModal()" class="text-emerald-400 hover:text-white font-bold text-lg">✕</button>
       </div>
-
-      <!-- Animated Finger Wagging Nedry -->
       <div class="my-6 flex flex-col items-center justify-center">
-        <div class="text-7xl sm:text-8xl select-none animate-wag mb-2">
-          ☝️🤓
-        </div>
-        <h3 class="text-3xl sm:text-4xl font-extrabold text-emerald-400 tracking-wider">
-          AH AH AH!
-        </h3>
-        <p class="text-xl sm:text-2xl text-emerald-300 mt-2">
-          YOU DIDN'T SAY THE MAGIC WORD!
-        </p>
+        <div class="text-7xl sm:text-8xl select-none animate-wag mb-2">☝️🤓</div>
+        <h3 class="text-3xl sm:text-4xl font-extrabold text-emerald-400 tracking-wider">AH AH AH!</h3>
+        <p class="text-xl sm:text-2xl text-emerald-300 mt-2">YOU DIDN'T SAY THE MAGIC WORD!</p>
       </div>
-
-      <!-- Retro Terminal Output -->
       <div class="bg-black/80 border border-emerald-500/30 p-3 rounded-lg text-left text-xs font-mono text-emerald-400 space-y-1 mb-6">
         <p>> ATTEMPTING ENTRY INTO CIRCLE OF TRUST...</p>
         <p class="text-rose-400 font-bold">> ERROR 403: ACCESS DENIED BY COMMISSIONER</p>
         <p class="text-amber-300">> VIOLATION LOGGED: STOP NEEDLING WESTON ABOUT THE APP</p>
       </div>
-
       <button onclick="closeNedryModal()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-black font-extrabold py-3.5 rounded-xl text-lg font-terminal tracking-widest uppercase transition shadow-lg shadow-emerald-600/40">
         [ RETURN TO SHAME ZONE ]
       </button>
@@ -246,7 +222,6 @@
         </div>
         <button onclick="closeModal()" class="text-slate-400 hover:text-white bg-slate-800/60 hover:bg-slate-800 w-8 h-8 rounded-full flex items-center justify-center transition">✕</button>
       </div>
-
       <div class="grid grid-cols-2 gap-3 mb-5 text-xs font-mono">
         <div class="bg-slate-950/80 p-3 rounded-2xl border border-slate-800/80">
           <span class="text-slate-500 block text-[10px] uppercase font-bold tracking-wider">Projected Wins</span>
@@ -257,10 +232,8 @@
           <span id="modal-avg-fpi" class="text-cyan-300 font-extrabold text-base">0.0</span>
         </div>
       </div>
-
       <h4 class="text-xs font-extrabold uppercase tracking-wider text-slate-400 mb-3">8 Drafted Teams</h4>
       <ul id="modal-teams-list" class="space-y-2 text-sm max-h-64 overflow-y-auto pr-1"></ul>
-
       <div class="mt-6">
         <button onclick="closeModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 rounded-xl text-xs uppercase tracking-wider transition">
           Close
@@ -269,11 +242,18 @@
     </div>
   </div>
 
-  <!-- Audio Element for Dennis Nedry Soundbyte -->
   <audio id="nedry-audio" preload="auto" loop src="https://www.myinstants.com/media/sounds/ah-ah-ah-you-didnt-say-the-magic-word.mp3"></audio>
 
   <script>
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwC1NpT8vKqmfsMFUxsPjc_23YhRPQAdMvEtz8GN05NVrm7IOtxnB9tu45ML4HgtLVD/exec";
+
+    // Official 2026 Week 0 Exact Scores & Results Carried Over into Week 1
+    const WEEK_0_DATA = [
+      { week: 1, owner: "Andy", team: "Florida State", pick: "WIN", result: "WIN", note: "Beat New Mexico State 34-17" },
+      { week: 1, owner: "Krystal", team: "Memphis", pick: "WIN", result: "WIN", note: "Beat UNLV 27-21" },
+      { week: 1, owner: "Tucker", team: "USC", pick: "WIN", result: "WIN", note: "Beat San Jose State 42-26" },
+      { week: 1, owner: "Weston", team: "TCU", pick: "WIN", result: "LOSS", note: "Lost to North Carolina 15-10" }
+    ];
 
     const LEAGUE_ROSTERS = {
       "Jared": { "teams": ["Texas Tech", "Boise State", "Oklahoma", "Virginia Tech", "Oklahoma State", "Tulsa", "California", "Rutgers"], "proj_wins": 54.7, "avg_fpi": 5.7 },
@@ -298,7 +278,6 @@
       const spread = parseFloat(spreadStr);
       if (isNaN(spread)) return 'ML N/A';
       if (spread === 0) return 'ML 110';
-      
       if (spread < 0) {
         const abs = Math.abs(spread);
         if (abs <= 3) return `ML ${Math.round(110 + abs * 20)}`;
@@ -315,7 +294,6 @@
       }
     }
 
-    // Zoom Controls
     function changeZoom(delta) {
       currentZoom = Math.min(Math.max(0.70, currentZoom + delta), 1.40);
       applyZoom();
@@ -337,7 +315,6 @@
       }
     }, { passive: false });
 
-    // Tab Switching
     function switchTab(tab) {
       const standingsPane = document.getElementById('tab-content-standings');
       const picksPane = document.getElementById('tab-content-picks');
@@ -401,12 +378,21 @@
 
       populateWeekDropdown(curWeek);
 
+      let sheetPicks = [];
       try {
         const resSheet = await fetch(GOOGLE_SCRIPT_URL);
-        cachedSheetPicks = await resSheet.json();
+        sheetPicks = await resSheet.json();
       } catch(err) {
         console.warn("Could not fetch Google Sheet picks", err);
       }
+
+      const mergedPicks = [...sheetPicks];
+      WEEK_0_DATA.forEach(w0 => {
+        const exists = mergedPicks.some(p => p.owner && p.owner.toLowerCase() === w0.owner.toLowerCase() && p.team.toLowerCase() === w0.team.toLowerCase());
+        if (!exists) mergedPicks.push(w0);
+      });
+
+      cachedSheetPicks = mergedPicks;
 
       renderStandings(cachedSheetPicks);
       renderLivePicksGrid(cachedSheetPicks, selectedWeek);
@@ -435,7 +421,8 @@
         };
       });
 
-      memberStats.sort((a, b) => b.wins - a.wins);
+      // Sort by Total Wins descending, then by Losses ascending
+      memberStats.sort((a, b) => (b.wins - a.wins) || (a.losses - b.losses));
 
       const top3 = memberStats.slice(0, 3);
       const podiumColors = [
@@ -523,6 +510,15 @@
             const ml = matchup.spread ? getMoneyline(matchup.spread) : '';
             const oppText = matchup.opponent && matchup.opponent !== 'BYE' ? `vs ${matchup.opponent}` : '';
 
+            let resultBadge = '';
+            if (p.result === 'WIN') {
+              resultBadge = `<span class="font-mono font-black px-2 py-0.5 rounded text-[10px] bg-emerald-500 text-slate-950">WIN ✓</span>`;
+            } else if (p.result === 'LOSS') {
+              resultBadge = `<span class="font-mono font-black px-2 py-0.5 rounded text-[10px] bg-rose-600 text-white">LOSS ✕</span>`;
+            } else {
+              resultBadge = `<span class="font-mono font-black px-2.5 py-1 rounded-lg text-[10px] ${p.pick === 'WIN' ? 'bg-emerald-950 text-emerald-300 border border-emerald-800/60' : 'bg-rose-950 text-rose-300 border border-rose-800/60'}">${p.pick}</span>`;
+            }
+
             return `
               <li class="bg-slate-950/90 p-3 rounded-2xl border border-slate-800/80 flex flex-col gap-1.5">
                 <div class="flex justify-between items-center">
@@ -531,11 +527,9 @@
                     ${spread ? `<span class="text-[10px] font-mono font-bold bg-indigo-950 text-indigo-300 border border-indigo-800/60 px-1.5 py-0.5 rounded">${spread}</span>` : ''}
                     ${ml ? `<span class="text-[10px] font-mono font-semibold bg-slate-900 text-cyan-300 border border-cyan-800/40 px-1.5 py-0.5 rounded">${ml}</span>` : ''}
                   </div>
-                  <span class="font-mono font-black px-2.5 py-1 rounded-lg text-[10px] ${p.pick === 'WIN' ? 'bg-emerald-950 text-emerald-300 border border-emerald-800/60' : 'bg-rose-950 text-rose-300 border border-rose-800/60'}">
-                    ${p.pick}
-                  </span>
+                  ${resultBadge}
                 </div>
-                ${oppText ? `<div class="text-[11px] text-slate-400 font-medium">${oppText}</div>` : ''}
+                ${oppText ? `<div class="text-[11px] text-slate-400 font-medium">${oppText}</div>` : (p.note ? `<div class="text-[11px] text-slate-400 font-medium">${p.note}</div>` : '')}
               </li>
             `;
           }).join('') + `</ul>`;
@@ -641,7 +635,6 @@
         const distance = Math.hypot(elCenterX - circleCenterX, elCenterY - circleCenterY);
         const circleRadius = circleRect.width / 2;
 
-        // Trigger on crossing boundary!
         if (distance < circleRadius) {
           isDragging = false;
           el.releasePointerCapture(e.pointerId);
@@ -660,8 +653,6 @@
       el.style.top = `${resetY}px`;
 
       document.getElementById('nedry-modal').classList.remove('hidden');
-
-      // Play Movie Audio with Speech Fallback
       playNedryAudio();
     }
 
@@ -670,7 +661,6 @@
       if (audio) {
         audio.currentTime = 0;
         audio.play().catch(e => {
-          // Fallback to text-to-speech if media is blocked
           if ('speechSynthesis' in window) {
             const utter = new SpeechSynthesisUtterance("Ah ah ah! You didn't say the magic word!");
             utter.pitch = 1.4;
