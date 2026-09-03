@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CFB Pool 2026 - Master Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&family=VT323&display=swap" rel="stylesheet">
@@ -46,10 +47,12 @@
 </head>
 <body class="bg-[#07090e] text-slate-100 min-h-screen selection:bg-indigo-500 selection:text-white relative overflow-x-hidden antialiased flex flex-col items-center">
 
+  <!-- Ambient Glow Effects -->
   <div class="fixed top-[-10%] left-[-5%] w-[45rem] h-[45rem] bg-indigo-600/10 rounded-full blur-[140px] pointer-events-none -z-10"></div>
   <div class="fixed top-[30%] right-[-10%] w-[40rem] h-[40rem] bg-fuchsia-600/10 rounded-full blur-[160px] pointer-events-none -z-10"></div>
   <div class="fixed bottom-[-10%] left-[20%] w-[50rem] h-[50rem] bg-cyan-600/10 rounded-full blur-[150px] pointer-events-none -z-10"></div>
 
+  <!-- Dynamic Zoom Container -->
   <div id="zoom-container" class="max-w-6xl px-4 sm:px-6 py-6">
     
     <!-- Top Header -->
@@ -199,7 +202,7 @@
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 bg-slate-900/50 border border-slate-800/80 p-5 rounded-2xl backdrop-blur-md">
         <div>
           <h2 class="text-xl font-black text-white flex items-center gap-2">Weekly Pick Grid</h2>
-          <p class="text-xs text-slate-400 mt-0.5">Showing all 6 active teams picked to win by each participant.</p>
+          <p class="text-xs text-slate-400 mt-0.5">Showing all 6 active teams picked to win by each participant with live Moneyline odds.</p>
         </div>
         
         <div class="flex items-center gap-3">
@@ -216,29 +219,101 @@
       <div id="weekly-picks-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
     </div>
 
-    <!-- ================= TAB 3: CIRCLE OF TRUST (PRANK TAB) ================= -->
+    <!-- ================= TAB 3: CIRCLE OF TRUST (PRANK & RIDDLE TAB) ================= -->
     <div id="tab-content-prank" class="tab-pane hidden">
       <div class="bg-slate-900/60 border border-slate-800 rounded-3xl p-6 backdrop-blur-xl shadow-2xl relative overflow-hidden">
-        <div class="text-center max-w-xl mx-auto mb-6">
-          <span class="text-[10px] font-mono uppercase tracking-widest bg-rose-950 text-rose-300 border border-rose-800/60 px-2.5 py-1 rounded-full font-bold">Security Level: Maximum</span>
-          <h2 class="text-2xl sm:text-3xl font-black text-white mt-2">The Official Circle of Trust</h2>
-          <p class="text-xs text-slate-400 mt-1">Due to excessive office complaints, trust is currently restricted. Drag your name inside to apply for entry.</p>
+        
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6 pb-4 border-b border-slate-800">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] font-mono uppercase tracking-widest bg-rose-950 text-rose-300 border border-rose-800/60 px-2.5 py-0.5 rounded-full font-bold">Security Level: Maximum</span>
+              <span class="text-[10px] font-mono uppercase tracking-widest bg-amber-950 text-amber-300 border border-amber-800/60 px-2.5 py-0.5 rounded-full font-bold">Jared Exiled</span>
+            </div>
+            <h2 class="text-2xl font-black text-white mt-1">The Official Circle of Trust</h2>
+            <p class="text-xs text-slate-400">Drag your name inside or solve the cryptic Trial of Worthiness to gain entry.</p>
+          </div>
+
+          <!-- Riddle Challenge Button -->
+          <button onclick="openRiddleModal()" class="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 hover:from-purple-500 hover:to-cyan-400 text-white font-black text-xs uppercase tracking-wider shadow-xl shadow-indigo-600/30 transition hover:scale-105 flex items-center gap-2 border border-white/20">
+            <span>🧠</span>
+            <span>Attempt Trial of Worthiness</span>
+          </button>
         </div>
 
-        <div id="arena" class="relative w-full h-[520px] bg-slate-950/90 border border-slate-800/80 rounded-2xl overflow-hidden flex items-center justify-center">
-          <div id="trust-circle" class="w-64 h-64 sm:w-72 sm:h-72 rounded-full border-2 border-dashed border-emerald-500/40 bg-emerald-950/20 flex flex-col items-center justify-center text-center p-4 relative shadow-[0_0_60px_-10px_rgba(16,185,129,0.25)] transition">
+        <!-- Drag Sandbox Arena -->
+        <div id="arena" class="relative w-full h-[580px] bg-slate-950 border border-slate-800/80 rounded-3xl overflow-hidden flex items-center justify-center">
+          
+          <!-- Deep Space Exile Sector (Bottom Right for Jared) -->
+          <div class="absolute bottom-0 right-0 w-64 h-48 border-t-2 border-l-2 border-dashed border-rose-900/40 bg-rose-950/10 rounded-tl-3xl p-3 flex flex-col justify-end items-end pointer-events-none">
+            <span class="text-[10px] font-mono font-black text-rose-500/80 uppercase tracking-widest flex items-center gap-1 animate-pulse">
+              ⚠️ MAXIMUM EXILE ZONE (JARED)
+            </span>
+            <span class="text-[9px] text-slate-600 font-mono">Distance from Trust: 50,000 km</span>
+          </div>
+
+          <!-- Inner Sanctum Circle of Trust -->
+          <div id="trust-circle" class="w-64 h-64 sm:w-72 sm:h-72 rounded-full border-2 border-dashed border-emerald-500/40 bg-emerald-950/20 flex flex-col items-center justify-center text-center p-4 relative shadow-[0_0_80px_-10px_rgba(16,185,129,0.3)] transition">
             <span class="text-2xl mb-1">👑</span>
             <span class="text-xs font-black uppercase tracking-wider text-emerald-400">Circle of Trust</span>
             <span class="text-[10px] text-emerald-500/70 font-mono mt-0.5">Lead Architect & Dev Supreme</span>
             <div class="mt-3 bg-emerald-500/20 border border-emerald-500/60 text-emerald-200 text-xs font-black px-4 py-1.5 rounded-full shadow-lg">
               ★ Weston ★
             </div>
+            <div id="admitted-members" class="mt-2 flex flex-wrap gap-1 justify-center"></div>
           </div>
+
+          <!-- Draggable Members Layer -->
           <div id="draggables-layer" class="absolute inset-0 pointer-events-auto"></div>
         </div>
+
       </div>
     </div>
 
+  </div>
+
+  <!-- TRIAL OF WORTHINESS (CRYPTIC RIDDLE MODAL) -->
+  <div id="riddle-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-[#0b140d] border-2 border-purple-500/80 rounded-3xl max-w-lg w-full p-6 shadow-[0_0_100px_rgba(168,85,247,0.35)] relative font-terminal text-purple-300">
+      
+      <!-- Window Title -->
+      <div class="flex justify-between items-center pb-3 border-b border-purple-500/40 text-purple-400 text-sm tracking-wider">
+        <span>TRIAL OF WORTHINESS // PROTOCOL: ENIGMA-26</span>
+        <button onclick="closeRiddleModal()" class="text-purple-400 hover:text-white font-bold text-lg">✕</button>
+      </div>
+
+      <!-- Stage Tracker -->
+      <div class="mt-4 flex justify-between items-center text-xs font-mono">
+        <span id="riddle-stage-title" class="text-emerald-400 font-bold tracking-widest">STAGE 1 of 3: THE PARADOX</span>
+        <span id="riddle-progress" class="bg-purple-950/80 px-2 py-0.5 rounded border border-purple-700/50">33%</span>
+      </div>
+
+      <!-- Riddle Question Box -->
+      <div class="my-5 bg-black/80 border border-purple-500/30 p-4 rounded-2xl min-h-[110px] flex items-center">
+        <p id="riddle-question-text" class="text-lg sm:text-xl text-purple-200 leading-relaxed">
+          Loading trial riddle...
+        </p>
+      </div>
+
+      <!-- Input Form -->
+      <form onsubmit="handleRiddleAnswer(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-mono uppercase tracking-widest text-purple-400 mb-1">Enter Decrypted Answer:</label>
+          <input type="text" id="riddle-answer-input" autocomplete="off" placeholder="Type answer..." required
+            class="w-full bg-black border-2 border-purple-500/60 rounded-xl p-3 text-lg font-terminal text-white tracking-widest focus:outline-none focus:border-cyan-400 uppercase">
+          <p id="riddle-feedback" class="text-xs font-mono font-bold text-rose-400 mt-2 hidden"></p>
+        </div>
+
+        <div class="flex gap-2 pt-2">
+          <button type="submit" class="flex-1 bg-purple-600 hover:bg-purple-500 text-white font-black py-3 rounded-xl text-lg font-terminal tracking-widest uppercase transition shadow-lg shadow-purple-600/30">
+            [ SUBMIT ANSWER ]
+          </button>
+          <button type="button" onclick="closeRiddleModal()" class="px-4 bg-slate-900 hover:bg-slate-800 text-slate-400 font-mono text-xs rounded-xl border border-slate-800">
+            Abord
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 
   <!-- USER LOGIN MODAL FOR MAKING PICKS -->
@@ -254,8 +329,7 @@
       <form onsubmit="handleLoginSubmit(event)" class="space-y-4">
         <div>
           <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">Select Your Name</label>
-          <select id="login-user-select" class="w-full bg-slate-950 border border-slate-800 text-white rounded-xl p-3 text-sm focus:outline-none focus:border-indigo-500 cursor-pointer">
-          </select>
+          <select id="login-user-select" class="w-full bg-slate-950 border border-slate-800 text-white rounded-xl p-3 text-sm focus:outline-none focus:border-indigo-500 cursor-pointer"></select>
         </div>
 
         <div>
@@ -330,7 +404,6 @@
   <script>
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwC1NpT8vKqmfsMFUxsPjc_23YhRPQAdMvEtz8GN05NVrm7IOtxnB9tu45ML4HgtLVD/exec";
 
-    // Official 2026 Week 0 Baseline Standings Adjustments
     const WEEK_0_STANDINGS_BASE = {
       "Andy": { wins: 1, losses: 0 },
       "Krystal": { wins: 1, losses: 0 },
@@ -344,7 +417,6 @@
       "Paul": { wins: 0, losses: 0 }
     };
 
-    // Banked Week 0 Picks to display on the team's true BYE week
     const BANKED_WEEK_0_PICKS = [
       { owner: "Andy", team: "Florida State", result: "WIN", note: "Week 0 Banked (Beat NMSU 34-17)" },
       { owner: "Krystal", team: "Memphis", result: "WIN", note: "Week 0 Banked (Beat UNLV 27-21)" },
@@ -383,6 +455,71 @@
     let selectedWeek = 1;
     let currentZoom = 1.0;
 
+    // Hard Cryptic Riddles
+    const RIDDLES = [
+      {
+        stage: "STAGE 1: THE GRIDIRON PARADOX",
+        progress: "33%",
+        question: "I have no voice, but I shout at 100 yards. I am divided into quarters, yet I am always whole. You can lose me without dropping me, and gain me without moving forward. What am I?",
+        answers: ["time", "clock", "game clock", "the clock", "the game clock"]
+      },
+      {
+        stage: "STAGE 2: THE ANCIENT KEEPER",
+        progress: "66%",
+        question: "I am taken from a mine and shut up inside a wooden case, from which I am never released, and yet I am used by nearly every scholar. What am I?",
+        answers: ["pencil lead", "lead", "graphite", "pencil", "pencil graphite"]
+      },
+      {
+        stage: "STAGE 3: THE COMMISSIONER'S DECREE",
+        progress: "100%",
+        question: "What is the single, absolute, incontrovertible secret to winning the 2026 pool?",
+        answers: ["weston is always right", "weston", "trust weston", "praise weston", "weston knows best", "commissioner weston"]
+      }
+    ];
+
+    let currentRiddleIndex = 0;
+
+    function openRiddleModal() {
+      currentRiddleIndex = 0;
+      loadRiddleStage();
+      document.getElementById('riddle-modal').classList.remove('hidden');
+    }
+
+    function closeRiddleModal() {
+      document.getElementById('riddle-modal').classList.add('hidden');
+    }
+
+    function loadRiddleStage() {
+      const r = RIDDLES[currentRiddleIndex];
+      document.getElementById('riddle-stage-title').innerText = r.stage;
+      document.getElementById('riddle-progress').innerText = r.progress;
+      document.getElementById('riddle-question-text').innerText = r.question;
+      document.getElementById('riddle-answer-input').value = '';
+      document.getElementById('riddle-feedback').classList.add('hidden');
+    }
+
+    function handleRiddleAnswer(e) {
+      e.preventDefault();
+      const input = document.getElementById('riddle-answer-input').value.trim().toLowerCase();
+      const valid = RIDDLES[currentRiddleIndex].answers;
+
+      if (valid.some(a => input.includes(a))) {
+        if (currentRiddleIndex < RIDDLES.length - 1) {
+          currentRiddleIndex++;
+          loadRiddleStage();
+        } else {
+          // Solved all 3!
+          closeRiddleModal();
+          confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+          alert("🎉 IMPOSSIBLE! You solved the Trial of Worthiness! You are temporarily granted access into the Circle of Trust.");
+        }
+      } else {
+        document.getElementById('riddle-feedback').innerText = "❌ INCORRECT CIPHER. ACCESS DENIED.";
+        document.getElementById('riddle-feedback').classList.remove('hidden');
+        playNedryAudio();
+      }
+    }
+
     function openLoginModal() {
       const select = document.getElementById('login-user-select');
       select.innerHTML = '';
@@ -392,7 +529,6 @@
         opt.innerText = owner;
         select.appendChild(opt);
       });
-
       document.getElementById('login-password-input').value = '';
       document.getElementById('login-error').classList.add('hidden');
       document.getElementById('login-modal').classList.remove('hidden');
@@ -406,8 +542,8 @@
       e.preventDefault();
       const user = document.getElementById('login-user-select').value;
       const pass = document.getElementById('login-password-input').value.trim();
-
       const expected = USER_CREDENTIALS[user];
+
       if (expected && expected.toLowerCase() === pass.toLowerCase()) {
         sessionStorage.setItem('cfb_auth_user', user);
         window.location.href = `pick.html?user=${encodeURIComponent(user)}`;
@@ -417,22 +553,25 @@
     }
 
     function getMoneyline(spreadStr) {
-      if (!spreadStr || spreadStr === 'N/A') return 'ML N/A';
-      const spread = parseFloat(spreadStr);
+      if (!spreadStr || spreadStr === 'N/A' || spreadStr === 'Line TBD') return 'ML N/A';
+      const match = spreadStr.match(/[-+]?\d*\.?\d+/);
+      if (!match) return 'ML N/A';
+      const spread = parseFloat(match[0]);
       if (isNaN(spread)) return 'ML N/A';
       if (spread === 0) return 'ML 110';
-      if (spread < 0) {
-        const abs = Math.abs(spread);
+      const isFav = spreadStr.includes('-') || spread < 0;
+      const abs = Math.abs(spread);
+      if (isFav) {
         if (abs <= 3) return `ML ${Math.round(110 + abs * 20)}`;
         if (abs <= 7) return `ML ${Math.round(180 + (abs - 3) * 35)}`;
         if (abs <= 14) return `ML ${Math.round(320 + (abs - 7) * 55)}`;
         if (abs <= 21) return `ML ${Math.round(750 + (abs - 14) * 80)}`;
         return `ML 1500+`;
       } else {
-        if (spread <= 3) return `ML +${Math.round(100 + spread * 18)}`;
-        if (spread <= 7) return `ML +${Math.round(160 + (spread - 3) * 30)}`;
-        if (spread <= 14) return `ML +${Math.round(280 + (spread - 7) * 45)}`;
-        if (spread <= 21) return `ML +${Math.round(600 + (spread - 14) * 60)}`;
+        if (abs <= 3) return `ML +${Math.round(100 + abs * 18)}`;
+        if (abs <= 7) return `ML +${Math.round(160 + (abs - 3) * 30)}`;
+        if (abs <= 14) return `ML +${Math.round(280 + (abs - 7) * 45)}`;
+        if (abs <= 21) return `ML +${Math.round(600 + (abs - 14) * 60)}`;
         return `ML +1000+`;
       }
     }
@@ -560,7 +699,6 @@
         };
       });
 
-      // Sort by Total Wins descending, then Losses ascending
       memberStats.sort((a, b) => (b.wins - a.wins) || (a.losses - b.losses));
 
       const top3 = memberStats.slice(0, 3);
@@ -631,7 +769,6 @@
       Object.keys(LEAGUE_ROSTERS).forEach(owner => {
         const ownerPicks = (picks || []).filter(p => p.owner && p.owner.toLowerCase() === owner.toLowerCase() && String(p.week) === String(week));
         
-        // Check if any of this owner's Banked Week 0 picks have a true scheduled BYE this week
         const displayPicks = [...ownerPicks];
         BANKED_WEEK_0_PICKS.forEach(banked => {
           if (banked.owner.toLowerCase() === owner.toLowerCase()) {
@@ -662,7 +799,7 @@
         } else {
           picksListHtml = `<ul class="space-y-2.5 mt-4">` + displayPicks.map(p => {
             const matchup = (leagueData.week_matchups || []).find(m => m.team && m.team.toLowerCase() === p.team.toLowerCase()) || {};
-            const spread = matchup.spread && matchup.spread !== 'N/A' ? matchup.spread : '';
+            const spread = matchup.spread && matchup.spread !== 'N/A' && matchup.spread !== 'Line TBD' ? matchup.spread : '';
             const ml = matchup.spread ? getMoneyline(matchup.spread) : '';
             const oppText = matchup.opponent && matchup.opponent !== 'BYE' ? `vs ${matchup.opponent}` : '';
 
@@ -681,7 +818,7 @@
                   <div class="flex items-center gap-2">
                     <span class="font-extrabold text-white text-sm">${p.team}</span>
                     ${spread ? `<span class="text-[10px] font-mono font-bold bg-indigo-950 text-indigo-300 border border-indigo-800/60 px-1.5 py-0.5 rounded">${spread}</span>` : ''}
-                    ${ml ? `<span class="text-[10px] font-mono font-semibold bg-slate-900 text-cyan-300 border border-cyan-800/40 px-1.5 py-0.5 rounded">${ml}</span>` : ''}
+                    ${ml && ml !== 'ML N/A' ? `<span class="text-[10px] font-mono font-semibold bg-slate-900 text-cyan-300 border border-cyan-800/40 px-1.5 py-0.5 rounded">${ml}</span>` : ''}
                   </div>
                   ${resultBadge}
                 </div>
@@ -708,33 +845,42 @@
       document.getElementById('submitted-badge').innerText = `${submittedCount}/10 Submitted`;
     }
 
-    const excludedCoworkers = ["Jared", "Cole", "Tucker", "Brayson", "Krystal", "Aaron", "Andy", "Rian", "Paul"];
+    // ================= PRANK JURASSIC PARK DRAGGABLE LOGIC =================
+    // Jared placed in extreme exile zone (bottom-right)
+    const coworkerPlacements = [
+      { name: "Cole", top: '35px', left: '50px' },
+      { name: "Tucker", top: '35px', right: '50px' },
+      { name: "Brayson", top: '160px', left: '30px' },
+      { name: "Krystal", top: '160px', right: '30px' },
+      { name: "Aaron", top: '300px', left: '40px' },
+      { name: "Andy", top: '300px', right: '40px' },
+      { name: "Rian", bottom: '30px', left: '70px' },
+      { name: "Paul", bottom: '30px', left: '40%' },
+      // JARED PLACED IN DEEP BOTTOM RIGHT CORNER
+      { name: "Jared", bottom: '25px', right: '30px', isExiled: true }
+    ];
 
     function initPrankArena() {
       const layer = document.getElementById('draggables-layer');
       layer.innerHTML = '';
-      
-      const positions = [
-        { top: '30px', left: '40px' },
-        { top: '30px', right: '40px' },
-        { top: '160px', left: '20px' },
-        { top: '160px', right: '20px' },
-        { top: '300px', left: '30px' },
-        { top: '300px', right: '30px' },
-        { bottom: '40px', left: '80px' },
-        { bottom: '40px', right: '80px' },
-        { bottom: '30px', left: '45%' }
-      ];
 
-      excludedCoworkers.forEach((name, i) => {
+      coworkerPlacements.forEach(person => {
         const badge = document.createElement('div');
-        const pos = positions[i] || { top: '50px', left: '50px' };
-        
-        badge.id = `drag-${name}`;
-        badge.className = "draggable-name absolute z-20 bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 font-extrabold text-xs px-4 py-2.5 rounded-2xl shadow-xl flex items-center gap-2 cursor-grab active:cursor-grabbing transition-shadow hover:border-indigo-500";
-        badge.innerHTML = `<span>🚫</span> <span>${name}</span>`;
+        badge.id = `drag-${person.name}`;
 
-        Object.assign(badge.style, pos);
+        if (person.isExiled) {
+          badge.className = "draggable-name absolute z-20 bg-rose-950/90 hover:bg-rose-900 text-rose-200 border-2 border-rose-600 font-black text-xs px-4 py-2.5 rounded-2xl shadow-[0_0_30px_rgba(225,29,72,0.4)] flex items-center gap-2 cursor-grab active:cursor-grabbing hover:scale-105";
+          badge.innerHTML = `<span>☣️</span> <span>Jared (Exile Penalty)</span>`;
+        } else {
+          badge.className = "draggable-name absolute z-20 bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 font-extrabold text-xs px-4 py-2.5 rounded-2xl shadow-xl flex items-center gap-2 cursor-grab active:cursor-grabbing hover:border-indigo-500";
+          badge.innerHTML = `<span>🚫</span> <span>${person.name}</span>`;
+        }
+
+        if (person.top) badge.style.top = person.top;
+        if (person.bottom) badge.style.bottom = person.bottom;
+        if (person.left) badge.style.left = person.left;
+        if (person.right) badge.style.right = person.right;
+
         layer.appendChild(badge);
         makeDraggable(badge);
       });
