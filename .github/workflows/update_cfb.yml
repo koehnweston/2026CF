@@ -1,10 +1,9 @@
 name: Auto Update CFB Lines and Matchups
 
 on:
+  workflow_dispatch:
   schedule:
-    # Runs every Tuesday and Friday at 10:00 AM UTC
     - cron: '0 10 * * 2,5'
-  workflow_dispatch: # Allows you to manually trigger it anytime via a button!
 
 jobs:
   update-data:
