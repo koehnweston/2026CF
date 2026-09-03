@@ -3,63 +3,61 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CFB Pool 2026 - Master Standings & Picks</title>
+  <title>CFB Pool 2026 - Master Standings & Scoreboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen font-sans">
-  <div class="max-w-6xl mx-auto px-4 py-8">
+  <div class="max-w-5xl mx-auto px-4 py-8">
     
-    <!-- Top Bar -->
+    <!-- Top Header -->
     <header class="flex flex-col md:flex-row justify-between items-center pb-6 border-b border-slate-800 mb-8 gap-4">
       <div>
-        <h1 class="text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
-          🏈 College Football Pool <span class="text-xs bg-indigo-600 text-white px-2.5 py-1 rounded-full uppercase font-bold">Week <span id="week-display">1</span></span>
+        <h1 class="text-3xl font-black tracking-tight text-white flex items-center gap-3">
+          🏈 CFB Pool Standings <span class="text-xs bg-indigo-600 text-white px-2.5 py-1 rounded-full uppercase font-bold">Week <span id="week-display">1</span></span>
         </h1>
-        <p class="text-slate-400 text-sm mt-1">Official Season Standings & Live Pick Tracker</p>
+        <p class="text-slate-400 text-sm mt-1">Official Season Leaderboard • Click any owner to view roster</p>
       </div>
-      <div id="quick-links" class="flex flex-wrap gap-2 justify-center"></div>
+      <button onclick="loadData()" class="text-xs bg-slate-900 hover:bg-slate-800 text-slate-300 px-3.5 py-2 rounded-xl border border-slate-700 transition flex items-center gap-2">
+        🔄 Refresh Live Scores
+      </button>
     </header>
 
     <!-- 1. Season-Long Standings Leaderboard -->
     <section class="mb-12">
       <div class="flex justify-between items-center mb-4">
         <h2 class="text-xl font-bold text-white flex items-center gap-2">
-          🏆 Season-Long Leaderboard
+          🏆 Season Leaderboard
         </h2>
         <span class="text-xs text-slate-400 font-mono">Ranked by Total Wins</span>
       </div>
-      <div class="overflow-x-auto rounded-2xl border border-slate-800 bg-slate-900/70 shadow-2xl">
+      <div class="overflow-x-auto rounded-2xl border border-slate-800 bg-slate-900/80 shadow-2xl">
         <table class="w-full text-left border-collapse">
           <thead>
-            <tr class="border-b border-slate-800 text-slate-400 text-xs uppercase tracking-wider bg-slate-900/90">
-              <th class="py-3.5 px-4 text-center">Rank</th>
-              <th class="py-3.5 px-4">Owner</th>
-              <th class="py-3.5 px-4 text-center">Record (W-L)</th>
-              <th class="py-3.5 px-4 text-center">Win %</th>
-              <th class="py-3.5 px-4 text-center">Proj Wins</th>
-              <th class="py-3.5 px-4">Drafted Roster (8 Teams)</th>
-              <th class="py-3.5 px-4 text-right">Pick Sheet</th>
+            <tr class="border-b border-slate-800 text-slate-400 text-xs uppercase tracking-wider bg-slate-950/60">
+              <th class="py-3.5 px-6 text-center w-16">Rank</th>
+              <th class="py-3.5 px-6">Owner</th>
+              <th class="py-3.5 px-6 text-center">Record (W-L)</th>
+              <th class="py-3.5 px-6 text-center">Win %</th>
+              <th class="py-3.5 px-6 text-center">Proj Wins</th>
+              <th class="py-3.5 px-6 text-center">Avg FPI</th>
             </tr>
           </thead>
           <tbody id="standings-body" class="divide-y divide-slate-800/60 text-sm">
-            <!-- Populated via JS -->
+            <!-- Rendered dynamically -->
           </tbody>
         </table>
       </div>
     </section>
 
-    <!-- 2. Live Weekly Picks Dashboard -->
+    <!-- 2. Live Weekly Picks Grid -->
     <section>
       <div class="flex justify-between items-center mb-4">
         <div>
           <h2 class="text-xl font-bold text-white flex items-center gap-2">
             📋 Live Week <span id="picks-week-display">1</span> Picks
           </h2>
-          <p class="text-xs text-slate-400">See all 6 picks made by each owner once submitted.</p>
+          <p class="text-xs text-slate-400">All 6 active picks locked in by each owner for this week.</p>
         </div>
-        <button onclick="loadData()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 transition">
-          🔄 Refresh Picks
-        </button>
       </div>
 
       <div id="weekly-picks-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -69,27 +67,61 @@
 
   </div>
 
+  <!-- Player Roster Profile Modal -->
+  <div id="roster-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl">
+      <div class="flex justify-between items-start mb-4 pb-3 border-b border-slate-800">
+        <div>
+          <span class="text-xs font-bold text-indigo-400 uppercase tracking-widest">Drafted Roster</span>
+          <h3 id="modal-owner-name" class="text-2xl font-extrabold text-white">Owner Name</h3>
+        </div>
+        <button onclick="closeModal()" class="text-slate-400 hover:text-white text-lg font-bold p-1">✕</button>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2 mb-4 text-xs font-mono">
+        <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800/80">
+          <span class="text-slate-500 block text-[10px] uppercase">Projected Wins</span>
+          <span id="modal-proj-wins" class="text-white font-bold text-sm">0</span>
+        </div>
+        <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800/80">
+          <span class="text-slate-500 block text-[10px] uppercase">Average FPI</span>
+          <span id="modal-avg-fpi" class="text-white font-bold text-sm">0</span>
+        </div>
+      </div>
+
+      <h4 class="text-xs font-bold uppercase text-slate-400 mb-2">8 Drafted Teams</h4>
+      <ul id="modal-teams-list" class="space-y-1.5 text-sm">
+        <!-- Teams populated here -->
+      </ul>
+
+      <div class="mt-6">
+        <button onclick="closeModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-semibold py-2.5 rounded-xl text-xs transition">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script>
     // PASTE YOUR GOOGLE SCRIPT WEB APP URL HERE:
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwC1NpT8vKqmfsMFUxsPjc_23YhRPQAdMvEtz8GN05NVrm7IOtxnB9tu45ML4HgtLVD/exec";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx0q60h3m4f9dG8n9k8k8w4n8k8/exec";
 
     const LEAGUE_ROSTERS = {
-      "Jared": { "teams": ["Texas Tech", "Boise State", "Oklahoma", "Virginia Tech", "Oklahoma State", "Tulsa", "California", "Rutgers"], "proj_wins": 54.7 },
-      "Cole": { "teams": ["Oregon", "San Diego State", "Louisville", "Pittsburgh", "Florida", "West Virginia", "Fresno State", "Colorado"], "proj_wins": 56.7 },
-      "Tucker": { "teams": ["Penn State", "Houston", "USC", "Oregon State", "Nebraska", "North Carolina", "Kansas", "Arkansas"], "proj_wins": 51.8 },
-      "Brayson": { "teams": ["Notre Dame", "Alabama", "Clemson", "NC State", "Illinois", "Baylor", "UCF", "Mississippi State"], "proj_wins": 57.5 },
-      "Krystal": { "teams": ["Miami", "Navy", "Utah", "Memphis", "Auburn", "Vanderbilt", "Washington State", "Iowa State"], "proj_wins": 56.4 },
-      "Weston": { "teams": ["Texas", "LSU", "Virginia", "TCU", "UTSA", "Cincinnati", "Temple", "UCLA"], "proj_wins": 56.1 },
-      "Aaron": { "teams": ["BYU", "Ole Miss", "Michigan", "Washington", "South Carolina", "Northwestern", "Maryland", "Kentucky"], "proj_wins": 52.1 },
-      "Andy": { "teams": ["Ohio State", "South Florida", "SMU", "Arizona", "Arizona State", "Florida State", "Minnesota", "Duke"], "proj_wins": 58.6 },
-      "Rian": { "teams": ["Indiana", "Kansas State", "Tulane", "Tennessee", "Wake Forest", "Missouri", "North Texas", "Florida Atlantic"], "proj_wins": 56.9 },
-      "Paul": { "teams": ["Georgia", "Texas A&M", "East Carolina", "Iowa", "Wisconsin", "Army", "Georgia Tech", "Syracuse"], "proj_wins": 56.4 }
+      "Jared": { "teams": ["Texas Tech", "Boise State", "Oklahoma", "Virginia Tech", "Oklahoma State", "Tulsa", "California", "Rutgers"], "proj_wins": 54.7, "avg_fpi": 5.7 },
+      "Cole": { "teams": ["Oregon", "San Diego State", "Louisville", "Pittsburgh", "Florida", "West Virginia", "Fresno State", "Colorado"], "proj_wins": 56.7, "avg_fpi": 8.5 },
+      "Tucker": { "teams": ["Penn State", "Houston", "USC", "Oregon State", "Nebraska", "North Carolina", "Kansas", "Arkansas"], "proj_wins": 51.8, "avg_fpi": 6.1 },
+      "Brayson": { "teams": ["Notre Dame", "Alabama", "Clemson", "NC State", "Illinois", "Baylor", "UCF", "Mississippi State"], "proj_wins": 57.5, "avg_fpi": 10.3 },
+      "Krystal": { "teams": ["Miami", "Navy", "Utah", "Memphis", "Auburn", "Vanderbilt", "Washington State", "Iowa State"], "proj_wins": 56.4, "avg_fpi": 5.5 },
+      "Weston": { "teams": ["Texas", "LSU", "Virginia", "TCU", "UTSA", "Cincinnati", "Temple", "UCLA"], "proj_wins": 56.1, "avg_fpi": 8.4 },
+      "Aaron": { "teams": ["BYU", "Ole Miss", "Michigan", "Washington", "South Carolina", "Northwestern", "Maryland", "Kentucky"], "proj_wins": 52.1, "avg_fpi": 9.9 },
+      "Andy": { "teams": ["Ohio State", "South Florida", "SMU", "Arizona", "Arizona State", "Florida State", "Minnesota", "Duke"], "proj_wins": 58.6, "avg_fpi": 8.0 },
+      "Rian": { "teams": ["Indiana", "Kansas State", "Tulane", "Tennessee", "Wake Forest", "Missouri", "North Texas", "Florida Atlantic"], "proj_wins": 56.9, "avg_fpi": 6.0 },
+      "Paul": { "teams": ["Georgia", "Texas A&M", "East Carolina", "Iowa", "Wisconsin", "Army", "Georgia Tech", "Syracuse"], "proj_wins": 56.4, "avg_fpi": 7.9 }
     };
 
     let leagueData = null;
 
     async function loadData() {
-      // 1. Fetch league_data.json
       try {
         const res = await fetch('league_data.json?t=' + new Date().getTime());
         leagueData = await res.json();
@@ -101,9 +133,8 @@
       document.getElementById('week-display').innerText = curWeek;
       document.getElementById('picks-week-display').innerText = curWeek;
 
-      // 2. Fetch live picks from Google Sheet
       let sheetPicks = [];
-      if (GOOGLE_SCRIPT_URL && !GOOGLE_SCRIPT_URL.includes("YOUR_DEPLOYMENT_ID")) {
+      if (GOOGLE_SCRIPT_URL && !GOOGLE_SCRIPT_URL.includes("AKfycbx0q60h3m4f9dG8n9k8k8w4n8k8")) {
         try {
           const resSheet = await fetch(GOOGLE_SCRIPT_URL);
           sheetPicks = await resSheet.json();
@@ -118,11 +149,8 @@
 
     function renderStandings(picks) {
       const tbody = document.getElementById('standings-body');
-      const quickLinks = document.getElementById('quick-links');
       tbody.innerHTML = '';
-      quickLinks.innerHTML = '';
 
-      // Calculate record per member (from sheet picks or static baseline)
       const memberStats = Object.keys(LEAGUE_ROSTERS).map(name => {
         const userPicks = picks.filter(p => p.owner && p.owner.toLowerCase() === name.toLowerCase());
         const wins = userPicks.filter(p => p.result === 'WIN').length;
@@ -136,34 +164,28 @@
           losses,
           winPct,
           proj_wins: LEAGUE_ROSTERS[name].proj_wins,
-          teams: LEAGUE_ROSTERS[name].teams
+          avg_fpi: LEAGUE_ROSTERS[name].avg_fpi
         };
       });
 
-      // Sort by Wins descending
+      // Sort by total wins descending
       memberStats.sort((a, b) => b.wins - a.wins);
 
       memberStats.forEach((m, idx) => {
-        // Quick Header Link
-        const link = document.createElement('a');
-        link.href = `pick.html?user=${encodeURIComponent(m.name)}`;
-        link.className = "text-xs bg-slate-900 hover:bg-indigo-600 border border-slate-700 hover:border-indigo-500 text-slate-300 hover:text-white px-2.5 py-1.5 rounded-lg transition";
-        link.innerText = m.name;
-        quickLinks.appendChild(link);
-
-        // Standings Row
         const tr = document.createElement('tr');
         tr.className = "hover:bg-slate-800/40 transition";
         tr.innerHTML = `
-          <td class="py-3.5 px-4 text-center font-mono font-bold ${idx === 0 ? 'text-amber-400' : 'text-slate-400'}">#${idx + 1}</td>
-          <td class="py-3.5 px-4 font-bold text-white">${m.name}</td>
-          <td class="py-3.5 px-4 text-center font-bold text-emerald-400 font-mono">${m.wins} - ${m.losses}</td>
-          <td class="py-3.5 px-4 text-center font-mono text-slate-300">${m.winPct}</td>
-          <td class="py-3.5 px-4 text-center font-mono text-slate-400">${m.proj_wins}</td>
-          <td class="py-3.5 px-4 text-xs text-slate-400 max-w-xs truncate">${m.teams.join(', ')}</td>
-          <td class="py-3.5 px-4 text-right">
-            <a href="pick.html?user=${encodeURIComponent(m.name)}" class="text-xs bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-3 py-1.5 rounded-lg transition shadow">Make Picks</a>
+          <td class="py-4 px-6 text-center font-mono font-bold ${idx === 0 ? 'text-amber-400' : 'text-slate-500'}">#${idx + 1}</td>
+          <td class="py-4 px-6">
+            <button onclick="openModal('${m.name}')" class="font-bold text-white hover:text-indigo-400 text-left flex items-center gap-1.5 transition group">
+              <span>${m.name}</span>
+              <span class="text-[10px] bg-slate-800 group-hover:bg-indigo-950 text-slate-400 group-hover:text-indigo-300 border border-slate-700 group-hover:border-indigo-800 px-1.5 py-0.5 rounded transition">Roster</span>
+            </button>
           </td>
+          <td class="py-4 px-6 text-center font-bold text-emerald-400 font-mono text-base">${m.wins} - ${m.losses}</td>
+          <td class="py-4 px-6 text-center font-mono text-slate-300 font-medium">${m.winPct}</td>
+          <td class="py-4 px-6 text-center font-mono text-slate-400">${m.proj_wins}</td>
+          <td class="py-4 px-6 text-center font-mono text-slate-400">${m.avg_fpi}</td>
         `;
         tbody.appendChild(tr);
       });
@@ -176,14 +198,14 @@
       Object.keys(LEAGUE_ROSTERS).forEach(owner => {
         const ownerPicks = picks.filter(p => p.owner && p.owner.toLowerCase() === owner.toLowerCase() && String(p.week) === String(week));
         const card = document.createElement('div');
-        card.className = "bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col justify-between";
+        card.className = "bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col justify-between shadow-lg";
 
         let picksListHtml = '';
         if (ownerPicks.length === 0) {
-          picksListHtml = `<p class="text-xs text-slate-500 italic py-4 text-center">No picks submitted yet for Week ${week}.</p>`;
+          picksListHtml = `<p class="text-xs text-slate-500 italic py-6 text-center">No picks locked in yet.</p>`;
         } else {
           picksListHtml = `<ul class="space-y-2 mt-3">` + ownerPicks.map(p => `
-            <li class="flex justify-between items-center text-xs bg-slate-950/80 px-3 py-2 rounded-lg border border-slate-800/80">
+            <li class="flex justify-between items-center text-xs bg-slate-950 px-3 py-2 rounded-xl border border-slate-800/80">
               <span class="font-semibold text-white">${p.team}</span>
               <span class="font-bold px-2 py-0.5 rounded text-[10px] ${p.pick === 'WIN' ? 'bg-emerald-950 text-emerald-300 border border-emerald-800' : 'bg-rose-950 text-rose-300 border border-rose-800'}">
                 ${p.pick}
@@ -194,21 +216,47 @@
 
         card.innerHTML = `
           <div>
-            <div class="flex justify-between items-center pb-2 border-b border-slate-800">
-              <h3 class="font-bold text-white text-base">${owner}</h3>
+            <div class="flex justify-between items-center pb-2.5 border-b border-slate-800">
+              <button onclick="openModal('${owner}')" class="font-bold text-white text-base hover:text-indigo-400 transition">${owner}</button>
               <span class="text-xs font-mono font-bold ${ownerPicks.length === 6 ? 'text-emerald-400' : 'text-amber-400'}">
                 ${ownerPicks.length}/6 Picks
               </span>
             </div>
             ${picksListHtml}
           </div>
-          <div class="mt-4 pt-3 border-t border-slate-800/60 flex justify-end">
-            <a href="pick.html?user=${encodeURIComponent(owner)}" class="text-xs text-indigo-400 hover:text-indigo-300 font-medium">Edit Picks →</a>
-          </div>
         `;
         grid.appendChild(card);
       });
     }
+
+    function openModal(owner) {
+      const roster = LEAGUE_ROSTERS[owner];
+      if (!roster) return;
+
+      document.getElementById('modal-owner-name').innerText = `${owner}'s Lineup`;
+      document.getElementById('modal-proj-wins').innerText = roster.proj_wins;
+      document.getElementById('modal-avg-fpi').innerText = roster.avg_fpi;
+
+      const list = document.getElementById('modal-teams-list');
+      list.innerHTML = '';
+      roster.teams.forEach((t, i) => {
+        const li = document.createElement('li');
+        li.className = "flex items-center gap-2 bg-slate-950/60 border border-slate-800/60 px-3 py-1.5 rounded-lg";
+        li.innerHTML = `<span class="text-xs font-mono text-slate-500 font-bold">${i + 1}.</span> <span class="font-semibold text-slate-200">${t}</span>`;
+        list.appendChild(li);
+      });
+
+      document.getElementById('roster-modal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('roster-modal').classList.add('hidden');
+    }
+
+    // Close modal on click outside
+    document.getElementById('roster-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'roster-modal') closeModal();
+    });
 
     loadData();
   </script>
