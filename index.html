@@ -27,15 +27,14 @@
     /* Wagging finger animation */
     @keyframes wag {
       0%, 100% { transform: rotate(0deg); }
-      25% { transform: rotate(-25deg); }
-      75% { transform: rotate(25deg); }
+      25% { transform: rotate(-28deg); }
+      75% { transform: rotate(28deg); }
     }
     .animate-wag {
       display: inline-block;
-      animation: wag 0.35s infinite ease-in-out;
+      animation: wag 0.3s infinite ease-in-out;
       transform-origin: bottom center;
     }
-    /* Draggable items styling */
     .draggable-name {
       cursor: grab;
       user-select: none;
@@ -201,9 +200,9 @@
 
   </div>
 
-  <!-- JURASSIC PARK NEDRY POPUP MODAL -->
-  <div id="nedry-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
-    <div class="bg-[#0b140d] border-2 border-emerald-500/80 rounded-2xl max-w-lg w-full p-6 shadow-[0_0_80px_rgba(16,185,129,0.4)] text-center relative font-terminal">
+  <!-- JURASSIC PARK NEDRY POPUP MODAL (WITH SOUND) -->
+  <div id="nedry-modal" class="fixed inset-0 bg-black/95 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-[#0b140d] border-2 border-emerald-500 rounded-2xl max-w-lg w-full p-6 shadow-[0_0_90px_rgba(16,185,129,0.5)] text-center relative font-terminal animate-pulse">
       
       <!-- Window Title Bar -->
       <div class="flex justify-between items-center pb-3 border-b border-emerald-500/40 text-emerald-400 text-sm tracking-wider">
@@ -224,14 +223,14 @@
         </p>
       </div>
 
-      <!-- Retro Terminal Text -->
+      <!-- Retro Terminal Output -->
       <div class="bg-black/80 border border-emerald-500/30 p-3 rounded-lg text-left text-xs font-mono text-emerald-400 space-y-1 mb-6">
         <p>> ATTEMPTING ENTRY INTO CIRCLE OF TRUST...</p>
-        <p class="text-rose-400">> ERROR 403: COMMISSIONER PRIVILEGE REQUIRED</p>
-        <p class="text-amber-300">> ACCESS VIOLATION LOGGED: STOP NEEDLING WESTON</p>
+        <p class="text-rose-400 font-bold">> ERROR 403: ACCESS DENIED BY COMMISSIONER</p>
+        <p class="text-amber-300">> VIOLATION LOGGED: STOP NEEDLING WESTON ABOUT THE APP</p>
       </div>
 
-      <button onclick="closeNedryModal()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-black font-extrabold py-3 rounded-xl text-lg font-terminal tracking-widest uppercase transition shadow-lg shadow-emerald-600/30">
+      <button onclick="closeNedryModal()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-black font-extrabold py-3.5 rounded-xl text-lg font-terminal tracking-widest uppercase transition shadow-lg shadow-emerald-600/40">
         [ RETURN TO SHAME ZONE ]
       </button>
     </div>
@@ -270,6 +269,9 @@
     </div>
   </div>
 
+  <!-- Audio Element for Dennis Nedry Soundbyte -->
+  <audio id="nedry-audio" preload="auto" loop src="https://www.myinstants.com/media/sounds/ah-ah-ah-you-didnt-say-the-magic-word.mp3"></audio>
+
   <script>
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwC1NpT8vKqmfsMFUxsPjc_23YhRPQAdMvEtz8GN05NVrm7IOtxnB9tu45ML4HgtLVD/exec";
 
@@ -291,7 +293,6 @@
     let selectedWeek = 1;
     let currentZoom = 1.0;
 
-    // Helper: Clean Moneyline
     function getMoneyline(spreadStr) {
       if (!spreadStr || spreadStr === 'N/A') return 'ML N/A';
       const spread = parseFloat(spreadStr);
@@ -625,7 +626,6 @@
         el.style.left = `${newLeft}px`;
         el.style.top = `${newTop}px`;
 
-        // Check collision with the Center Circle of Trust
         const arena = document.getElementById('arena');
         const circle = document.getElementById('trust-circle');
         
@@ -641,7 +641,7 @@
         const distance = Math.hypot(elCenterX - circleCenterX, elCenterY - circleCenterY);
         const circleRadius = circleRect.width / 2;
 
-        // If border is crossed!
+        // Trigger on crossing boundary!
         if (distance < circleRadius) {
           isDragging = false;
           el.releasePointerCapture(e.pointerId);
@@ -656,44 +656,37 @@
     }
 
     function triggerNedryAlarm(el, resetX, resetY) {
-      // Snap element back to outer boundary
       el.style.left = `${resetX}px`;
       el.style.top = `${resetY}px`;
 
-      // Open Jurassic Park Nedry Modal
       document.getElementById('nedry-modal').classList.remove('hidden');
 
-      // Synthesize a retro Dennis Nedry 8-bit alarm sound
-      playNedryBeep();
+      // Play Movie Audio with Speech Fallback
+      playNedryAudio();
+    }
+
+    function playNedryAudio() {
+      const audio = document.getElementById('nedry-audio');
+      if (audio) {
+        audio.currentTime = 0;
+        audio.play().catch(e => {
+          // Fallback to text-to-speech if media is blocked
+          if ('speechSynthesis' in window) {
+            const utter = new SpeechSynthesisUtterance("Ah ah ah! You didn't say the magic word!");
+            utter.pitch = 1.4;
+            utter.rate = 1.1;
+            window.speechSynthesis.speak(utter);
+          }
+        });
+      }
     }
 
     function closeNedryModal() {
       document.getElementById('nedry-modal').classList.add('hidden');
-    }
-
-    // Web Audio API Retro Alarm
-    function playNedryBeep() {
-      try {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(440, audioCtx.currentTime);
-        osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.1);
-        osc.frequency.setValueAtTime(440, audioCtx.currentTime + 0.2);
-        osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.3);
-
-        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.45);
-
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.5);
-      } catch (e) {
-        // Audio ignored if autoplay restricted
+      const audio = document.getElementById('nedry-audio');
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
       }
     }
 
