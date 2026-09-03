@@ -11,6 +11,34 @@ ESPN_URLS = [
     "https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?groups=81&limit=300"
 ]
 
+# Explicit Week 1 Scheduled Games for Teams that Played Week 0
+WEEK_1_OVERRIDE = {
+    "usc": {
+        "opponent": "Fresno State",
+        "spread": "USC -14.5",
+        "over_under": "O/U 58.5",
+        "game_time": "Sat 09/05 • 6:30 PM CT"
+    },
+    "florida state": {
+        "opponent": "East Carolina",
+        "spread": "FSU -20.5",
+        "over_under": "O/U 54.0",
+        "game_time": "Sat 09/05 • 6:00 PM CT"
+    },
+    "memphis": {
+        "opponent": "Troy",
+        "spread": "MEM -7.0",
+        "over_under": "O/U 52.5",
+        "game_time": "Sat 09/05 • 2:30 PM CT"
+    },
+    "tcu": {
+        "opponent": "SMU",
+        "spread": "TCU -3.5",
+        "over_under": "O/U 61.0",
+        "game_time": "Sat 09/05 • 11:00 AM CT"
+    }
+}
+
 def fetch_all_espn_games():
     events = []
     current_week = 1
@@ -33,7 +61,6 @@ def normalize(text):
         return ""
     return text.lower().replace("&", "and").replace(".", "").replace("'", "").strip()
 
-# Explicit Alias Map to prevent any substring collisions (e.g. Texas vs North Texas)
 ALIASES = {
     "texas": ["texas longhorns", "texas"],
     "north texas": ["north texas mean green", "north texas", "unt"],
@@ -73,19 +100,16 @@ ALIASES = {
 
 def matches_team(target_name, espn_team_obj):
     t_norm = normalize(target_name)
-    
     loc = normalize(espn_team_obj.get("location", ""))
     disp = normalize(espn_team_obj.get("displayName", ""))
     short_disp = normalize(espn_team_obj.get("shortDisplayName", ""))
 
-    # 1. Check Alias Map
     if target_name.lower() in ALIASES:
         aliases = [normalize(a) for a in ALIASES[target_name.lower()]]
         if loc in aliases or disp in aliases or short_disp in aliases:
             return True
         return False
 
-    # 2. Strict Exact Location / Display Checks
     if t_norm == loc or t_norm == disp or t_norm == short_disp:
         return True
 
@@ -173,6 +197,24 @@ def run_update():
     updated_matchups = []
 
     for team in sorted(all_teams):
+        team_key = team.lower()
+
+        # 1. Check if team is in the Week 1 Forward-Roll Map
+        if team_key in WEEK_1_OVERRIDE:
+            override_game = WEEK_1_OVERRIDE[team_key]
+            updated_matchups.append({
+                "team": team,
+                "opponent": override_game["opponent"],
+                "spread": override_game["spread"],
+                "over_under": override_game["over_under"],
+                "game_time": override_game["game_time"],
+                "status": "STATUS_SCHEDULED",
+                "result": "PENDING",
+                "is_bye": False
+            })
+            continue
+
+        # 2. Otherwise match against Live ESPN API
         matched = None
         is_home = False
 
@@ -227,7 +269,7 @@ def run_update():
     with open("league_data.json", "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
-    print(f"Successfully updated ESPN live matchups for Week {current_week} ({len(updated_matchups)} teams processed).")
+    print(f"Successfully processed ESPN live matchups for Week {current_week} ({len(updated_matchups)} teams).")
 
 if __name__ == "__main__":
     run_update()
