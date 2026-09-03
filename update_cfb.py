@@ -121,4 +121,26 @@ def run_update():
                 "game_time": time_display,
                 "is_bye": False
             })
-        els
+        else:
+            existing = next((m for m in data.get("week_matchups", []) if m.get("team") == team), None)
+            if existing:
+                updated_matchups.append(existing)
+            else:
+                updated_matchups.append({
+                    "team": team,
+                    "opponent": "BYE / TBD",
+                    "spread": "N/A",
+                    "over_under": "",
+                    "game_time": "BYE WEEK",
+                    "is_bye": True
+                })
+
+    data["week_matchups"] = updated_matchups
+
+    with open("league_data.json", "w") as f:
+        json.dump(data, f, indent=2)
+
+    print(f"Successfully processed {CURRENT_YEAR} Week {week} data for all {len(all_teams)} teams.")
+
+if __name__ == "__main__":
+    run_update()
