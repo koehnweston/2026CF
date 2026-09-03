@@ -8,23 +8,6 @@ CURRENT_YEAR = 2026
 CFBD_API_KEY = os.environ.get("CFBD_API_KEY", "")
 HEADERS = {"Authorization": f"Bearer {CFBD_API_KEY}"} if CFBD_API_KEY else {}
 
-def get_current_week():
-    try:
-        url = f"https://api.collegefootballdata.com/calendar?year={CURRENT_YEAR}"
-        res = requests.get(url, headers=HEADERS, timeout=15)
-        if res.status_code == 200:
-            calendar = res.json()
-            now = datetime.utcnow().isoformat()
-            for c in calendar:
-                start = c.get("firstGameStart")
-                end = c.get("lastGameEnd")
-                if isinstance(start, str) and isinstance(end, str):
-                    if start <= now <= end:
-                        return c.get("week", 1)
-    except Exception as e:
-        print(f"Notice: Calendar lookup exception ({e}), defaulting to Week 1.")
-    return 1
-
 def get_week_data(week):
     games = []
     lines_map = {}
@@ -36,7 +19,7 @@ def get_week_data(week):
             games = res.json()
             print(f"Retrieved {len(games)} games for {CURRENT_YEAR} Week {week}.")
         else:
-            print(f"Notice: Games endpoint returned status {res.status_code}.")
+            print(f"Games endpoint status: {res.status_code}")
     except Exception as e:
         print(f"Games fetch notice: {e}")
 
@@ -57,7 +40,7 @@ def get_week_data(week):
                     }
             print(f"Retrieved betting lines for {len(lines_map)} games.")
         else:
-            print(f"Notice: Lines endpoint returned status {res.status_code}.")
+            print(f"Lines endpoint status: {res.status_code}")
     except Exception as e:
         print(f"Lines fetch notice: {e}")
 
@@ -71,7 +54,8 @@ def run_update():
     with open("league_data.json", "r") as f:
         data = json.load(f)
 
-    week = get_current_week()
+    # Read current week directly from league_data.json
+    week = data.get("current_week", 1)
     data["current_week"] = week
     data["season_year"] = CURRENT_YEAR
     data["last_updated"] = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
