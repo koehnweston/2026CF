@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Make Picks (Pick 6) - CFB Pool</title>
+  <title>Make Picks (Pick 6) - CFB Pool 2026</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen font-sans">
@@ -14,7 +14,6 @@
       <a href="index.html" class="text-sm font-medium text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition">
         ← Back to Master Scoreboard
       </a>
-      <!-- Locked Player Badge -->
       <div class="flex items-center gap-2 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg">
         <span class="text-xs text-slate-400 uppercase font-semibold">User:</span>
         <span id="locked-user-display" class="text-sm font-bold text-indigo-300">Loading...</span>
@@ -27,7 +26,7 @@
         <div>
           <span class="text-xs font-bold text-indigo-400 uppercase tracking-widest">Personal Pick Sheet</span>
           <h1 id="user-title" class="text-3xl font-extrabold text-white">Select Player</h1>
-          <p class="text-xs text-slate-400 mt-1">Select exactly <strong class="text-indigo-300">6 of your 8 teams</strong> to play this week (All times Central).</p>
+          <p id="week0-notice" class="text-xs text-slate-400 mt-1">Select exactly <strong class="text-indigo-300">6 of your 8 teams</strong> to play this week.</p>
         </div>
         <div class="bg-slate-950/80 border border-slate-800 px-5 py-3 rounded-xl text-center sm:text-right min-w-[120px]">
           <span class="text-xs uppercase tracking-wider text-slate-400 font-semibold block">Pick Counter</span>
@@ -38,11 +37,8 @@
 
     <!-- Matchups Form -->
     <form id="picks-form" class="space-y-3">
-      <div id="matchups-container" class="space-y-3">
-        <!-- 8 Teams rendered dynamically -->
-      </div>
+      <div id="matchups-container" class="space-y-3"></div>
 
-      <!-- Action Buttons -->
       <div class="pt-6 space-y-3">
         <button id="submit-btn" type="button" onclick="submitPicksToBackend()" disabled 
           class="w-full bg-slate-800 text-slate-500 cursor-not-allowed font-bold py-3.5 px-6 rounded-xl transition duration-200 shadow-lg text-sm uppercase tracking-wider">
@@ -60,8 +56,15 @@
   </div>
 
   <script>
-    // Your exact live Google Apps Script endpoint:
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwC1NpT8vKqmfsMFUxsPjc_23YhRPQAdMvEtz8GN05NVrm7IOtxnB9tu45ML4HgtLVD/exec";
+
+    // 2026 Week 0 Exact Scores & Results Carried Over
+    const WEEK_0_PICKS = {
+      "Andy": { team: "Florida State", pick: "WIN", result: "WIN", score: "Won 34-17 vs New Mexico State" },
+      "Krystal": { team: "Memphis", pick: "WIN", result: "WIN", score: "Won 27-21 vs UNLV" },
+      "Tucker": { team: "USC", pick: "WIN", result: "WIN", score: "Won 42-26 vs San Jose State" },
+      "Weston": { team: "TCU", pick: "WIN", result: "LOSS", score: "Lost 10-15 vs North Carolina" }
+    };
 
     const DEFAULT_DATA = {
       current_week: 1,
@@ -111,11 +114,19 @@
       const userObj = leagueData.members[currentUser];
       if (!userObj) return;
 
+      const hasWeek0 = WEEK_0_PICKS[currentUser];
       document.getElementById('user-title').innerText = `${currentUser}'s Week ${leagueData.current_week || 1} Picks`;
+      
+      if (hasWeek0) {
+        document.getElementById('week0-notice').innerHTML = `★ <strong>${hasWeek0.team} (${hasWeek0.result})</strong> locked from Week 0. Select <strong class="text-indigo-300">5 more teams</strong> to reach 6 total.`;
+      }
+
       const container = document.getElementById('matchups-container');
       container.innerHTML = '';
 
       userObj.teams.forEach(team => {
+        const isW0Carry = hasWeek0 && hasWeek0.team.toLowerCase() === team.toLowerCase();
+
         const game = (leagueData.week_matchups || []).find(m => m.team && m.team.toLowerCase() === team.toLowerCase()) || {
           opponent: "BYE",
           spread: "",
@@ -125,48 +136,71 @@
         };
 
         const safeId = team.replace(/[^a-zA-Z0-9]/g, '_');
-        const isBye = game.is_bye || game.opponent === 'BYE' || game.game_time === 'BYE WEEK';
+        const isBye = !isW0Carry && (game.is_bye || game.opponent === 'BYE' || game.game_time === 'BYE WEEK');
 
         const card = document.createElement('div');
         card.id = `card_${safeId}`;
-        card.className = `team-card ${isBye ? 'bg-slate-900/40 border-dashed border-slate-800 opacity-60' : 'bg-slate-900 border-slate-800'} border rounded-xl p-4 flex flex-col sm:flex-row justify-between items-center gap-4 transition duration-150`;
+        card.className = `team-card ${isW0Carry ? 'bg-indigo-950/40 border-indigo-500/60 shadow-lg' : (isBye ? 'bg-slate-900/40 border-dashed border-slate-800 opacity-60' : 'bg-slate-900 border-slate-800')} border rounded-xl p-4 flex flex-col sm:flex-row justify-between items-center gap-4 transition duration-150`;
 
-        card.innerHTML = `
-          <div class="flex items-center gap-3 w-full sm:w-auto">
-            ${!isBye ? `
-              <input type="checkbox" id="check_${safeId}" onchange="updateState()" 
-                class="team-checkbox w-5 h-5 rounded border-slate-700 bg-slate-950 text-indigo-600 focus:ring-0 cursor-pointer">
-            ` : `
-              <div class="w-5 h-5 flex items-center justify-center text-slate-600 text-xs font-mono font-bold">✕</div>
-            `}
-            <div>
-              <div class="flex items-center gap-2">
-                <h3 class="font-bold text-white text-base">${team}</h3>
-                ${game.spread && game.spread !== 'N/A' && !isBye ? `
-                  <span class="text-xs font-mono font-semibold bg-indigo-950 text-indigo-300 border border-indigo-800/60 px-2 py-0.5 rounded">
-                    ${game.spread}
-                  </span>` : ''}
-                ${isBye ? `<span class="text-xs font-bold uppercase bg-amber-950/80 text-amber-400 border border-amber-800/60 px-2 py-0.5 rounded">BYE WEEK</span>` : ''}
+        if (isW0Carry) {
+          card.innerHTML = `
+            <div class="flex items-center gap-3 w-full sm:w-auto">
+              <input type="checkbox" id="check_${safeId}" checked disabled 
+                class="team-checkbox w-5 h-5 rounded border-indigo-600 bg-indigo-900 text-indigo-600 focus:ring-0 cursor-not-allowed">
+              <div>
+                <div class="flex items-center gap-2">
+                  <h3 class="font-bold text-white text-base">${team}</h3>
+                  <span class="text-[10px] font-mono font-extrabold px-2 py-0.5 rounded ${hasWeek0.result === 'WIN' ? 'bg-emerald-950 text-emerald-300 border border-emerald-800' : 'bg-rose-950 text-rose-300 border border-rose-800'}">
+                    WEEK 0 ${hasWeek0.result}
+                  </span>
+                </div>
+                <p class="text-xs text-slate-400 mt-0.5">${hasWeek0.score}</p>
+                <p class="text-[11px] font-mono text-indigo-300 mt-1">🔒 Locked into Week 1 Total (Pick 1 of 6)</p>
               </div>
-              <p class="text-xs text-slate-400 mt-0.5">
-                ${!isBye ? `vs <span class="text-slate-200 font-medium">${game.opponent}</span>` : `<span class="text-slate-500">No scheduled game</span>`}
-                ${game.over_under && !isBye ? `<span class="text-slate-500 ml-1">(${game.over_under})</span>` : ''}
-              </p>
-              <p class="text-[11px] font-mono text-indigo-400 mt-1 flex items-center gap-1">
-                🕒 ${game.game_time || 'Time TBD'}
-              </p>
             </div>
-          </div>
-          
-          <div id="options_${safeId}" class="flex items-center gap-2 w-full sm:w-auto justify-end ${isBye ? 'hidden' : 'opacity-40 pointer-events-none'} transition">
-            <label class="flex-1 sm:flex-initial text-center cursor-pointer bg-slate-950 hover:bg-slate-800 has-[:checked]:bg-emerald-600 has-[:checked]:text-white text-slate-300 px-4 py-2 rounded-lg text-xs font-bold border border-slate-800 transition">
-              <input type="radio" name="pick_${safeId}" value="WIN" class="hidden" checked> WIN
-            </label>
-            <label class="flex-1 sm:flex-initial text-center cursor-pointer bg-slate-950 hover:bg-slate-800 has-[:checked]:bg-rose-600 has-[:checked]:text-white text-slate-300 px-4 py-2 rounded-lg text-xs font-bold border border-slate-800 transition">
-              <input type="radio" name="pick_${safeId}" value="LOSS" class="hidden"> LOSS
-            </label>
-          </div>
-        `;
+            <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+              <span class="px-4 py-2 rounded-lg text-xs font-black font-mono border ${hasWeek0.result === 'WIN' ? 'bg-emerald-900/50 border-emerald-700 text-emerald-200' : 'bg-rose-900/50 border-rose-700 text-rose-200'}">
+                ${hasWeek0.result}
+              </span>
+            </div>
+          `;
+        } else {
+          card.innerHTML = `
+            <div class="flex items-center gap-3 w-full sm:w-auto">
+              ${!isBye ? `
+                <input type="checkbox" id="check_${safeId}" onchange="updateState()" 
+                  class="team-checkbox w-5 h-5 rounded border-slate-700 bg-slate-950 text-indigo-600 focus:ring-0 cursor-pointer">
+              ` : `
+                <div class="w-5 h-5 flex items-center justify-center text-slate-600 text-xs font-mono font-bold">✕</div>
+              `}
+              <div>
+                <div class="flex items-center gap-2">
+                  <h3 class="font-bold text-white text-base">${team}</h3>
+                  ${game.spread && game.spread !== 'N/A' && !isBye ? `
+                    <span class="text-xs font-mono font-semibold bg-indigo-950 text-indigo-300 border border-indigo-800/60 px-2 py-0.5 rounded">
+                      ${game.spread}
+                    </span>` : ''}
+                  ${isBye ? `<span class="text-xs font-bold uppercase bg-amber-950/80 text-amber-400 border border-amber-800/60 px-2 py-0.5 rounded">BYE WEEK</span>` : ''}
+                </div>
+                <p class="text-xs text-slate-400 mt-0.5">
+                  ${!isBye ? `vs <span class="text-slate-200 font-medium">${game.opponent}</span>` : `<span class="text-slate-500">No scheduled game</span>`}
+                  ${game.over_under && !isBye ? `<span class="text-slate-500 ml-1">(${game.over_under})</span>` : ''}
+                </p>
+                <p class="text-[11px] font-mono text-indigo-400 mt-1">🕒 ${game.game_time || 'Time TBD'}</p>
+              </div>
+            </div>
+            
+            <div id="options_${safeId}" class="flex items-center gap-2 w-full sm:w-auto justify-end ${isBye ? 'hidden' : 'opacity-40 pointer-events-none'} transition">
+              <label class="flex-1 sm:flex-initial text-center cursor-pointer bg-slate-950 hover:bg-slate-800 has-[:checked]:bg-emerald-600 has-[:checked]:text-white text-slate-300 px-4 py-2 rounded-lg text-xs font-bold border border-slate-800 transition">
+                <input type="radio" name="pick_${safeId}" value="WIN" class="hidden" checked> WIN
+              </label>
+              <label class="flex-1 sm:flex-initial text-center cursor-pointer bg-slate-950 hover:bg-slate-800 has-[:checked]:bg-rose-600 has-[:checked]:text-white text-slate-300 px-4 py-2 rounded-lg text-xs font-bold border border-slate-800 transition">
+                <input type="radio" name="pick_${safeId}" value="LOSS" class="hidden"> LOSS
+              </label>
+            </div>
+          `;
+        }
+
         container.appendChild(card);
       });
 
@@ -183,17 +217,21 @@
       counter.className = count === MAX_PICKS ? "text-2xl font-black text-emerald-400" : "text-2xl font-black text-amber-400";
 
       checkboxes.forEach(cb => {
+        if (cb.disabled && cb.checked) return;
+
         const safeId = cb.id.replace('check_', '');
         const options = document.getElementById(`options_${safeId}`);
         const card = document.getElementById(`card_${safeId}`);
 
-        if (cb.checked) {
-          options.classList.remove('opacity-40', 'pointer-events-none');
-          card.classList.add('border-indigo-600/50', 'bg-slate-900/90');
-        } else {
-          options.classList.add('opacity-40', 'pointer-events-none');
-          card.classList.remove('border-indigo-600/50', 'bg-slate-900/90');
-          cb.disabled = (count >= MAX_PICKS);
+        if (options) {
+          if (cb.checked) {
+            options.classList.remove('opacity-40', 'pointer-events-none');
+            card.classList.add('border-indigo-600/50', 'bg-slate-900/90');
+          } else {
+            options.classList.add('opacity-40', 'pointer-events-none');
+            card.classList.remove('border-indigo-600/50', 'bg-slate-900/90');
+            cb.disabled = (count >= MAX_PICKS);
+          }
         }
       });
 
@@ -216,8 +254,15 @@
 
       const userObj = leagueData.members[currentUser];
       const picks = [];
+      const hasWeek0 = WEEK_0_PICKS[currentUser];
+
+      if (hasWeek0) {
+        picks.push({ team: hasWeek0.team, pick: hasWeek0.pick });
+      }
 
       userObj.teams.forEach(team => {
+        if (hasWeek0 && hasWeek0.team.toLowerCase() === team.toLowerCase()) return;
+
         const safeId = team.replace(/[^a-zA-Z0-9]/g, '_');
         const cb = document.getElementById(`check_${safeId}`);
         if (cb && cb.checked) {
@@ -252,10 +297,18 @@
 
     function copyPicks() {
       const userObj = leagueData.members[currentUser];
+      const hasWeek0 = WEEK_0_PICKS[currentUser];
+
       let summary = `🏈 ${currentUser}'s Week ${leagueData.current_week || 1} Picks (6 of 8):\n`;
       summary += `─────────────────────────\n`;
 
+      if (hasWeek0) {
+        summary += `• ${hasWeek0.team} (Week 0): ${hasWeek0.pick} [${hasWeek0.result} - ${hasWeek0.score}]\n`;
+      }
+
       userObj.teams.forEach(team => {
+        if (hasWeek0 && hasWeek0.team.toLowerCase() === team.toLowerCase()) return;
+
         const safeId = team.replace(/[^a-zA-Z0-9]/g, '_');
         const cb = document.getElementById(`check_${safeId}`);
         if (cb && cb.checked) {
