@@ -17,7 +17,7 @@
       <div class="flex items-center gap-2">
         <label for="user-select" class="text-xs text-slate-400 uppercase font-semibold">Player:</label>
         <select id="user-select" class="bg-slate-900 border border-slate-700 text-white text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500 cursor-pointer">
-          <!-- Populated dynamically -->
+          <!-- Dynamic -->
         </select>
       </div>
     </div>
@@ -26,7 +26,7 @@
     <header class="bg-slate-900 border border-slate-800 rounded-2xl p-6 mb-6 shadow-xl">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <span class="text-xs font-bold text-indigo-400 uppercase tracking-widest">Weekly Pick Sheet</span>
+          <span class="text-xs font-bold text-indigo-400 uppercase tracking-widest">Personal Pick Sheet</span>
           <h1 id="user-title" class="text-3xl font-extrabold text-white">Select Player</h1>
           <p class="text-xs text-slate-400 mt-1">Select exactly <strong class="text-indigo-300">6 of your 8 teams</strong> to play this week (All times Central).</p>
         </div>
@@ -43,20 +43,27 @@
         <!-- 8 Teams rendered dynamically -->
       </div>
 
-      <!-- Action Button -->
-      <div class="pt-6">
-        <button id="submit-btn" type="button" onclick="copyPicks()" disabled 
+      <!-- Action Buttons -->
+      <div class="pt-6 space-y-3">
+        <button id="submit-btn" type="button" onclick="submitPicksToBackend()" disabled 
           class="w-full bg-slate-800 text-slate-500 cursor-not-allowed font-bold py-3.5 px-6 rounded-xl transition duration-200 shadow-lg text-sm uppercase tracking-wider">
-          Select 6 Teams to Copy Picks
+          Select 6 Teams to Lock In Picks
+        </button>
+        <button type="button" onclick="copyPicks()" 
+          class="w-full bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white font-medium py-2.5 px-4 rounded-xl border border-slate-800 text-xs transition">
+          📋 Copy Text Summary to Clipboard
         </button>
         <p id="status-msg" class="text-center text-sm font-semibold text-emerald-400 hidden mt-3 bg-emerald-950/40 border border-emerald-800/50 py-2.5 rounded-lg shadow">
-          ✓ Picks copied to clipboard! Paste directly into your group chat.
+          ✓ Picks submitted successfully!
         </p>
       </div>
     </form>
   </div>
 
   <script>
+    // PASTE YOUR GOOGLE SCRIPT WEB APP URL HERE:
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec";
+
     const DEFAULT_DATA = {
       current_week: 1,
       members: {
@@ -67,7 +74,7 @@
         "Krystal": { "teams": ["Miami", "Navy", "Utah", "Memphis", "Auburn", "Vanderbilt", "Washington State", "Iowa State"] },
         "Weston": { "teams": ["Texas", "LSU", "Virginia", "TCU", "UTSA", "Cincinnati", "Temple", "UCLA"] },
         "Aaron": { "teams": ["BYU", "Ole Miss", "Michigan", "Washington", "South Carolina", "Northwestern", "Maryland", "Kentucky"] },
-        "Andy": { "teams": ["Ohio State", "South India", "SMU", "Arizona", "Arizona State", "Florida State", "Minnesota", "Duke"] },
+        "Andy": { "teams": ["Ohio State", "South Florida", "SMU", "Arizona", "Arizona State", "Florida State", "Minnesota", "Duke"] },
         "Rian": { "teams": ["Indiana", "Kansas State", "Tulane", "Tennessee", "Wake Forest", "Missouri", "North Texas", "Florida Atlantic"] },
         "Paul": { "teams": ["Georgia", "Texas A&M", "East Carolina", "Iowa", "Wisconsin", "Army", "Georgia Tech", "Syracuse"] }
       },
@@ -81,9 +88,7 @@
     async function init() {
       try {
         const res = await fetch('league_data.json?t=' + new Date().getTime());
-        if (res.ok) {
-          leagueData = await res.json();
-        }
+        if (res.ok) leagueData = await res.json();
       } catch (err) {
         console.warn("Using default data", err);
       }
@@ -210,12 +215,55 @@
       if (count === MAX_PICKS) {
         submitBtn.disabled = false;
         submitBtn.className = "w-full bg-indigo-600 hover:bg-indigo-500 text-white cursor-pointer font-bold py-3.5 px-6 rounded-xl transition duration-200 shadow-lg shadow-indigo-600/30 text-sm uppercase tracking-wider";
-        submitBtn.innerText = "📋 Copy 6 Picks to Clipboard";
+        submitBtn.innerText = "🚀 Submit 6 Picks to Leaderboard";
       } else {
         submitBtn.disabled = true;
         submitBtn.className = "w-full bg-slate-800 text-slate-500 cursor-not-allowed font-bold py-3.5 px-6 rounded-xl transition duration-200 shadow-lg text-sm uppercase tracking-wider";
         submitBtn.innerText = `Select ${MAX_PICKS - count} more team${MAX_PICKS - count === 1 ? '' : 's'} (${count}/6)`;
       }
+    }
+
+    async function submitPicksToBackend() {
+      const submitBtn = document.getElementById('submit-btn');
+      submitBtn.disabled = true;
+      submitBtn.innerText = "Saving Picks...";
+
+      const userObj = leagueData.members[currentUser];
+      const picks = [];
+
+      userObj.teams.forEach(team => {
+        const safeId = team.replace(/[^a-zA-Z0-9]/g, '_');
+        const cb = document.getElementById(`check_${safeId}`);
+        if (cb && cb.checked) {
+          const pick = document.querySelector(`input[name="pick_${safeId}"]:checked`)?.value || 'WIN';
+          picks.push({ team, pick });
+        }
+      });
+
+      if (GOOGLE_SCRIPT_URL && !GOOGLE_SCRIPT_URL.includes("YOUR_DEPLOYMENT_ID")) {
+        try {
+          await fetch(GOOGLE_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              week: leagueData.current_week || 1,
+              owner: currentUser,
+              picks: picks
+            })
+          });
+        } catch(err) {
+          console.error("Error submitting to Google Sheet", err);
+        }
+      }
+
+      const msg = document.getElementById('status-msg');
+      msg.innerText = `✓ ${currentUser}'s Week ${leagueData.current_week || 1} picks are locked in! Redirecting...`;
+      msg.classList.remove('hidden');
+
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 1500);
     }
 
     function copyPicks() {
@@ -241,8 +289,9 @@
 
       navigator.clipboard.writeText(summary).then(() => {
         const msg = document.getElementById('status-msg');
+        msg.innerText = "✓ Picks copied to clipboard!";
         msg.classList.remove('hidden');
-        setTimeout(() => msg.classList.add('hidden'), 4500);
+        setTimeout(() => msg.classList.add('hidden'), 3500);
       });
     }
 
