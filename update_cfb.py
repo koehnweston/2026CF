@@ -24,7 +24,7 @@ def fetch_all_espn_games():
                 current_week = week_info.get("number", current_week)
                 events.extend(data.get("events", []))
         except Exception as e:
-            print(f"Error fetching from {url}: {e}")
+            print(f"Notice: Error fetching from {url}: {e}")
             
     return current_week, events
 
@@ -33,7 +33,7 @@ def normalize(text):
         return ""
     return text.lower().replace("&", "and").replace(".", "").replace("'", "").strip()
 
-# Alias map for teams with unique ESPN naming conventions
+# Explicit Alias Map to prevent any substring collisions (e.g. Texas vs North Texas)
 ALIASES = {
     "texas": ["texas longhorns", "texas"],
     "north texas": ["north texas mean green", "north texas", "unt"],
@@ -57,7 +57,18 @@ ALIASES = {
     "ucf": ["ucf knights", "ucf", "central florida"],
     "byu": ["byu cougars", "byu", "brigham young"],
     "penn state": ["penn state nittany lions", "penn state"],
-    "ohio state": ["ohio state buckeyes", "ohio state"]
+    "ohio state": ["ohio state buckeyes", "ohio state"],
+    "oklahoma state": ["oklahoma state cowboys", "oklahoma state"],
+    "oklahoma": ["oklahoma sooners", "oklahoma"],
+    "oregon state": ["oregon state beavers", "oregon state"],
+    "oregon": ["oregon ducks", "oregon"],
+    "kansas state": ["kansas state wildcats", "kansas state"],
+    "kansas": ["kansas jayhawks", "kansas"],
+    "arizona state": ["arizona state sun devils", "arizona state"],
+    "arizona": ["arizona wildcats", "arizona"],
+    "san diego state": ["san diego state aztecs", "san diego state", "sdsu"],
+    "fresno state": ["fresno state bulldogs", "fresno state"],
+    "boise state": ["boise state broncos", "boise state"]
 }
 
 def matches_team(target_name, espn_team_obj):
@@ -66,7 +77,6 @@ def matches_team(target_name, espn_team_obj):
     loc = normalize(espn_team_obj.get("location", ""))
     disp = normalize(espn_team_obj.get("displayName", ""))
     short_disp = normalize(espn_team_obj.get("shortDisplayName", ""))
-    name = normalize(espn_team_obj.get("name", ""))
 
     # 1. Check Alias Map
     if target_name.lower() in ALIASES:
@@ -75,7 +85,7 @@ def matches_team(target_name, espn_team_obj):
             return True
         return False
 
-    # 2. Strict Exact Name / Display Checks
+    # 2. Strict Exact Location / Display Checks
     if t_norm == loc or t_norm == disp or t_norm == short_disp:
         return True
 
@@ -217,7 +227,7 @@ def run_update():
     with open("league_data.json", "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
-    print(f"Successfully processed ESPN live data for Week {current_week} ({len(updated_matchups)} teams).")
+    print(f"Successfully updated ESPN live matchups for Week {current_week} ({len(updated_matchups)} teams processed).")
 
 if __name__ == "__main__":
     run_update()
