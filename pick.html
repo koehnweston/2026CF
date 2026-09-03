@@ -20,44 +20,77 @@
       </div>
     </div>
 
-    <!-- Header Banner -->
-    <header class="bg-slate-900 border border-slate-800 rounded-2xl p-6 mb-6 shadow-xl">
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <span class="text-xs font-bold text-indigo-400 uppercase tracking-widest">Personal Pick Sheet</span>
-          <h1 id="user-title" class="text-3xl font-extrabold text-white">Select Player</h1>
-          <p class="text-xs text-slate-400 mt-1">Select exactly <strong class="text-indigo-300">6 teams to WIN</strong> their matchups this week (All times Central).</p>
-        </div>
-        <div class="bg-slate-950/80 border border-slate-800 px-5 py-3 rounded-xl text-center sm:text-right min-w-[120px]">
-          <span class="text-xs uppercase tracking-wider text-slate-400 font-semibold block">Pick Counter</span>
-          <p id="pick-counter" class="text-2xl font-black text-amber-400">0 / 6</p>
-        </div>
-      </div>
-    </header>
-
-    <!-- Matchups Form -->
-    <form id="picks-form" class="space-y-3">
-      <div id="matchups-container" class="space-y-3"></div>
-
-      <!-- Action Buttons -->
-      <div class="pt-6 space-y-3">
-        <button id="submit-btn" type="button" onclick="submitPicksToBackend()" disabled 
-          class="w-full bg-slate-800 text-slate-500 cursor-not-allowed font-bold py-3.5 px-6 rounded-xl transition duration-200 shadow-lg text-sm uppercase tracking-wider">
-          Select 6 Teams to Lock In Picks
+    <!-- Auth Lock Screen (If direct URL is accessed without login) -->
+    <div id="auth-lock-screen" class="hidden bg-slate-900 border border-slate-800 rounded-3xl p-8 text-center max-w-md mx-auto my-12 shadow-2xl">
+      <span class="text-4xl block mb-3">🔒</span>
+      <h2 class="text-2xl font-black text-white">Authentication Required</h2>
+      <p class="text-xs text-slate-400 mt-1 mb-6">Enter your PIN to unlock your personal pick sheet.</p>
+      
+      <form onsubmit="verifyPageAuth(event)" class="space-y-4">
+        <input type="password" id="auth-password-input" placeholder="Enter PIN..." required
+          class="w-full bg-slate-950 border border-slate-800 text-white rounded-xl p-3 text-sm focus:outline-none focus:border-indigo-500 text-center">
+        <p id="auth-error-msg" class="text-xs font-semibold text-rose-400 hidden">Incorrect password.</p>
+        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl text-xs uppercase tracking-wider transition shadow-lg shadow-indigo-600/30">
+          Unlock Pick Sheet
         </button>
-        <button type="button" onclick="copyPicks()" 
-          class="w-full bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white font-medium py-2.5 px-4 rounded-xl border border-slate-800 text-xs transition">
-          📋 Copy Text Summary to Clipboard
-        </button>
-        <p id="status-msg" class="text-center text-sm font-semibold text-emerald-400 hidden mt-3 bg-emerald-950/40 border border-emerald-800/50 py-2.5 rounded-lg shadow">
-          ✓ Picks submitted successfully!
-        </p>
-      </div>
-    </form>
+      </form>
+    </div>
+
+    <!-- Main Pick Portal Content -->
+    <div id="pick-portal-content">
+      <!-- Header Banner -->
+      <header class="bg-slate-900 border border-slate-800 rounded-2xl p-6 mb-6 shadow-xl">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <span class="text-xs font-bold text-indigo-400 uppercase tracking-widest">Personal Pick Sheet</span>
+            <h1 id="user-title" class="text-3xl font-extrabold text-white">Select Player</h1>
+            <p class="text-xs text-slate-400 mt-1">Select exactly <strong class="text-indigo-300">6 teams to WIN</strong> their matchups this week (All times Central).</p>
+          </div>
+          <div class="bg-slate-950/80 border border-slate-800 px-5 py-3 rounded-xl text-center sm:text-right min-w-[120px]">
+            <span class="text-xs uppercase tracking-wider text-slate-400 font-semibold block">Pick Counter</span>
+            <p id="pick-counter" class="text-2xl font-black text-amber-400">0 / 6</p>
+          </div>
+        </div>
+      </header>
+
+      <!-- Matchups Form -->
+      <form id="picks-form" class="space-y-3">
+        <div id="matchups-container" class="space-y-3"></div>
+
+        <!-- Action Buttons -->
+        <div class="pt-6 space-y-3">
+          <button id="submit-btn" type="button" onclick="submitPicksToBackend()" disabled 
+            class="w-full bg-slate-800 text-slate-500 cursor-not-allowed font-bold py-3.5 px-6 rounded-xl transition duration-200 shadow-lg text-sm uppercase tracking-wider">
+            Select 6 Teams to Lock In Picks
+          </button>
+          <button type="button" onclick="copyPicks()" 
+            class="w-full bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white font-medium py-2.5 px-4 rounded-xl border border-slate-800 text-xs transition">
+            📋 Copy Text Summary to Clipboard
+          </button>
+          <p id="status-msg" class="text-center text-sm font-semibold text-emerald-400 hidden mt-3 bg-emerald-950/40 border border-emerald-800/50 py-2.5 rounded-lg shadow">
+            ✓ Picks submitted successfully!
+          </p>
+        </div>
+      </form>
+    </div>
+
   </div>
 
   <script>
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwC1NpT8vKqmfsMFUxsPjc_23YhRPQAdMvEtz8GN05NVrm7IOtxnB9tu45ML4HgtLVD/exec";
+
+    const USER_CREDENTIALS = {
+      "Jared": "jared26",
+      "Cole": "cole26",
+      "Tucker": "tucker26",
+      "Brayson": "brayson26",
+      "Krystal": "krystal26",
+      "Weston": "weston26",
+      "Aaron": "aaron26",
+      "Andy": "andy26",
+      "Rian": "rian26",
+      "Paul": "paul26"
+    };
 
     const DEFAULT_DATA = {
       current_week: 1,
@@ -100,7 +133,37 @@
       }
 
       document.getElementById('locked-user-display').innerText = currentUser;
+
+      const authSession = sessionStorage.getItem('cfb_auth_user');
+      if (authSession && authSession.toLowerCase() === currentUser.toLowerCase()) {
+        unlockPortal();
+      } else {
+        lockPortal();
+      }
+    }
+
+    function lockPortal() {
+      document.getElementById('auth-lock-screen').classList.remove('hidden');
+      document.getElementById('pick-portal-content').classList.add('hidden');
+    }
+
+    function unlockPortal() {
+      document.getElementById('auth-lock-screen').classList.add('hidden');
+      document.getElementById('pick-portal-content').classList.remove('hidden');
       renderTeams();
+    }
+
+    function verifyPageAuth(e) {
+      e.preventDefault();
+      const pass = document.getElementById('auth-password-input').value.trim();
+      const expected = USER_CREDENTIALS[currentUser];
+
+      if (expected && expected.toLowerCase() === pass.toLowerCase()) {
+        sessionStorage.setItem('cfb_auth_user', currentUser);
+        unlockPortal();
+      } else {
+        document.getElementById('auth-error-msg').classList.remove('hidden');
+      }
     }
 
     function renderTeams() {
@@ -113,11 +176,11 @@
 
       userObj.teams.forEach(team => {
         const game = (leagueData.week_matchups || []).find(m => m.team && m.team.toLowerCase() === team.toLowerCase()) || {
-          opponent: "BYE",
+          opponent: "TBD",
           spread: "",
           over_under: "",
-          game_time: "BYE WEEK",
-          is_bye: true
+          game_time: "Time TBD",
+          is_bye: false
         };
 
         const safeId = team.replace(/[^a-zA-Z0-9]/g, '_');
