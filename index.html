@@ -20,12 +20,6 @@
     .glow-indigo {
       box-shadow: 0 0 50px -12px rgba(99, 102, 241, 0.25);
     }
-    .glow-emerald {
-      box-shadow: 0 0 25px -5px rgba(16, 185, 129, 0.3);
-    }
-    .glow-gold {
-      box-shadow: 0 0 30px -5px rgba(245, 158, 11, 0.35);
-    }
     /* Custom scrollbars */
     ::-webkit-scrollbar {
       width: 8px;
@@ -45,15 +39,15 @@
 </head>
 <body class="bg-[#07090e] text-slate-100 min-h-screen selection:bg-indigo-500 selection:text-white relative overflow-x-hidden antialiased">
 
-  <!-- Background Decorative Light Orbs -->
+  <!-- Ambient Light Orbs -->
   <div class="fixed top-[-10%] left-[-5%] w-[45rem] h-[45rem] bg-indigo-600/10 rounded-full blur-[140px] pointer-events-none -z-10"></div>
   <div class="fixed top-[30%] right-[-10%] w-[40rem] h-[40rem] bg-fuchsia-600/10 rounded-full blur-[160px] pointer-events-none -z-10"></div>
   <div class="fixed bottom-[-10%] left-[20%] w-[50rem] h-[50rem] bg-cyan-600/10 rounded-full blur-[150px] pointer-events-none -z-10"></div>
 
-  <!-- Dynamic Zoom Wrapper -->
+  <!-- Dynamic Zoom Container -->
   <div id="zoom-container" class="max-w-6xl mx-auto px-4 sm:px-6 py-6 transition-all duration-150 origin-top">
     
-    <!-- Top Navbar / Header -->
+    <!-- Top Header -->
     <header class="flex flex-col md:flex-row justify-between items-center pb-6 border-b border-slate-800/80 mb-6 gap-4">
       <div class="flex items-center gap-4">
         <div class="h-12 w-12 rounded-2xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-cyan-400 p-[1px] shadow-lg shadow-indigo-500/20 flex items-center justify-center">
@@ -144,14 +138,14 @@
       </div>
     </div>
 
-    <!-- ================= TAB 2: WEEKLY PICKS ================= -->
+    <!-- ================= TAB 2: WEEKLY PICKS WITH ODDS & SPREAD ================= -->
     <div id="tab-content-picks" class="tab-pane hidden">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 bg-slate-900/50 border border-slate-800/80 p-5 rounded-2xl backdrop-blur-md">
         <div>
           <h2 class="text-xl font-black text-white flex items-center gap-2">
             Weekly Locked Picks
           </h2>
-          <p class="text-xs text-slate-400 mt-0.5">Showing all 6 game picks submitted by each participant for this week.</p>
+          <p class="text-xs text-slate-400 mt-0.5">Showing all 6 game picks, current point spreads, and estimated Moneyline (ML) odds.</p>
         </div>
         <div class="flex items-center gap-3">
           <span id="submitted-badge" class="px-3 py-1.5 rounded-xl text-xs font-mono font-bold bg-slate-950 border border-slate-800 text-slate-300">
@@ -203,7 +197,6 @@
   </div>
 
   <script>
-    // Live Google Apps Script Executable URL
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwC1NpT8vKqmfsMFUxsPjc_23YhRPQAdMvEtz8GN05NVrm7IOtxnB9tu45ML4HgtLVD/exec";
 
     const LEAGUE_ROSTERS = {
@@ -221,6 +214,31 @@
 
     let leagueData = null;
     let currentZoom = 1.0;
+
+    // Helper: Estimate Moneyline from Point Spread
+    function getMoneyline(spreadStr) {
+      if (!spreadStr || spreadStr === 'N/A') return 'ML N/A';
+      const spread = parseFloat(spreadStr);
+      if (isNaN(spread)) return 'ML N/A';
+      if (spread === 0) return 'ML -110';
+      
+      if (spread < 0) {
+        // Favorite
+        const abs = Math.abs(spread);
+        if (abs <= 3) return `ML -${Math.round(110 + abs * 20)}`;
+        if (abs <= 7) return `ML -${Math.round(180 + (abs - 3) * 35)}`;
+        if (abs <= 14) return `ML -${Math.round(320 + (abs - 7) * 55)}`;
+        if (abs <= 21) return `ML -${Math.round(750 + (abs - 14) * 80)}`;
+        return `ML -1500+`;
+      } else {
+        // Underdog
+        if (spread <= 3) return `ML +${Math.round(100 + spread * 18)}`;
+        if (spread <= 7) return `ML +${Math.round(160 + (spread - 3) * 30)}`;
+        if (spread <= 14) return `ML +${Math.round(280 + (spread - 7) * 45)}`;
+        if (spread <= 21) return `ML +${Math.round(600 + (spread - 14) * 60)}`;
+        return `ML +1000+`;
+      }
+    }
 
     // Zoom Controls
     function changeZoom(delta) {
@@ -261,7 +279,7 @@
         const res = await fetch('league_data.json?t=' + new Date().getTime());
         leagueData = await res.json();
       } catch (e) {
-        leagueData = { current_week: 1, members: LEAGUE_ROSTERS };
+        leagueData = { current_week: 1, members: LEAGUE_ROSTERS, week_matchups: [] };
       }
 
       const curWeek = leagueData.current_week || 1;
@@ -305,7 +323,7 @@
 
       memberStats.sort((a, b) => b.wins - a.wins);
 
-      // Render Top 3 Podium Cards
+      // Render Top 3 Podium
       const top3 = memberStats.slice(0, 3);
       const podiumColors = [
         { border: 'border-amber-500/60', bg: 'bg-gradient-to-b from-amber-950/30 to-slate-900/60', badge: 'bg-amber-500 text-slate-950', label: '👑 1st Place' },
@@ -353,100 +371,4 @@
           </td>
           <td class="py-4 px-6 text-center font-bold font-mono text-emerald-400 text-base">${m.wins} - ${m.losses}</td>
           <td class="py-4 px-6 text-center font-mono text-slate-300 font-medium">${m.winPct}</td>
-          <td class="py-4 px-6 text-center font-mono text-slate-400">${m.proj_wins}</td>
-          <td class="py-4 px-6 text-center font-mono text-slate-400">${m.avg_fpi}</td>
-          <td class="py-4 px-6 text-right">
-            <button onclick="openModal('${m.name}')" class="text-xs bg-slate-800/80 hover:bg-indigo-600 text-slate-300 hover:text-white px-3 py-1.5 rounded-xl border border-slate-700/80 hover:border-indigo-500 transition shadow">
-              View Lineup ➔
-            </button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    function renderLivePicksGrid(picks, week) {
-      const grid = document.getElementById('weekly-picks-grid');
-      grid.innerHTML = '';
-
-      let submittedCount = 0;
-
-      Object.keys(LEAGUE_ROSTERS).forEach(owner => {
-        const ownerPicks = picks.filter(p => p.owner && p.owner.toLowerCase() === owner.toLowerCase() && String(p.week) === String(week));
-        const card = document.createElement('div');
-        
-        if (ownerPicks.length === 6) submittedCount++;
-
-        const isComplete = ownerPicks.length === 6;
-        card.className = `p-5 rounded-3xl border ${isComplete ? 'border-slate-800 bg-slate-900/60 shadow-xl' : 'border-slate-800/60 bg-slate-950/40'} backdrop-blur-md flex flex-col justify-between transition hover:border-slate-700`;
-
-        let picksListHtml = '';
-        if (ownerPicks.length === 0) {
-          picksListHtml = `
-            <div class="py-8 text-center">
-              <span class="text-2xl opacity-40 block mb-1">⏳</span>
-              <p class="text-xs text-slate-500 italic">Picks not submitted yet.</p>
-            </div>`;
-        } else {
-          picksListHtml = `<ul class="space-y-2 mt-4">` + ownerPicks.map(p => `
-            <li class="flex justify-between items-center text-xs bg-slate-950/90 px-3.5 py-2 rounded-xl border border-slate-800/80">
-              <span class="font-bold text-slate-200">${p.team}</span>
-              <span class="font-mono font-extrabold px-2.5 py-0.5 rounded-lg text-[10px] ${p.pick === 'WIN' ? 'bg-emerald-950 text-emerald-300 border border-emerald-800/60' : 'bg-rose-950 text-rose-300 border border-rose-800/60'}">
-                ${p.pick}
-              </span>
-            </li>
-          `).join('') + `</ul>`;
-        }
-
-        card.innerHTML = `
-          <div>
-            <div class="flex justify-between items-center pb-3 border-b border-slate-800">
-              <button onclick="openModal('${owner}')" class="font-black text-white text-base hover:text-indigo-400 transition">${owner}</button>
-              <span class="text-xs font-mono font-extrabold px-2.5 py-1 rounded-full ${isComplete ? 'bg-emerald-950/80 text-emerald-400 border border-emerald-800/50' : 'bg-amber-950/80 text-amber-400 border border-amber-800/50'}">
-                ${ownerPicks.length}/6 Picks
-              </span>
-            </div>
-            ${picksListHtml}
-          </div>
-        `;
-        grid.appendChild(card);
-      });
-
-      document.getElementById('submitted-badge').innerText = `${submittedCount}/10 Submitted`;
-    }
-
-    function openModal(owner) {
-      const roster = LEAGUE_ROSTERS[owner];
-      if (!roster) return;
-
-      document.getElementById('modal-owner-name').innerText = `${owner}'s Lineup`;
-      document.getElementById('modal-proj-wins').innerText = roster.proj_wins;
-      document.getElementById('modal-avg-fpi').innerText = roster.avg_fpi;
-
-      const list = document.getElementById('modal-teams-list');
-      list.innerHTML = '';
-      roster.teams.forEach((t, i) => {
-        const li = document.createElement('li');
-        li.className = "flex items-center gap-3 bg-slate-950/70 border border-slate-800/80 px-3.5 py-2 rounded-xl";
-        li.innerHTML = `
-          <span class="text-xs font-mono text-indigo-400 font-black">#${i + 1}</span> 
-          <span class="font-bold text-slate-100">${t}</span>
-        `;
-        list.appendChild(li);
-      });
-
-      document.getElementById('roster-modal').classList.remove('hidden');
-    }
-
-    function closeModal() {
-      document.getElementById('roster-modal').classList.add('hidden');
-    }
-
-    document.getElementById('roster-modal').addEventListener('click', (e) => {
-      if (e.target.id === 'roster-modal') closeModal();
-    });
-
-    loadData();
-  </script>
-</body>
-</html>
+          <td class="py-4 px-6 text-center fon
