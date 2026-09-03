@@ -44,7 +44,7 @@
           <div>
             <span class="text-xs font-bold text-indigo-400 uppercase tracking-widest">Personal Pick Sheet</span>
             <h1 id="user-title" class="text-3xl font-extrabold text-white">Select Player</h1>
-            <p class="text-xs text-slate-400 mt-1">Select exactly <strong class="text-indigo-300">6 teams to WIN</strong> their matchups this week (All times Central).</p>
+            <p id="pick-subtitle" class="text-xs text-slate-400 mt-1">Select exactly <strong class="text-indigo-300">6 teams to WIN</strong> their matchups this week (All times Central).</p>
           </div>
           <div class="bg-slate-950/80 border border-slate-800 px-5 py-3 rounded-xl text-center sm:text-right min-w-[120px]">
             <span class="text-xs uppercase tracking-wider text-slate-400 font-semibold block">Pick Counter</span>
@@ -78,6 +78,14 @@
 
   <script>
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwC1NpT8vKqmfsMFUxsPjc_23YhRPQAdMvEtz8GN05NVrm7IOtxnB9tu45ML4HgtLVD/exec";
+
+    // Banked Week 0 Picks: Auto-locks onto sheet when the team has a BYE
+    const BANKED_WEEK_0_PICKS = [
+      { owner: "Weston", team: "TCU", result: "LOSS", desc: "Week 0 Result (Lost to UNC 10-15)" },
+      { owner: "Andy", team: "Florida State", result: "WIN", desc: "Week 0 Result (Beat NMSU 34-17)" },
+      { owner: "Krystal", team: "Memphis", result: "WIN", desc: "Week 0 Result (Beat UNLV 27-21)" },
+      { owner: "Tucker", team: "USC", result: "WIN", desc: "Week 0 Result (Beat SJSU 42-26)" }
+    ];
 
     const USER_CREDENTIALS = {
       "Jared": "jared26",
@@ -166,6 +174,30 @@
       }
     }
 
+    function getMoneyline(spreadStr) {
+      if (!spreadStr || spreadStr === 'N/A' || spreadStr === 'Line TBD') return '';
+      const match = spreadStr.match(/[-+]?\d*\.?\d+/);
+      if (!match) return '';
+      const spread = parseFloat(match[0]);
+      if (isNaN(spread)) return '';
+      if (spread === 0) return 'ML 110';
+      const isFav = spreadStr.includes('-') || spread < 0;
+      const abs = Math.abs(spread);
+      if (isFav) {
+        if (abs <= 3) return `ML ${Math.round(110 + abs * 20)}`;
+        if (abs <= 7) return `ML ${Math.round(180 + (abs - 3) * 35)}`;
+        if (abs <= 14) return `ML ${Math.round(320 + (abs - 7) * 55)}`;
+        if (abs <= 21) return `ML ${Math.round(750 + (abs - 14) * 80)}`;
+        return `ML 1500+`;
+      } else {
+        if (abs <= 3) return `ML +${Math.round(100 + abs * 18)}`;
+        if (abs <= 7) return `ML +${Math.round(160 + (abs - 3) * 30)}`;
+        if (abs <= 14) return `ML +${Math.round(280 + (abs - 7) * 45)}`;
+        if (abs <= 21) return `ML +${Math.round(600 + (abs - 14) * 60)}`;
+        return `ML +1000+`;
+      }
+    }
+
     function renderTeams() {
       const userObj = leagueData.members[currentUser];
       if (!userObj) return;
@@ -174,70 +206,114 @@
       const container = document.getElementById('matchups-container');
       container.innerHTML = '';
 
+      let hasAutoLockedBye = false;
+
       userObj.teams.forEach(team => {
         const game = (leagueData.week_matchups || []).find(m => m.team && m.team.toLowerCase() === team.toLowerCase()) || {
-          opponent: "TBD",
+          opponent: "BYE",
           spread: "",
           over_under: "",
-          game_time: "Time TBD",
-          is_bye: false
+          game_time: "BYE WEEK",
+          is_bye: true
         };
 
         const safeId = team.replace(/[^a-zA-Z0-9]/g, '_');
         const isBye = game.is_bye || game.opponent === 'BYE' || game.game_time === 'BYE WEEK';
+        
+        // Check if this team is a Banked Week 0 pick currently on a BYE!
+        const bankedObj = BANKED_WEEK_0_PICKS.find(b => b.owner.toLowerCase() === currentUser.toLowerCase() && b.team.toLowerCase() === team.toLowerCase());
+        const isAutoLockedWeek0Bye = isBye && bankedObj;
 
+        const ml = getMoneyline(game.spread);
         const card = document.createElement('div');
         card.id = `card_${safeId}`;
-        card.className = `team-card ${isBye ? 'bg-slate-900/40 border-dashed border-slate-800 opacity-60' : 'bg-slate-900 border-slate-800 hover:border-slate-700 cursor-pointer'} border rounded-xl p-4 flex justify-between items-center transition duration-150`;
 
-        if (!isBye) {
-          card.onclick = (e) => {
-            if (e.target.tagName !== 'INPUT') {
-              const cb = document.getElementById(`check_${safeId}`);
-              if (!cb.disabled || cb.checked) {
-                cb.checked = !cb.checked;
-                updateState();
-              }
-            }
-          };
-        }
-
-        card.innerHTML = `
-          <div class="flex items-center gap-4 w-full">
-            ${!isBye ? `
-              <input type="checkbox" id="check_${safeId}" onchange="updateState()" 
-                class="team-checkbox w-6 h-6 rounded-lg border-slate-700 bg-slate-950 text-indigo-600 focus:ring-0 cursor-pointer">
-            ` : `
-              <div class="w-6 h-6 flex items-center justify-center text-slate-600 text-xs font-mono font-bold">✕</div>
-            `}
-            <div class="flex-1">
-              <div class="flex items-center gap-2">
-                <h3 class="font-bold text-white text-base">${team}</h3>
-                ${game.spread && game.spread !== 'N/A' && !isBye ? `
-                  <span class="text-xs font-mono font-semibold bg-indigo-950 text-indigo-300 border border-indigo-800/60 px-2 py-0.5 rounded">
-                    ${game.spread}
-                  </span>` : ''}
-                ${isBye ? `<span class="text-xs font-bold uppercase bg-amber-950/80 text-amber-400 border border-amber-800/60 px-2 py-0.5 rounded">BYE WEEK</span>` : ''}
+        if (isAutoLockedWeek0Bye) {
+          hasAutoLockedBye = true;
+          // Render Locked Week 0 Card
+          card.className = "team-card bg-indigo-950/30 border-2 border-indigo-500/70 rounded-xl p-4 flex justify-between items-center shadow-lg";
+          card.innerHTML = `
+            <div class="flex items-center gap-4 w-full">
+              <input type="checkbox" id="check_${safeId}" checked disabled 
+                class="team-checkbox w-6 h-6 rounded-lg border-indigo-500 bg-indigo-900 text-indigo-500 cursor-not-allowed">
+              <div class="flex-1">
+                <div class="flex items-center gap-2">
+                  <h3 class="font-bold text-white text-base">${team}</h3>
+                  <span class="text-[10px] font-mono font-black uppercase px-2 py-0.5 rounded ${bankedObj.result === 'WIN' ? 'bg-emerald-950 text-emerald-300 border border-emerald-800' : 'bg-rose-950 text-rose-300 border border-rose-800'}">
+                    WEEK 0 BYE AUTO-LOCK (${bankedObj.result})
+                  </span>
+                </div>
+                <p class="text-xs text-slate-300 mt-0.5">${bankedObj.desc}</p>
+                <p class="text-[11px] font-mono text-indigo-400 mt-1">🔒 Auto-Applied to Week 1 total (Pick 1 of 6)</p>
               </div>
-              <p class="text-xs text-slate-400 mt-0.5">
-                ${!isBye ? `vs <span class="text-slate-200 font-medium">${game.opponent}</span>` : `<span class="text-slate-500">No scheduled game this week</span>`}
-                ${game.over_under && !isBye ? `<span class="text-slate-500 ml-1">(${game.over_under})</span>` : ''}
-              </p>
-              <p class="text-[11px] font-mono text-indigo-400 mt-1">🕒 ${game.game_time || 'Time TBD'}</p>
-            </div>
-
-            ${!isBye ? `
               <div class="hidden sm:block">
-                <span class="pick-indicator text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-950 text-slate-500 transition">
-                  PICK TO WIN
+                <span class="text-xs font-black uppercase tracking-wider px-3 py-1.5 rounded-lg border ${bankedObj.result === 'WIN' ? 'border-emerald-500 bg-emerald-500 text-slate-950' : 'border-rose-600 bg-rose-600 text-white'}">
+                  ${bankedObj.result} LOCKED
                 </span>
               </div>
-            ` : ''}
-          </div>
-        `;
+            </div>
+          `;
+        } else {
+          // Standard Card
+          card.className = `team-card ${isBye ? 'bg-slate-900/40 border-dashed border-slate-800 opacity-60' : 'bg-slate-900 border-slate-800 hover:border-slate-700 cursor-pointer'} border rounded-xl p-4 flex justify-between items-center transition duration-150`;
+
+          if (!isBye) {
+            card.onclick = (e) => {
+              if (e.target.tagName !== 'INPUT') {
+                const cb = document.getElementById(`check_${safeId}`);
+                if (!cb.disabled || cb.checked) {
+                  cb.checked = !cb.checked;
+                  updateState();
+                }
+              }
+            };
+          }
+
+          card.innerHTML = `
+            <div class="flex items-center gap-4 w-full">
+              ${!isBye ? `
+                <input type="checkbox" id="check_${safeId}" onchange="updateState()" 
+                  class="team-checkbox w-6 h-6 rounded-lg border-slate-700 bg-slate-950 text-indigo-600 focus:ring-0 cursor-pointer">
+              ` : `
+                <div class="w-6 h-6 flex items-center justify-center text-slate-600 text-xs font-mono font-bold">✕</div>
+              `}
+              <div class="flex-1">
+                <div class="flex items-center gap-2">
+                  <h3 class="font-bold text-white text-base">${team}</h3>
+                  ${game.spread && game.spread !== 'N/A' && game.spread !== 'Line TBD' && !isBye ? `
+                    <span class="text-xs font-mono font-semibold bg-indigo-950 text-indigo-300 border border-indigo-800/60 px-2 py-0.5 rounded">
+                      ${game.spread}
+                    </span>` : ''}
+                  ${ml ? `
+                    <span class="text-xs font-mono font-semibold bg-slate-900 text-cyan-300 border border-cyan-800/40 px-2 py-0.5 rounded">
+                      ${ml}
+                    </span>` : ''}
+                  ${isBye ? `<span class="text-xs font-bold uppercase bg-amber-950/80 text-amber-400 border border-amber-800/60 px-2 py-0.5 rounded">BYE WEEK</span>` : ''}
+                </div>
+                <p class="text-xs text-slate-400 mt-0.5">
+                  ${!isBye ? `vs <span class="text-slate-200 font-medium">${game.opponent}</span>` : `<span class="text-slate-500">No scheduled game this week</span>`}
+                  ${game.over_under && !isBye ? `<span class="text-slate-500 ml-1">(${game.over_under})</span>` : ''}
+                </p>
+                <p class="text-[11px] font-mono text-indigo-400 mt-1">🕒 ${game.game_time || 'Time TBD'}</p>
+              </div>
+
+              ${!isBye ? `
+                <div class="hidden sm:block">
+                  <span class="pick-indicator text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-950 text-slate-500 transition">
+                    PICK TO WIN
+                  </span>
+                </div>
+              ` : ''}
+            </div>
+          `;
+        }
 
         container.appendChild(card);
       });
+
+      if (hasAutoLockedBye) {
+        document.getElementById('pick-subtitle').innerHTML = `★ <strong>TCU</strong> is on a BYE (Week 0 pick auto-locked). Select <strong class="text-indigo-300">5 more teams to WIN</strong>.`;
+      }
 
       updateState();
     }
@@ -252,6 +328,8 @@
       counter.className = count === MAX_PICKS ? "text-2xl font-black text-emerald-400" : "text-2xl font-black text-amber-400";
 
       checkboxes.forEach(cb => {
+        if (cb.disabled && cb.checked) return; // Keep Auto-Locked Week 0 Bye intact
+
         const safeId = cb.id.replace('check_', '');
         const card = document.getElementById(`card_${safeId}`);
         const indicator = card.querySelector('.pick-indicator');
@@ -298,7 +376,10 @@
         const safeId = team.replace(/[^a-zA-Z0-9]/g, '_');
         const cb = document.getElementById(`check_${safeId}`);
         if (cb && cb.checked) {
-          picks.push({ team, pick: "WIN" });
+          // Check if it's TCU auto-lock or standard WIN pick
+          const bankedObj = BANKED_WEEK_0_PICKS.find(b => b.owner.toLowerCase() === currentUser.toLowerCase() && b.team.toLowerCase() === team.toLowerCase());
+          const pickVal = (cb.disabled && bankedObj) ? bankedObj.result : "WIN";
+          picks.push({ team, pick: pickVal });
         }
       });
 
@@ -328,7 +409,7 @@
 
     function copyPicks() {
       const userObj = leagueData.members[currentUser];
-      let summary = `🏈 ${currentUser}'s Week ${leagueData.current_week || 1} Picks (6 to Win):\n`;
+      let summary = `🏈 ${currentUser}'s Week ${leagueData.current_week || 1} Picks (6 Picks):\n`;
       summary += `─────────────────────────\n`;
 
       userObj.teams.forEach(team => {
@@ -340,7 +421,9 @@
           if (game && !game.is_bye && game.opponent !== 'BYE') {
             lineDetails = ` (vs ${game.opponent}${game.spread ? ` [${game.spread}]` : ''})`;
           }
-          summary += `• ${team}${lineDetails}: TO WIN\n`;
+          const bankedObj = BANKED_WEEK_0_PICKS.find(b => b.owner.toLowerCase() === currentUser.toLowerCase() && b.team.toLowerCase() === team.toLowerCase());
+          const statusTxt = (cb.disabled && bankedObj) ? `[WEEK 0 AUTO-LOCKED: ${bankedObj.result}]` : "TO WIN";
+          summary += `• ${team}${lineDetails}: ${statusTxt}\n`;
         }
       });
 
