@@ -17,13 +17,10 @@
       <div class="flex items-center gap-2">
         <label for="user-select" class="text-xs text-slate-400 uppercase font-semibold">Player:</label>
         <select id="user-select" class="bg-slate-900 border border-slate-700 text-white text-sm rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500 cursor-pointer">
-          <!-- Populated dynamically via JS -->
+          <!-- Populated dynamically -->
         </select>
       </div>
     </div>
-
-    <!-- Error/Notice Alert (Hidden by default) -->
-    <div id="notice-box" class="hidden mb-4 p-3 bg-amber-950/50 border border-amber-800 text-amber-200 text-xs rounded-xl"></div>
 
     <!-- Header Banner -->
     <header class="bg-slate-900 border border-slate-800 rounded-2xl p-6 mb-6 shadow-xl">
@@ -31,7 +28,7 @@
         <div>
           <span class="text-xs font-bold text-indigo-400 uppercase tracking-widest">Weekly Pick Sheet</span>
           <h1 id="user-title" class="text-3xl font-extrabold text-white">Select Player</h1>
-          <p class="text-xs text-slate-400 mt-1">Select exactly <strong class="text-indigo-300">6 of your 8 teams</strong> to play this week.</p>
+          <p class="text-xs text-slate-400 mt-1">Select exactly <strong class="text-indigo-300">6 of your 8 teams</strong> to play this week (All times Central).</p>
         </div>
         <div class="bg-slate-950/80 border border-slate-800 px-5 py-3 rounded-xl text-center sm:text-right min-w-[120px]">
           <span class="text-xs uppercase tracking-wider text-slate-400 font-semibold block">Pick Counter</span>
@@ -60,7 +57,6 @@
   </div>
 
   <script>
-    // Embedded fallback rosters so the app NEVER hangs on "Loading..."
     const DEFAULT_DATA = {
       current_week: 1,
       members: {
@@ -71,7 +67,7 @@
         "Krystal": { "teams": ["Miami", "Navy", "Utah", "Memphis", "Auburn", "Vanderbilt", "Washington State", "Iowa State"] },
         "Weston": { "teams": ["Texas", "LSU", "Virginia", "TCU", "UTSA", "Cincinnati", "Temple", "UCLA"] },
         "Aaron": { "teams": ["BYU", "Ole Miss", "Michigan", "Washington", "South Carolina", "Northwestern", "Maryland", "Kentucky"] },
-        "Andy": { "teams": ["Ohio State", "South Florida", "SMU", "Arizona", "Arizona State", "Florida State", "Minnesota", "Duke"] },
+        "Andy": { "teams": ["Ohio State", "South India", "SMU", "Arizona", "Arizona State", "Florida State", "Minnesota", "Duke"] },
         "Rian": { "teams": ["Indiana", "Kansas State", "Tulane", "Tennessee", "Wake Forest", "Missouri", "North Texas", "Florida Atlantic"] },
         "Paul": { "teams": ["Georgia", "Texas A&M", "East Carolina", "Iowa", "Wisconsin", "Army", "Georgia Tech", "Syracuse"] }
       },
@@ -83,20 +79,18 @@
     const MAX_PICKS = 6;
 
     async function init() {
-      // Try to fetch live league_data.json (with cache busting)
       try {
         const res = await fetch('league_data.json?t=' + new Date().getTime());
         if (res.ok) {
           leagueData = await res.json();
         }
       } catch (err) {
-        console.warn("Using embedded fallback roster data.", err);
+        console.warn("Using default data", err);
       }
 
       const params = new URLSearchParams(window.location.search);
       const requestedUser = params.get('user');
 
-      // Case-insensitive user matching
       const memberNames = Object.keys(leagueData.members);
       if (requestedUser) {
         const matched = memberNames.find(n => n.toLowerCase() === requestedUser.toLowerCase());
@@ -105,7 +99,6 @@
         currentUser = memberNames[0];
       }
 
-      // Populate user dropdown
       const select = document.getElementById('user-select');
       select.innerHTML = '';
       memberNames.forEach(user => {
@@ -133,36 +126,48 @@
 
       userObj.teams.forEach(team => {
         const game = (leagueData.week_matchups || []).find(m => m.team && m.team.toLowerCase() === team.toLowerCase()) || {
-          opponent: "TBD / BYE",
-          spread: "N/A",
-          over_under: ""
+          opponent: "BYE",
+          spread: "",
+          over_under: "",
+          game_time: "BYE WEEK",
+          is_bye: true
         };
 
         const safeId = team.replace(/[^a-zA-Z0-9]/g, '_');
+        const isBye = game.is_bye || game.opponent === 'BYE' || game.game_time === 'BYE WEEK';
 
         const card = document.createElement('div');
         card.id = `card_${safeId}`;
-        card.className = "team-card bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col sm:flex-row justify-between items-center gap-4 transition duration-150";
+        card.className = `team-card ${isBye ? 'bg-slate-900/40 border-dashed border-slate-800 opacity-60' : 'bg-slate-900 border-slate-800'} border rounded-xl p-4 flex flex-col sm:flex-row justify-between items-center gap-4 transition duration-150`;
+
         card.innerHTML = `
           <div class="flex items-center gap-3 w-full sm:w-auto">
-            <input type="checkbox" id="check_${safeId}" onchange="handleTeamToggle('${team}')" 
-              class="team-checkbox w-5 h-5 rounded border-slate-700 bg-slate-950 text-indigo-600 focus:ring-0 cursor-pointer">
+            ${!isBye ? `
+              <input type="checkbox" id="check_${safeId}" onchange="updateState()" 
+                class="team-checkbox w-5 h-5 rounded border-slate-700 bg-slate-950 text-indigo-600 focus:ring-0 cursor-pointer">
+            ` : `
+              <div class="w-5 h-5 flex items-center justify-center text-slate-600 text-xs font-mono font-bold">✕</div>
+            `}
             <div>
               <div class="flex items-center gap-2">
                 <h3 class="font-bold text-white text-base">${team}</h3>
-                ${game.spread && game.spread !== 'N/A' ? `
+                ${game.spread && game.spread !== 'N/A' && !isBye ? `
                   <span class="text-xs font-mono font-semibold bg-indigo-950 text-indigo-300 border border-indigo-800/60 px-2 py-0.5 rounded">
                     ${game.spread}
                   </span>` : ''}
+                ${isBye ? `<span class="text-xs font-bold uppercase bg-amber-950/80 text-amber-400 border border-amber-800/60 px-2 py-0.5 rounded">BYE WEEK</span>` : ''}
               </div>
               <p class="text-xs text-slate-400 mt-0.5">
-                vs <span class="text-slate-200 font-medium">${game.opponent}</span> 
-                ${game.over_under ? `<span class="text-slate-500 ml-1">(${game.over_under})</span>` : ''}
+                ${!isBye ? `vs <span class="text-slate-200 font-medium">${game.opponent}</span>` : `<span class="text-slate-500">No scheduled game</span>`}
+                ${game.over_under && !isBye ? `<span class="text-slate-500 ml-1">(${game.over_under})</span>` : ''}
+              </p>
+              <p class="text-[11px] font-mono text-indigo-400 mt-1 flex items-center gap-1">
+                🕒 ${game.game_time || 'Time TBD'}
               </p>
             </div>
           </div>
           
-          <div id="options_${safeId}" class="flex items-center gap-2 w-full sm:w-auto justify-end opacity-40 pointer-events-none transition">
+          <div id="options_${safeId}" class="flex items-center gap-2 w-full sm:w-auto justify-end ${isBye ? 'hidden' : 'opacity-40 pointer-events-none'} transition">
             <label class="flex-1 sm:flex-initial text-center cursor-pointer bg-slate-950 hover:bg-slate-800 has-[:checked]:bg-emerald-600 has-[:checked]:text-white text-slate-300 px-4 py-2 rounded-lg text-xs font-bold border border-slate-800 transition">
               <input type="radio" name="pick_${safeId}" value="WIN" class="hidden" checked> WIN
             </label>
@@ -177,25 +182,15 @@
       updateState();
     }
 
-    function handleTeamToggle(team) {
-      updateState();
-    }
-
     function updateState() {
       const checkboxes = document.querySelectorAll('.team-checkbox');
       const checkedBoxes = document.querySelectorAll('.team-checkbox:checked');
       const count = checkedBoxes.length;
 
-      // Update counter UI
       const counter = document.getElementById('pick-counter');
       counter.innerText = `${count} / ${MAX_PICKS}`;
-      if (count === MAX_PICKS) {
-        counter.className = "text-2xl font-black text-emerald-400";
-      } else {
-        counter.className = "text-2xl font-black text-amber-400";
-      }
+      counter.className = count === MAX_PICKS ? "text-2xl font-black text-emerald-400" : "text-2xl font-black text-amber-400";
 
-      // Enable/Disable radio pick buttons based on whether checkbox is checked
       checkboxes.forEach(cb => {
         const safeId = cb.id.replace('check_', '');
         const options = document.getElementById(`options_${safeId}`);
@@ -211,7 +206,6 @@
         }
       });
 
-      // Update Submit Button State
       const submitBtn = document.getElementById('submit-btn');
       if (count === MAX_PICKS) {
         submitBtn.disabled = false;
@@ -237,8 +231,8 @@
           const game = (leagueData.week_matchups || []).find(m => m.team && m.team.toLowerCase() === team.toLowerCase());
           
           let lineDetails = '';
-          if (game && game.opponent && game.opponent !== 'TBD / BYE') {
-            lineDetails = ` (vs ${game.opponent}${game.spread && game.spread !== 'N/A' ? ` [${game.spread}]` : ''})`;
+          if (game && !game.is_bye && game.opponent !== 'BYE') {
+            lineDetails = ` (vs ${game.opponent}${game.spread ? ` [${game.spread}]` : ''})`;
           }
 
           summary += `• ${team}${lineDetails}: ${pick}\n`;
@@ -252,7 +246,6 @@
       });
     }
 
-    // Execute immediately on page load
     init();
   </script>
 </body>
