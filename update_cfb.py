@@ -33,7 +33,6 @@ def normalize(text):
         return ""
     return text.lower().replace("&", "and").replace(".", "").replace("'", "").strip()
 
-# Explicit Alias Map to prevent any substring collisions
 ALIASES = {
     "texas": ["texas longhorns", "texas"],
     "north texas": ["north texas mean green", "north texas", "unt"],
@@ -170,26 +169,30 @@ def run_update():
     updated_matchups = []
 
     for team in sorted(all_teams):
-        matched = None
-        is_home = False
+        matched_games = []
 
+        # Find ALL matching games for this team in ESPN's feed
         for g in games:
             if matches_team(team, g["home_obj"]):
-                matched = g
-                is_home = True
-                break
+                matched_games.append((g, True)) # (game, is_home)
             elif matches_team(team, g["away_obj"]):
-                matched = g
-                is_home = False
-                break
+                matched_games.append((g, False))
 
-        if matched:
-            opponent = matched["away_loc"] if is_home else f"@{matched['home_loc']}"
+        if matched_games:
+            # PRIORITY: Pick upcoming games (STATUS_SCHEDULED or IN_PROGRESS) first.
+            # If all are FINAL, pick the newest game.
+            upcoming = [item for item in matched_games if "FINAL" not in item[0]["status"]]
+            if upcoming:
+                selected_game, is_home = upcoming[0]
+            else:
+                selected_game, is_home = matched_games[-1]
+
+            opponent = selected_game["away_loc"] if is_home else f"@{selected_game['home_loc']}"
             res_str = "PENDING"
-            if "FINAL" in matched["status"]:
+            if "FINAL" in selected_game["status"]:
                 try:
-                    h_score = int(matched["home_score"])
-                    a_score = int(matched["away_score"])
+                    h_score = int(selected_game["home_score"])
+                    a_score = int(selected_game["away_score"])
                     if is_home:
                         res_str = "WIN" if h_score > a_score else "LOSS"
                     else:
@@ -200,10 +203,10 @@ def run_update():
             updated_matchups.append({
                 "team": team,
                 "opponent": opponent,
-                "spread": matched["spread"],
-                "over_under": matched["over_under"],
-                "game_time": matched["game_time"],
-                "status": matched["status"],
+                "spread": selected_game["spread"],
+                "over_under": selected_game["over_under"],
+                "game_time": selected_game["game_time"],
+                "status": selected_game["status"],
                 "result": res_str,
                 "is_bye": False
             })
