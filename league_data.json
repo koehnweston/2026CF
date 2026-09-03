@@ -1,6 +1,6 @@
 {
   "current_week": 1,
-  "last_updated": "2026-09-03 20:00:16 UTC",
+  "last_updated": "2026-09-03 20:11:52 UTC",
   "members": {
     "Jared": {
       "teams": [
@@ -336,12 +336,12 @@
     },
     {
       "team": "Florida State",
-      "opponent": "New Mexico State",
-      "spread": "Line TBD",
-      "over_under": "",
-      "game_time": "Sat 08/29 • 06:00 PM CT",
-      "status": "STATUS_FINAL",
-      "result": "WIN",
+      "opponent": "East Carolina",
+      "spread": "FSU -20.5",
+      "over_under": "O/U 54.0",
+      "game_time": "Sat 09/05 • 6:00 PM CT",
+      "status": "STATUS_SCHEDULED",
+      "result": "PENDING",
       "is_bye": false
     },
     {
@@ -387,8 +387,8 @@
     {
       "team": "Illinois",
       "opponent": "UAB",
-      "spread": "ILL -27.5",
-      "over_under": "O/U 54.5",
+      "spread": "ILL -26.5",
+      "over_under": "O/U 53.5",
       "game_time": "Thu 09/03 • 08:00 PM CT",
       "status": "STATUS_SCHEDULED",
       "result": "PENDING",
@@ -486,12 +486,12 @@
     },
     {
       "team": "Memphis",
-      "opponent": "@UNLV",
-      "spread": "Line TBD",
-      "over_under": "",
-      "game_time": "Sat 08/29 • 09:00 PM CT",
-      "status": "STATUS_FINAL",
-      "result": "WIN",
+      "opponent": "Troy",
+      "spread": "MEM -7.0",
+      "over_under": "O/U 52.5",
+      "game_time": "Sat 09/05 • 2:30 PM CT",
+      "status": "STATUS_SCHEDULED",
+      "result": "PENDING",
       "is_bye": false
     },
     {
@@ -756,12 +756,12 @@
     },
     {
       "team": "TCU",
-      "opponent": "North Carolina",
-      "spread": "Line TBD",
-      "over_under": "",
-      "game_time": "Sat 08/29 • 11:00 AM CT",
-      "status": "STATUS_FINAL",
-      "result": "LOSS",
+      "opponent": "SMU",
+      "spread": "TCU -3.5",
+      "over_under": "O/U 61.0",
+      "game_time": "Sat 09/05 • 11:00 AM CT",
+      "status": "STATUS_SCHEDULED",
+      "result": "PENDING",
       "is_bye": false
     },
     {
@@ -856,12 +856,12 @@
     },
     {
       "team": "USC",
-      "opponent": "San José State",
-      "spread": "Line TBD",
-      "over_under": "",
-      "game_time": "Sat 08/29 • 02:00 PM CT",
-      "status": "STATUS_FINAL",
-      "result": "WIN",
+      "opponent": "Fresno State",
+      "spread": "USC -14.5",
+      "over_under": "O/U 58.5",
+      "game_time": "Sat 09/05 • 6:30 PM CT",
+      "status": "STATUS_SCHEDULED",
+      "result": "PENDING",
       "is_bye": false
     },
     {
