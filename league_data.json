@@ -1,6 +1,6 @@
 {
   "current_week": 1,
-  "last_updated": "2026-09-03 20:34:59 UTC",
+  "last_updated": "2026-09-04 12:43:17 UTC",
   "members": {
     "Jared": {
       "teams": [
@@ -167,7 +167,7 @@
     {
       "team": "Alabama",
       "opponent": "East Carolina",
-      "spread": "ALA -28.5",
+      "spread": "ALA -27.5",
       "over_under": "O/U 52.5",
       "game_time": "Sat 09/05 • 11:00 AM CT",
       "status": "STATUS_SCHEDULED",
@@ -218,7 +218,7 @@
       "team": "Auburn",
       "opponent": "Baylor",
       "spread": "AUB -7.5",
-      "over_under": "O/U 58.5",
+      "over_under": "O/U 59.5",
       "game_time": "Sat 09/05 • 02:30 PM CT",
       "status": "STATUS_SCHEDULED",
       "result": "PENDING",
@@ -238,7 +238,7 @@
       "team": "Baylor",
       "opponent": "@Auburn",
       "spread": "AUB -7.5",
-      "over_under": "O/U 58.5",
+      "over_under": "O/U 59.5",
       "game_time": "Sat 09/05 • 02:30 PM CT",
       "status": "STATUS_SCHEDULED",
       "result": "PENDING",
@@ -257,7 +257,7 @@
     {
       "team": "California",
       "opponent": "UCLA",
-      "spread": "UCLA -1.5",
+      "spread": "UCLA -2.5",
       "over_under": "O/U 53.5",
       "game_time": "Sat 09/05 • 09:30 PM CT",
       "status": "STATUS_SCHEDULED",
@@ -268,7 +268,7 @@
       "team": "Cincinnati",
       "opponent": "Boston College",
       "spread": "CIN -7.5",
-      "over_under": "O/U 49.5",
+      "over_under": "O/U 50.5",
       "game_time": "Sat 09/05 • 02:30 PM CT",
       "status": "STATUS_SCHEDULED",
       "result": "PENDING",
@@ -287,11 +287,11 @@
     {
       "team": "Colorado",
       "opponent": "@Georgia Tech",
-      "spread": "GT -6.5",
-      "over_under": "O/U 51.5",
+      "spread": "Line TBD",
+      "over_under": "",
       "game_time": "Thu 09/03 • 07:00 PM CT",
-      "status": "STATUS_SCHEDULED",
-      "result": "PENDING",
+      "status": "STATUS_FINAL",
+      "result": "WIN",
       "is_bye": false
     },
     {
@@ -307,7 +307,7 @@
     {
       "team": "East Carolina",
       "opponent": "@Alabama",
-      "spread": "ALA -28.5",
+      "spread": "ALA -27.5",
       "over_under": "O/U 52.5",
       "game_time": "Sat 09/05 • 11:00 AM CT",
       "status": "STATUS_SCHEDULED",
@@ -367,11 +367,11 @@
     {
       "team": "Georgia Tech",
       "opponent": "Colorado",
-      "spread": "GT -6.5",
-      "over_under": "O/U 51.5",
+      "spread": "Line TBD",
+      "over_under": "",
       "game_time": "Thu 09/03 • 07:00 PM CT",
-      "status": "STATUS_SCHEDULED",
-      "result": "PENDING",
+      "status": "STATUS_FINAL",
+      "result": "LOSS",
       "is_bye": false
     },
     {
@@ -387,11 +387,11 @@
     {
       "team": "Illinois",
       "opponent": "UAB",
-      "spread": "ILL -26.5",
-      "over_under": "O/U 53.5",
+      "spread": "Line TBD",
+      "over_under": "",
       "game_time": "Thu 09/03 • 08:00 PM CT",
-      "status": "STATUS_SCHEDULED",
-      "result": "PENDING",
+      "status": "STATUS_FINAL",
+      "result": "WIN",
       "is_bye": false
     },
     {
@@ -427,7 +427,7 @@
     {
       "team": "Kansas",
       "opponent": "Long Island University",
-      "spread": "KU -41.5",
+      "spread": "KU -42.5",
       "over_under": "O/U 54.5",
       "game_time": "Fri 09/04 • 07:00 PM CT",
       "status": "STATUS_SCHEDULED",
@@ -517,11 +517,11 @@
     {
       "team": "Minnesota",
       "opponent": "Eastern Illinois",
-      "spread": "MINN -42.5",
-      "over_under": "O/U 52.5",
+      "spread": "Line TBD",
+      "over_under": "",
       "game_time": "Thu 09/03 • 07:00 PM CT",
-      "status": "STATUS_SCHEDULED",
-      "result": "PENDING",
+      "status": "STATUS_FINAL",
+      "result": "WIN",
       "is_bye": false
     },
     {
@@ -537,11 +537,11 @@
     {
       "team": "Missouri",
       "opponent": "Arkansas-Pine Bluff",
-      "spread": "MIZ -55.5",
-      "over_under": "O/U 61.5",
+      "spread": "Line TBD",
+      "over_under": "",
       "game_time": "Thu 09/03 • 07:00 PM CT",
-      "status": "STATUS_SCHEDULED",
-      "result": "PENDING",
+      "status": "STATUS_FINAL",
+      "result": "WIN",
       "is_bye": false
     },
     {
@@ -597,7 +597,7 @@
     {
       "team": "Northwestern",
       "opponent": "South Dakota State",
-      "spread": "NU -13.5",
+      "spread": "NU -12.5",
       "over_under": "O/U 46.5",
       "game_time": "Sat 09/05 • 07:00 PM CT",
       "status": "STATUS_SCHEDULED",
@@ -697,11 +697,11 @@
     {
       "team": "Rutgers",
       "opponent": "Massachusetts",
-      "spread": "RUTG -29.5",
-      "over_under": "O/U 53.5",
+      "spread": "Line TBD",
+      "over_under": "",
       "game_time": "Thu 09/03 • 05:00 PM CT",
-      "status": "STATUS_SCHEDULED",
-      "result": "PENDING",
+      "status": "STATUS_FINAL",
+      "result": "LOSS",
       "is_bye": false
     },
     {
@@ -748,7 +748,7 @@
       "team": "Syracuse",
       "opponent": "New Hampshire",
       "spread": "SYR -33.5",
-      "over_under": "O/U 55.5",
+      "over_under": "O/U 54.5",
       "game_time": "Sat 09/05 • 11:00 AM CT",
       "status": "STATUS_SCHEDULED",
       "result": "PENDING",
@@ -777,7 +777,7 @@
     {
       "team": "Tennessee",
       "opponent": "Furman",
-      "spread": "TENN -46.5",
+      "spread": "TENN -47.5",
       "over_under": "O/U 66.5",
       "game_time": "Sat 09/05 • 02:30 PM CT",
       "status": "STATUS_SCHEDULED",
@@ -837,17 +837,17 @@
     {
       "team": "UCF",
       "opponent": "Bethune-Cookman",
-      "spread": "UCF -42.5",
-      "over_under": "O/U 58.5",
+      "spread": "Line TBD",
+      "over_under": "",
       "game_time": "Thu 09/03 • 06:00 PM CT",
-      "status": "STATUS_SCHEDULED",
-      "result": "PENDING",
+      "status": "STATUS_FINAL",
+      "result": "WIN",
       "is_bye": false
     },
     {
       "team": "UCLA",
       "opponent": "@California",
-      "spread": "UCLA -1.5",
+      "spread": "UCLA -2.5",
       "over_under": "O/U 53.5",
       "game_time": "Sat 09/05 • 09:30 PM CT",
       "status": "STATUS_SCHEDULED",
@@ -877,11 +877,11 @@
     {
       "team": "Utah",
       "opponent": "Idaho",
-      "spread": "UTAH -37.5",
-      "over_under": "O/U 59.5",
+      "spread": "Line TBD",
+      "over_under": "",
       "game_time": "Thu 09/03 • 08:00 PM CT",
-      "status": "STATUS_SCHEDULED",
-      "result": "PENDING",
+      "status": "STATUS_FINAL",
+      "result": "WIN",
       "is_bye": false
     },
     {
@@ -908,7 +908,7 @@
       "team": "Virginia Tech",
       "opponent": "VMI",
       "spread": "VT -55.5",
-      "over_under": "O/U 61.5",
+      "over_under": "O/U 62.5",
       "game_time": "Sat 09/05 • 06:30 PM CT",
       "status": "STATUS_SCHEDULED",
       "result": "PENDING",
@@ -917,11 +917,11 @@
     {
       "team": "Wake Forest",
       "opponent": "Akron",
-      "spread": "WAKE -27.5",
-      "over_under": "O/U 50.5",
+      "spread": "Line TBD",
+      "over_under": "",
       "game_time": "Thu 09/03 • 06:00 PM CT",
-      "status": "STATUS_SCHEDULED",
-      "result": "PENDING",
+      "status": "STATUS_FINAL",
+      "result": "WIN",
       "is_bye": false
     },
     {
@@ -948,7 +948,7 @@
       "team": "West Virginia",
       "opponent": "Coastal Carolina",
       "spread": "WVU -21",
-      "over_under": "O/U 56.5",
+      "over_under": "O/U 55.5",
       "game_time": "Sat 09/05 • 11:00 AM CT",
       "status": "STATUS_SCHEDULED",
       "result": "PENDING",
