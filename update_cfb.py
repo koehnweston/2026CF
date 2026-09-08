@@ -5,7 +5,7 @@ import requests
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
-# Google Apps Script Web App Endpoint for Live Scoring
+# Your Google Apps Script Web App Endpoint
 GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwC1NpT8vKqmfsMFUxsPjc_23YhRPQAdMvEtz8GN05NVrm7IOtxnB9tu45ML4HgtLVD/exec"
 
 ESPN_URLS = [
@@ -15,7 +15,7 @@ ESPN_URLS = [
 
 def fetch_all_espn_games():
     events = []
-    current_week = 2 # Default roll forward
+    current_week = 1
     
     for url in ESPN_URLS:
         try:
@@ -150,6 +150,17 @@ def parse_events(events):
 
     return parsed_games
 
+def auto_score_google_sheet(scores_map):
+    try:
+        payload = {
+            "action": "auto_score",
+            "scores": scores_map
+        }
+        res = requests.post(GOOGLE_SCRIPT_URL, json=payload, timeout=15)
+        print(f"Google Sheet Auto-Scoring Response: {res.text}")
+    except Exception as e:
+        print(f"Notice: Google Sheet auto-scoring webhook error: {e}")
+
 def run_update():
     if not os.path.exists("league_data.json"):
         print("Error: league_data.json not found!")
@@ -161,7 +172,6 @@ def run_update():
     current_week, events = fetch_all_espn_games()
     games = parse_events(events)
 
-    # Roll to Week 2 if current Tuesday after Labor Day
     data["current_week"] = max(current_week, 2)
     data["last_updated"] = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
 
@@ -170,6 +180,7 @@ def run_update():
         all_teams.update(member.get("teams", []))
 
     updated_matchups = []
+    scores_map = {}
 
     for team in sorted(all_teams):
         matched_games = []
@@ -181,6 +192,18 @@ def run_update():
                 matched_games.append((g, False))
 
         if matched_games:
+            # Check for completed games first to score picks in database
+            for g_item, is_h in matched_games:
+                if "FINAL" in g_item["status"]:
+                    try:
+                        h_score = int(g_item["home_score"])
+                        a_score = int(g_item["away_score"])
+                        won = (h_score > a_score) if is_h else (a_score > h_score)
+                        scores_map[team.lower()] = "WIN" if won else "LOSS"
+                    except:
+                        pass
+
+            # Pick upcoming games for next week's schedule
             upcoming = [item for item in matched_games if "FINAL" not in item[0]["status"]]
             if upcoming:
                 selected_game, is_home = upcoming[0]
@@ -222,12 +245,17 @@ def run_update():
                 "is_bye": True
             })
 
+    # Execute automated scoring on Google Sheet
+    if scores_map:
+        print(f"Scoring {len(scores_map)} teams in Google Sheet database...")
+        auto_score_google_sheet(scores_map)
+
     data["week_matchups"] = updated_matchups
 
     with open("league_data.json", "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
-    print(f"Successfully rolled forward to Week {data['current_week']} and refreshed all {len(updated_matchups)} teams.")
+    print(f"Auto-update complete for Week {data['current_week']}.")
 
 if __name__ == "__main__":
     run_update()
