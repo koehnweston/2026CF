@@ -1,6 +1,6 @@
 {
   "current_week": 2,
-  "last_updated": "2026-09-08 13:16:16 UTC",
+  "last_updated": "2026-09-08 13:21:00 UTC",
   "members": {
     "Jared": {
       "teams": [
@@ -197,7 +197,7 @@
     {
       "team": "Arkansas",
       "opponent": "@Utah",
-      "spread": "UTAH -11.5",
+      "spread": "UTAH -12.5",
       "over_under": "O/U 56.5",
       "game_time": "Sat 09/12 • 09:15 PM CT",
       "status": "STATUS_SCHEDULED",
@@ -698,7 +698,7 @@
       "team": "Rutgers",
       "opponent": "@Boston College",
       "spread": "BC -3",
-      "over_under": "O/U 54.5",
+      "over_under": "O/U 53.5",
       "game_time": "Fri 09/11 • 06:30 PM CT",
       "status": "STATUS_SCHEDULED",
       "result": "PENDING",
@@ -877,7 +877,7 @@
     {
       "team": "Utah",
       "opponent": "Arkansas",
-      "spread": "UTAH -11.5",
+      "spread": "UTAH -12.5",
       "over_under": "O/U 56.5",
       "game_time": "Sat 09/12 • 09:15 PM CT",
       "status": "STATUS_SCHEDULED",
@@ -908,7 +908,7 @@
       "team": "Virginia Tech",
       "opponent": "Old Dominion",
       "spread": "VT -18.5",
-      "over_under": "O/U 51.5",
+      "over_under": "O/U 50.5",
       "game_time": "Sat 09/12 • 11:00 AM CT",
       "status": "STATUS_SCHEDULED",
       "result": "PENDING",
