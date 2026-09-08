@@ -69,7 +69,7 @@
               CFB POOL <span class="bg-gradient-to-r from-indigo-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent">2026</span>
             </h1>
             <span class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold uppercase tracking-wider bg-gradient-to-r from-indigo-500/20 to-purple-500/20 border border-indigo-500/30 text-indigo-300 shadow-inner">
-              Week <span id="week-display">1</span>
+              Week <span id="week-display">2</span>
             </span>
           </div>
           <p class="text-slate-400 text-xs mt-0.5 font-medium">10 Owners • 80 Drafted Teams • Pick 6 to Win Weekly</p>
@@ -219,11 +219,9 @@
       <div id="weekly-picks-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
     </div>
 
-    <!-- ================= TAB 3: CIRCLE OF TRUST (PRANK & RIDDLE TAB) ================= -->
+    <!-- ================= TAB 3: CIRCLE OF TRUST (PRANK TAB) ================= -->
     <div id="tab-content-prank" class="tab-pane hidden">
       <div class="bg-slate-900/60 border border-slate-800 rounded-3xl p-6 backdrop-blur-xl shadow-2xl relative overflow-hidden">
-        
-        <!-- Header -->
         <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6 pb-4 border-b border-slate-800">
           <div>
             <div class="flex items-center gap-2">
@@ -234,17 +232,13 @@
             <p class="text-xs text-slate-400">Drag your name inside or solve the cryptic Trial of Worthiness to gain entry.</p>
           </div>
 
-          <!-- Riddle Challenge Button -->
           <button onclick="openRiddleModal()" class="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 hover:from-purple-500 hover:to-cyan-400 text-white font-black text-xs uppercase tracking-wider shadow-xl shadow-indigo-600/30 transition hover:scale-105 flex items-center gap-2 border border-white/20">
             <span>🧠</span>
             <span>Attempt Trial of Worthiness</span>
           </button>
         </div>
 
-        <!-- Drag Sandbox Arena -->
         <div id="arena" class="relative w-full h-[580px] bg-slate-950 border border-slate-800/80 rounded-3xl overflow-hidden flex items-center justify-center">
-          
-          <!-- Deep Space Exile Sector (Bottom Right for Jared) -->
           <div class="absolute bottom-0 right-0 w-64 h-48 border-t-2 border-l-2 border-dashed border-rose-900/40 bg-rose-950/10 rounded-tl-3xl p-3 flex flex-col justify-end items-end pointer-events-none">
             <span class="text-[10px] font-mono font-black text-rose-500/80 uppercase tracking-widest flex items-center gap-1 animate-pulse">
               ⚠️ MAXIMUM EXILE ZONE (JARED)
@@ -252,7 +246,6 @@
             <span class="text-[9px] text-slate-600 font-mono">Distance from Trust: 50,000 km</span>
           </div>
 
-          <!-- Inner Sanctum Circle of Trust -->
           <div id="trust-circle" class="w-64 h-64 sm:w-72 sm:h-72 rounded-full border-2 border-dashed border-emerald-500/40 bg-emerald-950/20 flex flex-col items-center justify-center text-center p-4 relative shadow-[0_0_80px_-10px_rgba(16,185,129,0.3)] transition">
             <span class="text-2xl mb-1">👑</span>
             <span class="text-xs font-black uppercase tracking-wider text-emerald-400">Circle of Trust</span>
@@ -263,39 +256,32 @@
             <div id="admitted-members" class="mt-2 flex flex-wrap gap-1 justify-center"></div>
           </div>
 
-          <!-- Draggable Members Layer -->
           <div id="draggables-layer" class="absolute inset-0 pointer-events-auto"></div>
         </div>
-
       </div>
     </div>
 
   </div>
 
-  <!-- TRIAL OF WORTHINESS (CRYPTIC RIDDLE MODAL) -->
+  <!-- TRIAL OF WORTHINESS RIDDLE MODAL -->
   <div id="riddle-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
     <div class="bg-[#0b140d] border-2 border-purple-500/80 rounded-3xl max-w-lg w-full p-6 shadow-[0_0_100px_rgba(168,85,247,0.35)] relative font-terminal text-purple-300">
-      
-      <!-- Window Title -->
       <div class="flex justify-between items-center pb-3 border-b border-purple-500/40 text-purple-400 text-sm tracking-wider">
         <span>TRIAL OF WORTHINESS // PROTOCOL: ENIGMA-26</span>
         <button onclick="closeRiddleModal()" class="text-purple-400 hover:text-white font-bold text-lg">✕</button>
       </div>
 
-      <!-- Stage Tracker -->
       <div class="mt-4 flex justify-between items-center text-xs font-mono">
         <span id="riddle-stage-title" class="text-emerald-400 font-bold tracking-widest">STAGE 1 of 3: THE PARADOX</span>
         <span id="riddle-progress" class="bg-purple-950/80 px-2 py-0.5 rounded border border-purple-700/50">33%</span>
       </div>
 
-      <!-- Riddle Question Box -->
       <div class="my-5 bg-black/80 border border-purple-500/30 p-4 rounded-2xl min-h-[110px] flex items-center">
         <p id="riddle-question-text" class="text-lg sm:text-xl text-purple-200 leading-relaxed">
           Loading trial riddle...
         </p>
       </div>
 
-      <!-- Input Form -->
       <form onsubmit="handleRiddleAnswer(event)" class="space-y-4">
         <div>
           <label class="block text-xs font-mono uppercase tracking-widest text-purple-400 mb-1">Enter Decrypted Answer:</label>
@@ -309,7 +295,7 @@
             [ SUBMIT ANSWER ]
           </button>
           <button type="button" onclick="closeRiddleModal()" class="px-4 bg-slate-900 hover:bg-slate-800 text-slate-400 font-mono text-xs rounded-xl border border-slate-800">
-            Abord
+            Abort
           </button>
         </div>
       </form>
@@ -346,7 +332,7 @@
     </div>
   </div>
 
-  <!-- JURASSIC PARK NEDRY POPUP MODAL (WITH SOUND) -->
+  <!-- JURASSIC PARK NEDRY POPUP MODAL -->
   <div id="nedry-modal" class="fixed inset-0 bg-black/95 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
     <div class="bg-[#0b140d] border-2 border-emerald-500 rounded-2xl max-w-lg w-full p-6 shadow-[0_0_90px_rgba(16,185,129,0.5)] text-center relative font-terminal animate-pulse">
       <div class="flex justify-between items-center pb-3 border-b border-emerald-500/40 text-emerald-400 text-sm tracking-wider">
@@ -452,10 +438,9 @@
 
     let leagueData = null;
     let cachedSheetPicks = [];
-    let selectedWeek = 1;
+    let selectedWeek = 2;
     let currentZoom = 1.0;
 
-    // Hard Cryptic Riddles
     const RIDDLES = [
       {
         stage: "STAGE 1: THE GRIDIRON PARADOX",
@@ -508,10 +493,9 @@
           currentRiddleIndex++;
           loadRiddleStage();
         } else {
-          // Solved all 3!
           closeRiddleModal();
           confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
-          alert("🎉 IMPOSSIBLE! You solved the Trial of Worthiness! You are temporarily granted access into the Circle of Trust.");
+          alert("🎉 IMPOSSIBLE! You solved the Trial of Worthiness! You are granted access into the Circle of Trust.");
         }
       } else {
         document.getElementById('riddle-feedback').innerText = "❌ INCORRECT CIPHER. ACCESS DENIED.";
@@ -651,10 +635,10 @@
         const res = await fetch('league_data.json?t=' + new Date().getTime());
         leagueData = await res.json();
       } catch (e) {
-        leagueData = { current_week: 1, members: LEAGUE_ROSTERS, week_matchups: [] };
+        leagueData = { current_week: 2, members: LEAGUE_ROSTERS, week_matchups: [], season_schedule: {} };
       }
 
-      const curWeek = leagueData.current_week || 1;
+      const curWeek = leagueData.current_week || 2;
       selectedWeek = curWeek;
       document.getElementById('week-display').innerText = curWeek;
 
@@ -764,7 +748,14 @@
       grid.innerHTML = '';
 
       let submittedCount = 0;
-      const matchups = leagueData ? (leagueData.week_matchups || []) : [];
+      
+      // Dynamic: Get matchups specifically for the selected week from the season archive!
+      let weekSchedule = [];
+      if (leagueData && leagueData.season_schedule && leagueData.season_schedule[String(week)]) {
+        weekSchedule = leagueData.season_schedule[String(week)];
+      } else if (leagueData) {
+        weekSchedule = leagueData.week_matchups || [];
+      }
 
       Object.keys(LEAGUE_ROSTERS).forEach(owner => {
         const ownerPicks = (picks || []).filter(p => p.owner && p.owner.toLowerCase() === owner.toLowerCase() && String(p.week) === String(week));
@@ -772,7 +763,7 @@
         const displayPicks = [...ownerPicks];
         BANKED_WEEK_0_PICKS.forEach(banked => {
           if (banked.owner.toLowerCase() === owner.toLowerCase()) {
-            const game = matchups.find(m => m.team && m.team.toLowerCase() === banked.team.toLowerCase());
+            const game = weekSchedule.find(m => m.team && m.team.toLowerCase() === banked.team.toLowerCase());
             if (game && (game.is_bye || game.opponent === 'BYE' || game.game_time === 'BYE WEEK')) {
               displayPicks.unshift({
                 team: banked.team,
@@ -798,7 +789,7 @@
             </div>`;
         } else {
           picksListHtml = `<ul class="space-y-2.5 mt-4">` + displayPicks.map(p => {
-            const matchup = (leagueData.week_matchups || []).find(m => m.team && m.team.toLowerCase() === p.team.toLowerCase()) || {};
+            const matchup = weekSchedule.find(m => m.team && m.team.toLowerCase() === p.team.toLowerCase()) || {};
             const spread = matchup.spread && matchup.spread !== 'N/A' && matchup.spread !== 'Line TBD' ? matchup.spread : '';
             const ml = matchup.spread ? getMoneyline(matchup.spread) : '';
             const oppText = matchup.opponent && matchup.opponent !== 'BYE' ? `vs ${matchup.opponent}` : '';
@@ -845,8 +836,6 @@
       document.getElementById('submitted-badge').innerText = `${submittedCount}/10 Submitted`;
     }
 
-    // ================= PRANK JURASSIC PARK DRAGGABLE LOGIC =================
-    // Jared placed in extreme exile zone (bottom-right)
     const coworkerPlacements = [
       { name: "Cole", top: '35px', left: '50px' },
       { name: "Tucker", top: '35px', right: '50px' },
@@ -856,7 +845,6 @@
       { name: "Andy", top: '300px', right: '40px' },
       { name: "Rian", bottom: '30px', left: '70px' },
       { name: "Paul", bottom: '30px', left: '40%' },
-      // JARED PLACED IN DEEP BOTTOM RIGHT CORNER
       { name: "Jared", bottom: '25px', right: '30px', isExiled: true }
     ];
 
