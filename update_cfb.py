@@ -8,6 +8,7 @@ from zoneinfo import ZoneInfo
 # Your Google Apps Script Web App Endpoint
 GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwC1NpT8vKqmfsMFUxsPjc_23YhRPQAdMvEtz8GN05NVrm7IOtxnB9tu45ML4HgtLVD/exec"
 
+# ESPN API endpoints (fetches both FBS groups + recent completed games)
 ESPN_URLS = [
     "https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?groups=80&limit=300",
     "https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?groups=81&limit=300"
@@ -180,7 +181,7 @@ def run_update():
         all_teams.update(member.get("teams", []))
 
     updated_matchups = []
-    scores_map = {}
+    real_espn_scores = {}
 
     for team in sorted(all_teams):
         matched_games = []
@@ -192,18 +193,18 @@ def run_update():
                 matched_games.append((g, False))
 
         if matched_games:
-            # Check for completed games first to score picks in database
+            # Check for FINAL games to record live real-world WIN/LOSS
             for g_item, is_h in matched_games:
                 if "FINAL" in g_item["status"]:
                     try:
                         h_score = int(g_item["home_score"])
                         a_score = int(g_item["away_score"])
                         won = (h_score > a_score) if is_h else (a_score > h_score)
-                        scores_map[team.lower()] = "WIN" if won else "LOSS"
-                    except:
-                        pass
+                        real_espn_scores[team.lower()] = "WIN" if won else "LOSS"
+                    except Exception as err:
+                        print(f"Score parse error for {team}: {err}")
 
-            # Pick upcoming games for next week's schedule
+            # Pick upcoming game for next week's matchup board
             upcoming = [item for item in matched_games if "FINAL" not in item[0]["status"]]
             if upcoming:
                 selected_game, is_home = upcoming[0]
@@ -245,17 +246,17 @@ def run_update():
                 "is_bye": True
             })
 
-    # Execute automated scoring on Google Sheet
-    if scores_map:
-        print(f"Scoring {len(scores_map)} teams in Google Sheet database...")
-        auto_score_google_sheet(scores_map)
+    # Post real ESPN game scores directly to Google Sheet database
+    if real_espn_scores:
+        print(f"Posting {len(real_espn_scores)} real ESPN game results directly to Google Sheet...")
+        auto_score_google_sheet(real_espn_scores)
 
     data["week_matchups"] = updated_matchups
 
     with open("league_data.json", "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
-    print(f"Auto-update complete for Week {data['current_week']}.")
+    print(f"Successfully processed Week {data['current_week']} data.")
 
 if __name__ == "__main__":
     run_update()
