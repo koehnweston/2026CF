@@ -175,66 +175,89 @@ def run_update():
     for member in data["members"].values():
         all_teams.update(member.get("teams", []))
 
-    updated_matchups = []
-    real_espn_scores = {}
+    if "season_schedule" not in data:
+        data["season_schedule"] = {}
 
-    # 1. First pass: Evaluate FINAL game scores from Week 1
-    for g in games:
-        if "FINAL" in g["status"]:
-            try:
-                h_score = int(g["home_score"])
-                a_score = int(g["away_score"])
-                
-                for team in all_teams:
-                    if matches_team(team, g["home_obj"]):
-                        real_espn_scores[team.lower()] = "WIN" if h_score > a_score else "LOSS"
-                    elif matches_team(team, g["away_obj"]):
-                        real_espn_scores[team.lower()] = "WIN" if a_score > h_score else "LOSS"
-            except:
-                pass
+    # 1. PROCESS AND ARCHIVE WEEK 1 FINAL SCORES
+    week1_matchups = []
+    week1_scores = {}
 
-    # 2. Second pass: Populate Week 2 upcoming matchups
     for team in sorted(all_teams):
-        matched_games = []
-
+        matched_final = None
+        is_home = False
         for g in games:
-            if matches_team(team, g["home_obj"]):
-                matched_games.append((g, True))
-            elif matches_team(team, g["away_obj"]):
-                matched_games.append((g, False))
+            if "FINAL" in g["status"]:
+                if matches_team(team, g["home_obj"]):
+                    matched_final = g
+                    is_home = True
+                    break
+                elif matches_team(team, g["away_obj"]):
+                    matched_final = g
+                    is_home = False
+                    break
 
-        if matched_games:
-            upcoming = [item for item in matched_games if "FINAL" not in item[0]["status"]]
-            if upcoming:
-                selected_game, is_home = upcoming[0]
-            else:
-                selected_game, is_home = matched_games[-1]
+        if matched_final:
+            opponent = matched_final["away_loc"] if is_home else f"@{matched_final['home_loc']}"
+            h_score = int(matched_final["home_score"] or 0)
+            a_score = int(matched_final["away_score"] or 0)
+            won = (h_score > a_score) if is_home else (a_score > h_score)
+            res_str = "WIN" if won else "LOSS"
+            week1_scores[team.lower()] = res_str
 
-            opponent = selected_game["away_loc"] if is_home else f"@{selected_game['home_loc']}"
-            res_str = "PENDING"
-            if "FINAL" in selected_game["status"]:
-                try:
-                    h_score = int(selected_game["home_score"])
-                    a_score = int(selected_game["away_score"])
-                    if is_home:
-                        res_str = "WIN" if h_score > a_score else "LOSS"
-                    else:
-                        res_str = "WIN" if a_score > h_score else "LOSS"
-                except:
-                    pass
-
-            updated_matchups.append({
+            week1_matchups.append({
                 "team": team,
                 "opponent": opponent,
-                "spread": selected_game["spread"],
-                "over_under": selected_game["over_under"],
-                "game_time": selected_game["game_time"],
-                "status": selected_game["status"],
+                "spread": matched_final["spread"],
+                "over_under": matched_final["over_under"],
+                "game_time": matched_final["game_time"],
+                "status": "STATUS_FINAL",
                 "result": res_str,
                 "is_bye": False
             })
         else:
-            updated_matchups.append({
+            week1_matchups.append({
+                "team": team,
+                "opponent": "BYE",
+                "spread": "N/A",
+                "over_under": "",
+                "game_time": "BYE WEEK",
+                "status": "STATUS_FINAL",
+                "result": "BYE",
+                "is_bye": True
+            })
+
+    data["season_schedule"]["1"] = week1_matchups
+
+    # 2. PROCESS AND STORE WEEK 2 UPCOMING MATCHUPS
+    week2_matchups = []
+    for team in sorted(all_teams):
+        matched_upcoming = None
+        is_home = False
+        for g in games:
+            if "FINAL" not in g["status"]:
+                if matches_team(team, g["home_obj"]):
+                    matched_upcoming = g
+                    is_home = True
+                    break
+                elif matches_team(team, g["away_obj"]):
+                    matched_upcoming = g
+                    is_home = False
+                    break
+
+        if matched_upcoming:
+            opponent = matched_upcoming["away_loc"] if is_home else f"@{matched_upcoming['home_loc']}"
+            week2_matchups.append({
+                "team": team,
+                "opponent": opponent,
+                "spread": matched_upcoming["spread"],
+                "over_under": matched_upcoming["over_under"],
+                "game_time": matched_upcoming["game_time"],
+                "status": matched_upcoming["status"],
+                "result": "PENDING",
+                "is_bye": False
+            })
+        else:
+            week2_matchups.append({
                 "team": team,
                 "opponent": "BYE / TBD",
                 "spread": "N/A",
@@ -245,17 +268,18 @@ def run_update():
                 "is_bye": True
             })
 
-    # Post real ESPN game scores strictly for completed Week 1
-    if real_espn_scores:
-        print(f"Scoring Week 1 picks in Google Sheet...")
-        auto_score_google_sheet(real_espn_scores, week_num=1)
+    data["season_schedule"]["2"] = week2_matchups
+    data["week_matchups"] = week2_matchups # Active week default
 
-    data["week_matchups"] = updated_matchups
+    # Score Week 1 in Google Sheets
+    if week1_scores:
+        print(f"Scoring {len(week1_scores)} Week 1 picks in Google Sheet...")
+        auto_score_google_sheet(week1_scores, week_num=1)
 
     with open("league_data.json", "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
-    print(f"Successfully scored Week 1 and prepared Week 2.")
+    print("Successfully updated both Week 1 archive and Week 2 active schedule.")
 
 if __name__ == "__main__":
     run_update()
