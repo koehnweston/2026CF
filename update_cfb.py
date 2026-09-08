@@ -5,7 +5,9 @@ import requests
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
-# ESPN API endpoints to capture all FBS and Non-Conf matchups
+# Google Apps Script Web App Endpoint for Live Scoring
+GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwC1NpT8vKqmfsMFUxsPjc_23YhRPQAdMvEtz8GN05NVrm7IOtxnB9tu45ML4HgtLVD/exec"
+
 ESPN_URLS = [
     "https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?groups=80&limit=300",
     "https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?groups=81&limit=300"
@@ -13,7 +15,7 @@ ESPN_URLS = [
 
 def fetch_all_espn_games():
     events = []
-    current_week = 1
+    current_week = 2 # Default roll forward
     
     for url in ESPN_URLS:
         try:
@@ -159,7 +161,8 @@ def run_update():
     current_week, events = fetch_all_espn_games()
     games = parse_events(events)
 
-    data["current_week"] = current_week
+    # Roll to Week 2 if current Tuesday after Labor Day
+    data["current_week"] = max(current_week, 2)
     data["last_updated"] = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
 
     all_teams = set()
@@ -171,16 +174,13 @@ def run_update():
     for team in sorted(all_teams):
         matched_games = []
 
-        # Find ALL matching games for this team in ESPN's feed
         for g in games:
             if matches_team(team, g["home_obj"]):
-                matched_games.append((g, True)) # (game, is_home)
+                matched_games.append((g, True))
             elif matches_team(team, g["away_obj"]):
                 matched_games.append((g, False))
 
         if matched_games:
-            # PRIORITY: Pick upcoming games (STATUS_SCHEDULED or IN_PROGRESS) first.
-            # If all are FINAL, pick the newest game.
             upcoming = [item for item in matched_games if "FINAL" not in item[0]["status"]]
             if upcoming:
                 selected_game, is_home = upcoming[0]
@@ -227,7 +227,7 @@ def run_update():
     with open("league_data.json", "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
-    print(f"Successfully processed live ESPN matchups for Week {current_week} ({len(updated_matchups)} teams).")
+    print(f"Successfully rolled forward to Week {data['current_week']} and refreshed all {len(updated_matchups)} teams.")
 
 if __name__ == "__main__":
     run_update()
