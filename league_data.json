@@ -1,6 +1,6 @@
 {
   "current_week": 2,
-  "last_updated": "2026-09-08 13:11:28 UTC",
+  "last_updated": "2026-09-08 13:16:16 UTC",
   "members": {
     "Jared": {
       "teams": [
@@ -336,13 +336,13 @@
     },
     {
       "team": "Florida State",
-      "opponent": "BYE / TBD",
-      "spread": "N/A",
+      "opponent": "SMU",
+      "spread": "Line TBD",
       "over_under": "",
-      "game_time": "BYE WEEK",
-      "status": "STATUS_SCHEDULED",
-      "result": "BYE",
-      "is_bye": true
+      "game_time": "Mon 09/07 • 06:30 PM CT",
+      "status": "STATUS_FINAL",
+      "result": "LOSS",
+      "is_bye": false
     },
     {
       "team": "Fresno State",
@@ -596,13 +596,13 @@
     },
     {
       "team": "Northwestern",
-      "opponent": "BYE / TBD",
-      "spread": "N/A",
+      "opponent": "South Dakota State",
+      "spread": "Line TBD",
       "over_under": "",
-      "game_time": "BYE WEEK",
-      "status": "STATUS_SCHEDULED",
-      "result": "BYE",
-      "is_bye": true
+      "game_time": "Sat 09/05 • 07:00 PM CT",
+      "status": "STATUS_FINAL",
+      "result": "WIN",
+      "is_bye": false
     },
     {
       "team": "Notre Dame",
@@ -908,7 +908,7 @@
       "team": "Virginia Tech",
       "opponent": "Old Dominion",
       "spread": "VT -18.5",
-      "over_under": "O/U 50.5",
+      "over_under": "O/U 51.5",
       "game_time": "Sat 09/12 • 11:00 AM CT",
       "status": "STATUS_SCHEDULED",
       "result": "PENDING",
