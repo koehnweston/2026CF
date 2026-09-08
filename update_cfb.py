@@ -5,31 +5,27 @@ import requests
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
-# Your Google Apps Script Web App Endpoint
+# Google Apps Script Web App Endpoint
 GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwC1NpT8vKqmfsMFUxsPjc_23YhRPQAdMvEtz8GN05NVrm7IOtxnB9tu45ML4HgtLVD/exec"
 
-# ESPN API endpoints (fetches both FBS groups + recent completed games)
-ESPN_URLS = [
-    "https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?groups=80&limit=300",
-    "https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?groups=81&limit=300"
-]
-
-def fetch_all_espn_games():
+def fetch_espn_data_for_weeks(current_week):
     events = []
-    current_week = 1
     
-    for url in ESPN_URLS:
-        try:
-            res = requests.get(url, timeout=15)
-            if res.status_code == 200:
-                data = res.json()
-                week_info = data.get("week", {})
-                current_week = week_info.get("number", current_week)
-                events.extend(data.get("events", []))
-        except Exception as e:
-            print(f"Notice: Error fetching from {url}: {e}")
-            
-    return current_week, events
+    # Query both the completed week and current week to capture all scores & upcoming games
+    weeks_to_query = [max(1, current_week - 1), current_week]
+    
+    for w in set(weeks_to_query):
+        for grp in [80, 81]:
+            url = f"https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?dates=2026&week={w}&groups={grp}&limit=300"
+            try:
+                res = requests.get(url, timeout=15)
+                if res.status_code == 200:
+                    data = res.json()
+                    events.extend(data.get("events", []))
+            except Exception as e:
+                print(f"Notice: Error fetching week {w} group {grp}: {e}")
+                
+    return events
 
 def normalize(text):
     if not text:
@@ -170,11 +166,13 @@ def run_update():
     with open("league_data.json", "r", encoding="utf-8") as f:
         data = json.load(f)
 
-    current_week, events = fetch_all_espn_games()
-    games = parse_events(events)
-
-    data["current_week"] = max(current_week, 2)
+    # Roll forward to Week 2
+    current_week = 2
+    data["current_week"] = current_week
     data["last_updated"] = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
+
+    events = fetch_espn_data_for_weeks(current_week)
+    games = parse_events(events)
 
     all_teams = set()
     for member in data["members"].values():
@@ -183,6 +181,23 @@ def run_update():
     updated_matchups = []
     real_espn_scores = {}
 
+    # 1. First pass: Evaluate FINAL game scores from Week 1
+    for g in games:
+        if "FINAL" in g["status"]:
+            try:
+                h_score = int(g["home_score"])
+                a_score = int(g["away_score"])
+                
+                # Check which drafted teams played in this completed game
+                for team in all_teams:
+                    if matches_team(team, g["home_obj"]):
+                        real_espn_scores[team.lower()] = "WIN" if h_score > a_score else "LOSS"
+                    elif matches_team(team, g["away_obj"]):
+                        real_espn_scores[team.lower()] = "WIN" if a_score > h_score else "LOSS"
+            except:
+                pass
+
+    # 2. Second pass: Populate Week 2 upcoming matchups
     for team in sorted(all_teams):
         matched_games = []
 
@@ -193,18 +208,7 @@ def run_update():
                 matched_games.append((g, False))
 
         if matched_games:
-            # Check for FINAL games to record live real-world WIN/LOSS
-            for g_item, is_h in matched_games:
-                if "FINAL" in g_item["status"]:
-                    try:
-                        h_score = int(g_item["home_score"])
-                        a_score = int(g_item["away_score"])
-                        won = (h_score > a_score) if is_h else (a_score > h_score)
-                        real_espn_scores[team.lower()] = "WIN" if won else "LOSS"
-                    except Exception as err:
-                        print(f"Score parse error for {team}: {err}")
-
-            # Pick upcoming game for next week's matchup board
+            # Pick upcoming game (STATUS_SCHEDULED / IN_PROGRESS)
             upcoming = [item for item in matched_games if "FINAL" not in item[0]["status"]]
             if upcoming:
                 selected_game, is_home = upcoming[0]
@@ -256,7 +260,7 @@ def run_update():
     with open("league_data.json", "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
-    print(f"Successfully processed Week {data['current_week']} data.")
+    print(f"Successfully processed Week 1 final scores and loaded Week 2 schedule.")
 
 if __name__ == "__main__":
     run_update()
