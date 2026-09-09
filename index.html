@@ -121,7 +121,7 @@
         <div class="px-6 py-4 border-b border-slate-800/80 flex justify-between items-center bg-slate-900/60">
           <div>
             <h2 class="text-sm font-bold uppercase tracking-wider text-slate-300">Official Leaderboard</h2>
-            <p class="text-xs text-slate-500">Season-long Standings (Factoring Week 0 Results)</p>
+            <p class="text-xs text-slate-500">Season-long Standings (Only Scored for Completed Games)</p>
           </div>
           <span class="text-xs font-mono bg-indigo-950/80 text-indigo-400 border border-indigo-800/50 px-3 py-1 rounded-full font-bold">
             Live Record
@@ -202,7 +202,7 @@
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 bg-slate-900/50 border border-slate-800/80 p-5 rounded-2xl backdrop-blur-md">
         <div>
           <h2 class="text-xl font-black text-white flex items-center gap-2">Weekly Pick Grid</h2>
-          <p class="text-xs text-slate-400 mt-0.5">Showing all 6 active teams picked to win by each participant with live Moneyline odds.</p>
+          <p class="text-xs text-slate-400 mt-0.5">Showing all 6 active teams picked to win with live verified status.</p>
         </div>
         
         <div class="flex items-center gap-3">
@@ -441,67 +441,35 @@
     let selectedWeek = 2;
     let currentZoom = 1.0;
 
-    const RIDDLES = [
-      {
-        stage: "STAGE 1: THE GRIDIRON PARADOX",
-        progress: "33%",
-        question: "I have no voice, but I shout at 100 yards. I am divided into quarters, yet I am always whole. You can lose me without dropping me, and gain me without moving forward. What am I?",
-        answers: ["time", "clock", "game clock", "the clock", "the game clock"]
-      },
-      {
-        stage: "STAGE 2: THE ANCIENT KEEPER",
-        progress: "66%",
-        question: "I am taken from a mine and shut up inside a wooden case, from which I am never released, and yet I am used by nearly every scholar. What am I?",
-        answers: ["pencil lead", "lead", "graphite", "pencil", "pencil graphite"]
-      },
-      {
-        stage: "STAGE 3: THE COMMISSIONER'S DECREE",
-        progress: "100%",
-        question: "What is the single, absolute, incontrovertible secret to winning the 2026 pool?",
-        answers: ["weston is always right", "weston", "trust weston", "praise weston", "weston knows best", "commissioner weston"]
+    // Strict Date & Status Validator: Returns verified WIN, LOSS, or PENDING
+    function getVerifiedPickStatus(p, weekNum) {
+      const curWeek = leagueData ? (leagueData.current_week || 2) : 2;
+      
+      // Future weeks are ALWAYS pending
+      if (parseInt(weekNum, 10) > curWeek) return "PENDING";
+      
+      // Check matchup in JSON archive
+      let schedule = [];
+      if (leagueData && leagueData.season_schedule && leagueData.season_schedule[String(weekNum)]) {
+        schedule = leagueData.season_schedule[String(weekNum)];
+      } else if (leagueData) {
+        schedule = leagueData.week_matchups || [];
       }
-    ];
 
-    let currentRiddleIndex = 0;
-
-    function openRiddleModal() {
-      currentRiddleIndex = 0;
-      loadRiddleStage();
-      document.getElementById('riddle-modal').classList.remove('hidden');
-    }
-
-    function closeRiddleModal() {
-      document.getElementById('riddle-modal').classList.add('hidden');
-    }
-
-    function loadRiddleStage() {
-      const r = RIDDLES[currentRiddleIndex];
-      document.getElementById('riddle-stage-title').innerText = r.stage;
-      document.getElementById('riddle-progress').innerText = r.progress;
-      document.getElementById('riddle-question-text').innerText = r.question;
-      document.getElementById('riddle-answer-input').value = '';
-      document.getElementById('riddle-feedback').classList.add('hidden');
-    }
-
-    function handleRiddleAnswer(e) {
-      e.preventDefault();
-      const input = document.getElementById('riddle-answer-input').value.trim().toLowerCase();
-      const valid = RIDDLES[currentRiddleIndex].answers;
-
-      if (valid.some(a => input.includes(a))) {
-        if (currentRiddleIndex < RIDDLES.length - 1) {
-          currentRiddleIndex++;
-          loadRiddleStage();
-        } else {
-          closeRiddleModal();
-          confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
-          alert("🎉 IMPOSSIBLE! You solved the Trial of Worthiness! You are granted access into the Circle of Trust.");
-        }
-      } else {
-        document.getElementById('riddle-feedback').innerText = "❌ INCORRECT CIPHER. ACCESS DENIED.";
-        document.getElementById('riddle-feedback').classList.remove('hidden');
-        playNedryAudio();
+      const match = schedule.find(m => m.team && m.team.toLowerCase() === (p.team || "").toLowerCase());
+      
+      // If game status is not FINAL or game is upcoming, enforce PENDING
+      if (match) {
+        if (match.status && match.status !== "STATUS_FINAL") return "PENDING";
+        if (match.result && (match.result === "WIN" || match.result === "LOSS")) return match.result;
       }
+
+      // Default to recorded result if week is in past
+      if (parseInt(weekNum, 10) < curWeek) {
+        return p.result === "WIN" ? "WIN" : (p.result === "LOSS" ? "LOSS" : "PENDING");
+      }
+
+      return "PENDING";
     }
 
     function openLoginModal() {
@@ -663,12 +631,19 @@
 
       const memberStats = Object.keys(LEAGUE_ROSTERS).map(name => {
         const userPicks = (picks || []).filter(p => p.owner && p.owner.toLowerCase() === name.toLowerCase());
-        const sheetWins = userPicks.filter(p => p.result === 'WIN').length;
-        const sheetLosses = userPicks.filter(p => p.result === 'LOSS').length;
+        
+        let verifiedWins = 0;
+        let verifiedLosses = 0;
+
+        userPicks.forEach(p => {
+          const status = getVerifiedPickStatus(p, p.week);
+          if (status === "WIN") verifiedWins++;
+          if (status === "LOSS") verifiedLosses++;
+        });
 
         const base = WEEK_0_STANDINGS_BASE[name] || { wins: 0, losses: 0 };
-        const wins = sheetWins + base.wins;
-        const losses = sheetLosses + base.losses;
+        const wins = verifiedWins + base.wins;
+        const losses = verifiedLosses + base.losses;
 
         const total = wins + losses;
         const winPct = total > 0 ? ((wins / total) * 100).toFixed(1) + '%' : '0.0%';
@@ -749,7 +724,6 @@
 
       let submittedCount = 0;
       
-      // Dynamic: Get matchups specifically for the selected week from the season archive!
       let weekSchedule = [];
       if (leagueData && leagueData.season_schedule && leagueData.season_schedule[String(week)]) {
         weekSchedule = leagueData.season_schedule[String(week)];
@@ -794,10 +768,13 @@
             const ml = matchup.spread ? getMoneyline(matchup.spread) : '';
             const oppText = matchup.opponent && matchup.opponent !== 'BYE' ? `vs ${matchup.opponent}` : '';
 
+            // Strictly Verified Status: Guaranteed PENDING for future / unplayed games!
+            const verifiedResult = getVerifiedPickStatus(p, week);
+
             let resultBadge = '';
-            if (p.result === 'WIN') {
+            if (verifiedResult === 'WIN') {
               resultBadge = `<span class="font-mono font-black px-2 py-0.5 rounded text-[10px] bg-emerald-500 text-slate-950">WIN ✓</span>`;
-            } else if (p.result === 'LOSS') {
+            } else if (verifiedResult === 'LOSS') {
               resultBadge = `<span class="font-mono font-black px-2 py-0.5 rounded text-[10px] bg-rose-600 text-white">LOSS ✕</span>`;
             } else {
               resultBadge = `<span class="font-mono font-black px-2.5 py-1 rounded-lg text-[10px] bg-emerald-950 text-emerald-300 border border-emerald-800/60">TO WIN</span>`;
