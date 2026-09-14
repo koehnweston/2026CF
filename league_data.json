@@ -1,6 +1,6 @@
 {
   "current_week": 2,
-  "last_updated": "2026-09-14 13:31:38 UTC",
+  "last_updated": "2026-09-14 14:29:27 UTC",
   "members": {
     "Jared": {
       "teams": [
@@ -166,7 +166,7 @@
   "week_matchups": [
     {
       "team": "Alabama",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -176,7 +176,7 @@
     },
     {
       "team": "Arizona",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -186,7 +186,7 @@
     },
     {
       "team": "Arizona State",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -196,7 +196,7 @@
     },
     {
       "team": "Arkansas",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -206,7 +206,7 @@
     },
     {
       "team": "Army",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -216,7 +216,7 @@
     },
     {
       "team": "Auburn",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -226,7 +226,7 @@
     },
     {
       "team": "BYU",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -236,7 +236,7 @@
     },
     {
       "team": "Baylor",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -246,7 +246,7 @@
     },
     {
       "team": "Boise State",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -256,7 +256,7 @@
     },
     {
       "team": "California",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -266,7 +266,7 @@
     },
     {
       "team": "Cincinnati",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -276,7 +276,7 @@
     },
     {
       "team": "Clemson",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -286,7 +286,7 @@
     },
     {
       "team": "Colorado",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -296,7 +296,7 @@
     },
     {
       "team": "Duke",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -306,7 +306,7 @@
     },
     {
       "team": "East Carolina",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -316,7 +316,7 @@
     },
     {
       "team": "Florida",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -326,7 +326,7 @@
     },
     {
       "team": "Florida Atlantic",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -336,7 +336,7 @@
     },
     {
       "team": "Florida State",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -346,7 +346,7 @@
     },
     {
       "team": "Fresno State",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -356,7 +356,7 @@
     },
     {
       "team": "Georgia",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -366,7 +366,7 @@
     },
     {
       "team": "Georgia Tech",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -376,7 +376,7 @@
     },
     {
       "team": "Houston",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -386,7 +386,7 @@
     },
     {
       "team": "Illinois",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -396,7 +396,7 @@
     },
     {
       "team": "Indiana",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -406,7 +406,7 @@
     },
     {
       "team": "Iowa",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -416,7 +416,7 @@
     },
     {
       "team": "Iowa State",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -426,7 +426,7 @@
     },
     {
       "team": "Kansas",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -436,7 +436,7 @@
     },
     {
       "team": "Kansas State",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -446,7 +446,7 @@
     },
     {
       "team": "Kentucky",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -456,7 +456,7 @@
     },
     {
       "team": "LSU",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -466,7 +466,7 @@
     },
     {
       "team": "Louisville",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -476,7 +476,7 @@
     },
     {
       "team": "Maryland",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -486,7 +486,7 @@
     },
     {
       "team": "Memphis",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -496,7 +496,7 @@
     },
     {
       "team": "Miami",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -506,7 +506,7 @@
     },
     {
       "team": "Michigan",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -516,7 +516,7 @@
     },
     {
       "team": "Minnesota",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -526,7 +526,7 @@
     },
     {
       "team": "Mississippi State",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -536,7 +536,7 @@
     },
     {
       "team": "Missouri",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -546,7 +546,7 @@
     },
     {
       "team": "NC State",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -556,7 +556,7 @@
     },
     {
       "team": "Navy",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -566,7 +566,7 @@
     },
     {
       "team": "Nebraska",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -576,7 +576,7 @@
     },
     {
       "team": "North Carolina",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -586,7 +586,7 @@
     },
     {
       "team": "North Texas",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -596,7 +596,7 @@
     },
     {
       "team": "Northwestern",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -606,7 +606,7 @@
     },
     {
       "team": "Notre Dame",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -616,7 +616,7 @@
     },
     {
       "team": "Ohio State",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -626,7 +626,7 @@
     },
     {
       "team": "Oklahoma",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -636,7 +636,7 @@
     },
     {
       "team": "Oklahoma State",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -646,7 +646,7 @@
     },
     {
       "team": "Ole Miss",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -656,7 +656,7 @@
     },
     {
       "team": "Oregon",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -666,7 +666,7 @@
     },
     {
       "team": "Oregon State",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -676,7 +676,7 @@
     },
     {
       "team": "Penn State",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -686,7 +686,7 @@
     },
     {
       "team": "Pittsburgh",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -696,7 +696,7 @@
     },
     {
       "team": "Rutgers",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -706,7 +706,7 @@
     },
     {
       "team": "SMU",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -716,7 +716,7 @@
     },
     {
       "team": "San Diego State",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -726,7 +726,7 @@
     },
     {
       "team": "South Carolina",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -736,7 +736,7 @@
     },
     {
       "team": "South Florida",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -746,7 +746,7 @@
     },
     {
       "team": "Syracuse",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -756,7 +756,7 @@
     },
     {
       "team": "TCU",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -766,7 +766,7 @@
     },
     {
       "team": "Temple",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -776,7 +776,7 @@
     },
     {
       "team": "Tennessee",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -786,7 +786,7 @@
     },
     {
       "team": "Texas",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -796,7 +796,7 @@
     },
     {
       "team": "Texas A&M",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -806,7 +806,7 @@
     },
     {
       "team": "Texas Tech",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -816,7 +816,7 @@
     },
     {
       "team": "Tulane",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -826,7 +826,7 @@
     },
     {
       "team": "Tulsa",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -836,7 +836,7 @@
     },
     {
       "team": "UCF",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -846,7 +846,7 @@
     },
     {
       "team": "UCLA",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -856,7 +856,7 @@
     },
     {
       "team": "USC",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -866,7 +866,7 @@
     },
     {
       "team": "UTSA",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -876,7 +876,7 @@
     },
     {
       "team": "Utah",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -886,7 +886,7 @@
     },
     {
       "team": "Vanderbilt",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -896,7 +896,7 @@
     },
     {
       "team": "Virginia",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -906,7 +906,7 @@
     },
     {
       "team": "Virginia Tech",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -916,7 +916,7 @@
     },
     {
       "team": "Wake Forest",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -926,7 +926,7 @@
     },
     {
       "team": "Washington",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -936,7 +936,7 @@
     },
     {
       "team": "Washington State",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -946,7 +946,7 @@
     },
     {
       "team": "West Virginia",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -956,7 +956,7 @@
     },
     {
       "team": "Wisconsin",
-      "opponent": "BYE / TBD",
+      "opponent": "BYE",
       "spread": "N/A",
       "over_under": "",
       "game_time": "BYE WEEK",
@@ -1772,7 +1772,7 @@
     "2": [
       {
         "team": "Alabama",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -1782,7 +1782,7 @@
       },
       {
         "team": "Arizona",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -1792,7 +1792,7 @@
       },
       {
         "team": "Arizona State",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -1802,7 +1802,7 @@
       },
       {
         "team": "Arkansas",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -1812,7 +1812,7 @@
       },
       {
         "team": "Army",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -1822,7 +1822,7 @@
       },
       {
         "team": "Auburn",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -1832,7 +1832,7 @@
       },
       {
         "team": "BYU",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -1842,7 +1842,7 @@
       },
       {
         "team": "Baylor",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -1852,7 +1852,7 @@
       },
       {
         "team": "Boise State",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -1862,7 +1862,7 @@
       },
       {
         "team": "California",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -1872,7 +1872,7 @@
       },
       {
         "team": "Cincinnati",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -1882,7 +1882,7 @@
       },
       {
         "team": "Clemson",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -1892,7 +1892,7 @@
       },
       {
         "team": "Colorado",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -1902,7 +1902,7 @@
       },
       {
         "team": "Duke",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -1912,7 +1912,7 @@
       },
       {
         "team": "East Carolina",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -1922,7 +1922,7 @@
       },
       {
         "team": "Florida",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -1932,7 +1932,7 @@
       },
       {
         "team": "Florida Atlantic",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -1942,7 +1942,7 @@
       },
       {
         "team": "Florida State",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -1952,7 +1952,7 @@
       },
       {
         "team": "Fresno State",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -1962,7 +1962,7 @@
       },
       {
         "team": "Georgia",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -1972,7 +1972,7 @@
       },
       {
         "team": "Georgia Tech",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -1982,7 +1982,7 @@
       },
       {
         "team": "Houston",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -1992,7 +1992,7 @@
       },
       {
         "team": "Illinois",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2002,7 +2002,7 @@
       },
       {
         "team": "Indiana",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2012,7 +2012,7 @@
       },
       {
         "team": "Iowa",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2022,7 +2022,7 @@
       },
       {
         "team": "Iowa State",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2032,7 +2032,7 @@
       },
       {
         "team": "Kansas",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2042,7 +2042,7 @@
       },
       {
         "team": "Kansas State",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2052,7 +2052,7 @@
       },
       {
         "team": "Kentucky",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2062,7 +2062,7 @@
       },
       {
         "team": "LSU",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2072,7 +2072,7 @@
       },
       {
         "team": "Louisville",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2082,7 +2082,7 @@
       },
       {
         "team": "Maryland",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2092,7 +2092,7 @@
       },
       {
         "team": "Memphis",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2102,7 +2102,7 @@
       },
       {
         "team": "Miami",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2112,7 +2112,7 @@
       },
       {
         "team": "Michigan",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2122,7 +2122,7 @@
       },
       {
         "team": "Minnesota",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2132,7 +2132,7 @@
       },
       {
         "team": "Mississippi State",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2142,7 +2142,7 @@
       },
       {
         "team": "Missouri",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2152,7 +2152,7 @@
       },
       {
         "team": "NC State",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2162,7 +2162,7 @@
       },
       {
         "team": "Navy",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2172,7 +2172,7 @@
       },
       {
         "team": "Nebraska",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2182,7 +2182,7 @@
       },
       {
         "team": "North Carolina",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2192,7 +2192,7 @@
       },
       {
         "team": "North Texas",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2202,7 +2202,7 @@
       },
       {
         "team": "Northwestern",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2212,7 +2212,7 @@
       },
       {
         "team": "Notre Dame",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2222,7 +2222,7 @@
       },
       {
         "team": "Ohio State",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2232,7 +2232,7 @@
       },
       {
         "team": "Oklahoma",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2242,7 +2242,7 @@
       },
       {
         "team": "Oklahoma State",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2252,7 +2252,7 @@
       },
       {
         "team": "Ole Miss",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2262,7 +2262,7 @@
       },
       {
         "team": "Oregon",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2272,7 +2272,7 @@
       },
       {
         "team": "Oregon State",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2282,7 +2282,7 @@
       },
       {
         "team": "Penn State",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2292,7 +2292,7 @@
       },
       {
         "team": "Pittsburgh",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2302,7 +2302,7 @@
       },
       {
         "team": "Rutgers",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2312,7 +2312,7 @@
       },
       {
         "team": "SMU",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2322,7 +2322,7 @@
       },
       {
         "team": "San Diego State",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2332,7 +2332,7 @@
       },
       {
         "team": "South Carolina",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2342,7 +2342,7 @@
       },
       {
         "team": "South Florida",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2352,7 +2352,7 @@
       },
       {
         "team": "Syracuse",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2362,7 +2362,7 @@
       },
       {
         "team": "TCU",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2372,7 +2372,7 @@
       },
       {
         "team": "Temple",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2382,7 +2382,7 @@
       },
       {
         "team": "Tennessee",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2392,7 +2392,7 @@
       },
       {
         "team": "Texas",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2402,7 +2402,7 @@
       },
       {
         "team": "Texas A&M",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2412,7 +2412,7 @@
       },
       {
         "team": "Texas Tech",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2422,7 +2422,7 @@
       },
       {
         "team": "Tulane",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2432,7 +2432,7 @@
       },
       {
         "team": "Tulsa",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2442,7 +2442,7 @@
       },
       {
         "team": "UCF",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2452,7 +2452,7 @@
       },
       {
         "team": "UCLA",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2462,7 +2462,7 @@
       },
       {
         "team": "USC",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2472,7 +2472,7 @@
       },
       {
         "team": "UTSA",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2482,7 +2482,7 @@
       },
       {
         "team": "Utah",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2492,7 +2492,7 @@
       },
       {
         "team": "Vanderbilt",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2502,7 +2502,7 @@
       },
       {
         "team": "Virginia",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2512,7 +2512,7 @@
       },
       {
         "team": "Virginia Tech",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2522,7 +2522,7 @@
       },
       {
         "team": "Wake Forest",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2532,7 +2532,7 @@
       },
       {
         "team": "Washington",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2542,7 +2542,7 @@
       },
       {
         "team": "Washington State",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2552,7 +2552,7 @@
       },
       {
         "team": "West Virginia",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
@@ -2562,7 +2562,7 @@
       },
       {
         "team": "Wisconsin",
-        "opponent": "BYE / TBD",
+        "opponent": "BYE",
         "spread": "N/A",
         "over_under": "",
         "game_time": "BYE WEEK",
