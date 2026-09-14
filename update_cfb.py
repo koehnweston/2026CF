@@ -5,6 +5,7 @@ import requests
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
+# Replace with your active Google Script Web App URL
 GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwC1NpT8vKqmfsMFUxsPjc_23YhRPQAdMvEtz8GN05NVrm7IOtxnB9tu45ML4HgtLVD/exec"
 
 ALIASES = {
@@ -69,7 +70,7 @@ def fetch_espn_data_for_weeks(current_week):
 
     for w in set(weeks_to_query):
         for grp in [80, 81]:
-            # Queries active ESPN CFB scoreboard
+            # Queries live ESPN college football scoreboard
             url = f"https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?dates=2024&week={w}&groups={grp}&limit=300"
             try:
                 res = requests.get(url, timeout=12)
@@ -155,7 +156,7 @@ def auto_score_google_sheet(scores_map, week_num):
         res = requests.post(GOOGLE_SCRIPT_URL, json=payload, timeout=15)
         print(f"Google Sheet Auto-Scoring Response (Week {week_num}): {res.text}")
     except Exception as e:
-        print(f"Notice: Google Sheet auto-scoring webhook error: {e}")
+        print(f"Notice: Google Sheet webhook error: {e}")
 
 def run_update():
     if not os.path.exists("league_data.json"):
@@ -179,16 +180,14 @@ def run_update():
     if "season_schedule" not in data:
         data["season_schedule"] = {}
 
-    # 1. PROCESS AND VERIFY WEEK 1 RESULTS
+    # 1. SCORE FINAL GAMES FOR WEEK 1
     week1_matchups = data["season_schedule"].get("1", [])
     week1_scores = {}
 
-    # If Week 1 was already formatted in JSON, extract scores directly
     for m in week1_matchups:
         if m.get("result") in ["WIN", "LOSS"]:
             week1_scores[m["team"].lower()] = m["result"]
 
-    # Also update with any final games observed from ESPN
     for g in games:
         if "FINAL" in g["status"]:
             for team in all_teams:
@@ -198,40 +197,39 @@ def run_update():
                     h_score = int(g["home_score"] or 0)
                     a_score = int(g["away_score"] or 0)
                     won = (h_score > a_score) if is_home else (a_score > h_score)
-                    res_str = "WIN" if won else "LOSS"
-                    week1_scores[team.lower()] = res_str
+                    week1_scores[team.lower()] = "WIN" if won else "LOSS"
 
     if week1_scores:
-        print(f"Auto-scoring {len(week1_scores)} Week 1 picks in Google Sheet...")
+        print(f"Scoring {len(week1_scores)} Week 1 picks in Google Sheet...")
         auto_score_google_sheet(week1_scores, week_num=1)
 
-    # 2. PROCESS WEEK 2 (Safely preserve existing schedule if API has no upcoming games)
+    # 2. PROCESS WEEK 2: ONLY update if live upcoming games exist
     upcoming_games = [g for g in games if "FINAL" not in g["status"]]
-    if upcoming_games:
-        print(f"Discovered {len(upcoming_games)} upcoming live games for Week {current_week}.")
+    if len(upcoming_games) > 5:
+        print(f"Found {len(upcoming_games)} live upcoming games. Updating Week {current_week} schedule.")
         week2_matchups = []
         for team in sorted(all_teams):
-            matched_game = None
+            matched = None
             is_home = False
             for g in upcoming_games:
                 if matches_team(team, g["home_obj"]):
-                    matched_game = g
+                    matched = g
                     is_home = True
                     break
                 elif matches_team(team, g["away_obj"]):
-                    matched_game = g
+                    matched = g
                     is_home = False
                     break
 
-            if matched_game:
-                opponent = matched_game["away_loc"] if is_home else f"@{matched_game['home_loc']}"
+            if matched:
+                opponent = matched["away_loc"] if is_home else f"@{matched['home_loc']}"
                 week2_matchups.append({
                     "team": team,
                     "opponent": opponent,
-                    "spread": matched_game["spread"],
-                    "over_under": matched_game["over_under"],
-                    "game_time": matched_game["game_time"],
-                    "status": matched_game["status"],
+                    "spread": matched["spread"],
+                    "over_under": matched["over_under"],
+                    "game_time": matched["game_time"],
+                    "status": matched["status"],
                     "result": "PENDING",
                     "is_bye": False
                 })
@@ -250,15 +248,15 @@ def run_update():
         data["season_schedule"]["2"] = week2_matchups
         data["week_matchups"] = week2_matchups
     else:
-        print("Notice: No live upcoming games returned by API. Preserving existing Week 2 schedule.")
-        # Ensure active week_matchups points to whatever is in season_schedule[current_week]
+        # SAFEGUARD: Keep the real matchups you added in league_data.json
+        print("API returned no upcoming games for Week 2. Preserving existing matchups in league_data.json.")
         if str(current_week) in data["season_schedule"]:
             data["week_matchups"] = data["season_schedule"][str(current_week)]
 
     with open("league_data.json", "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
-    print("Successfully updated league_data.json.")
+    print("Update complete.")
 
 if __name__ == "__main__":
     run_update()
