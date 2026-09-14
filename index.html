@@ -121,7 +121,7 @@
         <div class="px-6 py-4 border-b border-slate-800/80 flex justify-between items-center bg-slate-900/60">
           <div>
             <h2 class="text-sm font-bold uppercase tracking-wider text-slate-300">Official Leaderboard</h2>
-            <p class="text-xs text-slate-500">Season-long Standings (Only Scored for Completed Games)</p>
+            <p class="text-xs text-slate-500">Season-long Standings (Factoring Week 0 Results)</p>
           </div>
           <span class="text-xs font-mono bg-indigo-950/80 text-indigo-400 border border-indigo-800/50 px-3 py-1 rounded-full font-bold">
             Live Record
@@ -441,32 +441,16 @@
     let selectedWeek = 2;
     let currentZoom = 1.0;
 
-    // Strict Date & Status Validator: Returns verified WIN, LOSS, or PENDING
+    // Strict Status Engine: Only allows WIN/LOSS for Week 1 (completed week), strictly PENDING for Week 2+
     function getVerifiedPickStatus(p, weekNum) {
-      const curWeek = leagueData ? (leagueData.current_week || 2) : 2;
+      const w = parseInt(weekNum, 10);
       
-      // Future weeks are ALWAYS pending
-      if (parseInt(weekNum, 10) > curWeek) return "PENDING";
-      
-      // Check matchup in JSON archive
-      let schedule = [];
-      if (leagueData && leagueData.season_schedule && leagueData.season_schedule[String(weekNum)]) {
-        schedule = leagueData.season_schedule[String(weekNum)];
-      } else if (leagueData) {
-        schedule = leagueData.week_matchups || [];
-      }
+      // Week 2 and future weeks are ALWAYS pending until games conclude!
+      if (w >= 2) return "PENDING";
 
-      const match = schedule.find(m => m.team && m.team.toLowerCase() === (p.team || "").toLowerCase());
-      
-      // If game status is not FINAL or game is upcoming, enforce PENDING
-      if (match) {
-        if (match.status && match.status !== "STATUS_FINAL") return "PENDING";
-        if (match.result && (match.result === "WIN" || match.result === "LOSS")) return match.result;
-      }
-
-      // Default to recorded result if week is in past
-      if (parseInt(weekNum, 10) < curWeek) {
-        return p.result === "WIN" ? "WIN" : (p.result === "LOSS" ? "LOSS" : "PENDING");
+      // Week 1 completed games
+      if (w === 1) {
+        if (p.result === "WIN" || p.result === "LOSS") return p.result;
       }
 
       return "PENDING";
@@ -630,13 +614,14 @@
       podium.innerHTML = '';
 
       const memberStats = Object.keys(LEAGUE_ROSTERS).map(name => {
-        const userPicks = (picks || []).filter(p => p.owner && p.owner.toLowerCase() === name.toLowerCase());
+        // Only count picks belonging to the completed Week 1 (Strict week filter)
+        const userWeek1Picks = (picks || []).filter(p => p.owner && p.owner.toLowerCase() === name.toLowerCase() && parseInt(p.week, 10) === 1);
         
         let verifiedWins = 0;
         let verifiedLosses = 0;
 
-        userPicks.forEach(p => {
-          const status = getVerifiedPickStatus(p, p.week);
+        userWeek1Picks.forEach(p => {
+          const status = getVerifiedPickStatus(p, 1);
           if (status === "WIN") verifiedWins++;
           if (status === "LOSS") verifiedLosses++;
         });
@@ -723,16 +708,18 @@
       grid.innerHTML = '';
 
       let submittedCount = 0;
+      const targetWeek = parseInt(week, 10);
       
       let weekSchedule = [];
-      if (leagueData && leagueData.season_schedule && leagueData.season_schedule[String(week)]) {
-        weekSchedule = leagueData.season_schedule[String(week)];
+      if (leagueData && leagueData.season_schedule && leagueData.season_schedule[String(targetWeek)]) {
+        weekSchedule = leagueData.season_schedule[String(targetWeek)];
       } else if (leagueData) {
         weekSchedule = leagueData.week_matchups || [];
       }
 
       Object.keys(LEAGUE_ROSTERS).forEach(owner => {
-        const ownerPicks = (picks || []).filter(p => p.owner && p.owner.toLowerCase() === owner.toLowerCase() && String(p.week) === String(week));
+        // STRICT FILTER: Match picks strictly belonging to targetWeek (No week mixing!)
+        const ownerPicks = (picks || []).filter(p => p.owner && p.owner.toLowerCase() === owner.toLowerCase() && parseInt(p.week, 10) === targetWeek);
         
         const displayPicks = [...ownerPicks];
         BANKED_WEEK_0_PICKS.forEach(banked => {
@@ -740,6 +727,7 @@
             const game = weekSchedule.find(m => m.team && m.team.toLowerCase() === banked.team.toLowerCase());
             if (game && (game.is_bye || game.opponent === 'BYE' || game.game_time === 'BYE WEEK')) {
               displayPicks.unshift({
+                week: targetWeek,
                 team: banked.team,
                 pick: "WIN",
                 result: banked.result,
@@ -759,7 +747,7 @@
           picksListHtml = `
             <div class="py-8 text-center">
               <span class="text-2xl opacity-40 block mb-1">⏳</span>
-              <p class="text-xs text-slate-500 italic">No picks submitted for Week ${week}.</p>
+              <p class="text-xs text-slate-500 italic">No picks submitted for Week ${targetWeek}.</p>
             </div>`;
         } else {
           picksListHtml = `<ul class="space-y-2.5 mt-4">` + displayPicks.map(p => {
@@ -768,8 +756,8 @@
             const ml = matchup.spread ? getMoneyline(matchup.spread) : '';
             const oppText = matchup.opponent && matchup.opponent !== 'BYE' ? `vs ${matchup.opponent}` : '';
 
-            // Strictly Verified Status: Guaranteed PENDING for future / unplayed games!
-            const verifiedResult = getVerifiedPickStatus(p, week);
+            // Verified Status: Week 1 shows real final WIN/LOSS; Week 2+ is strictly PENDING ("TO WIN")
+            const verifiedResult = getVerifiedPickStatus(p, targetWeek);
 
             let resultBadge = '';
             if (verifiedResult === 'WIN') {
