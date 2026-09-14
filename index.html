@@ -514,20 +514,34 @@
     async function loadData() {
       try {
         const res = await fetch('league_data.json?t=' + new Date().getTime());
-        leagueData = await res.json();
+        if (res.ok) {
+          leagueData = await res.json();
+        } else {
+          console.warn("league_data.json returned status:", res.status);
+        }
       } catch (e) {
+        console.warn("Could not load league_data.json, using defaults", e);
         leagueData = { current_week: 2, members: LEAGUE_ROSTERS, week_matchups: [], season_schedule: {} };
       }
 
-      const curWeek = leagueData.current_week || 2;
+      const curWeek = leagueData?.current_week || 2;
       selectedWeek = curWeek;
       document.getElementById('week-display').innerText = curWeek;
 
       populateWeekDropdown(curWeek);
 
+      // Safe Google Sheet Fetch
+      cachedSheetPicks = [];
       try {
         const resSheet = await fetch(GOOGLE_SCRIPT_URL);
-        cachedSheetPicks = await resSheet.json();
+        const rawText = await resSheet.text();
+
+        // If Google returns HTML instead of JSON (e.g. 404 or Login required page)
+        if (rawText.trim().startsWith('<')) {
+          console.error("⚠️ Google Apps Script returned an HTML error page instead of JSON. Ensure 'Who has access' is set to 'Anyone' in your Apps Script deployment.");
+        } else {
+          cachedSheetPicks = JSON.parse(rawText);
+        }
       } catch(err) {
         console.warn("Notice: Could not fetch Google Sheet picks", err);
       }
