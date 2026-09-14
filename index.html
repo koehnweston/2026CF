@@ -210,7 +210,7 @@
               <span class="text-[10px] font-mono uppercase tracking-widest bg-amber-950 text-amber-300 border border-amber-800/60 px-2.5 py-0.5 rounded-full font-bold">Jared Exiled</span>
             </div>
             <h2 class="text-2xl font-black text-white mt-1">The Official Circle of Trust</h2>
-            <p class="text-xs text-slate-400">Drag your name inside or solve the cryptic Trial of Worthiness to gain entry.</p>
+            <p class="text-xs text-slate-400">Drag your name inside to enter.</p>
           </div>
         </div>
 
@@ -372,21 +372,30 @@
     let selectedWeek = 2;
     let currentZoom = 1.0;
 
-    // Direct Dual-Resolution: Reads Sheet outcome or falls back to season_schedule JSON
+    // DIRECT AUTHORITY ENGINE: Uses official schedule in league_data.json as truth
     function getVerifiedPickStatus(p, weekNum) {
-      const w = parseInt(weekNum, 10);
+      const w = String(weekNum);
 
-      // 1. Google Sheets already marked it WIN or LOSS
-      if (p.result === "WIN" || p.result === "LOSS") {
+      // 1. Check Banked Week 0 auto-slotted pick
+      if (p.note && (p.result === "WIN" || p.result === "LOSS")) {
         return p.result;
       }
 
-      // 2. Direct lookup in league_data.json season_schedule
-      if (leagueData && leagueData.season_schedule && leagueData.season_schedule[String(w)]) {
-        const match = leagueData.season_schedule[String(w)].find(m => m.team.toLowerCase() === p.team.toLowerCase());
-        if (match && match.status === "STATUS_FINAL" && (match.result === "WIN" || match.result === "LOSS")) {
-          return match.result;
+      // 2. PRIMARY AUTHORITY: Check official game outcome in league_data.json
+      if (leagueData && leagueData.season_schedule && leagueData.season_schedule[w]) {
+        const match = leagueData.season_schedule[w].find(m => m.team && m.team.toLowerCase() === p.team.toLowerCase());
+        if (match) {
+          if (match.status === "STATUS_FINAL") {
+            return match.result; // Official WIN or LOSS from your schedule
+          } else {
+            return "PENDING";
+          }
         }
+      }
+
+      // 3. Fallback to Google Sheet value if match not found in schedule
+      if (p.result === "WIN" || p.result === "LOSS") {
+        return p.result;
       }
 
       return "PENDING";
@@ -516,11 +525,9 @@
         const res = await fetch('league_data.json?t=' + new Date().getTime());
         if (res.ok) {
           leagueData = await res.json();
-        } else {
-          console.warn("league_data.json returned status:", res.status);
         }
       } catch (e) {
-        console.warn("Could not load league_data.json, using defaults", e);
+        console.warn("Using default league data", e);
         leagueData = { current_week: 2, members: LEAGUE_ROSTERS, week_matchups: [], season_schedule: {} };
       }
 
@@ -530,20 +537,19 @@
 
       populateWeekDropdown(curWeek);
 
-      // Safe Google Sheet Fetch
+      // Safe Google Sheet Fetch (Handles any HTML redirect without crashing)
       cachedSheetPicks = [];
       try {
         const resSheet = await fetch(GOOGLE_SCRIPT_URL);
         const rawText = await resSheet.text();
 
-        // If Google returns HTML instead of JSON (e.g. 404 or Login required page)
         if (rawText.trim().startsWith('<')) {
-          console.error("⚠️ Google Apps Script returned an HTML error page instead of JSON. Ensure 'Who has access' is set to 'Anyone' in your Apps Script deployment.");
+          console.warn("Google Apps Script returned an HTML page. Ensure 'Who has access' is set to 'Anyone'.");
         } else {
           cachedSheetPicks = JSON.parse(rawText);
         }
       } catch(err) {
-        console.warn("Notice: Could not fetch Google Sheet picks", err);
+        console.warn("Could not fetch Google Sheet picks", err);
       }
 
       renderStandings(cachedSheetPicks);
@@ -671,7 +677,7 @@
         BANKED_WEEK_0_PICKS.forEach(banked => {
           if (banked.owner.toLowerCase() === owner.toLowerCase()) {
             const game = weekSchedule.find(m => m.team && m.team.toLowerCase() === banked.team.toLowerCase());
-            // Only auto-slot when the team is actually on a genuine bye
+            // Strictly slot ONLY when the team is actually on an off-week (genuine BYE)
             if (game && (game.is_bye || game.opponent === 'BYE' || game.game_time === 'BYE WEEK')) {
               displayPicks.unshift({
                 week: targetWeek,
