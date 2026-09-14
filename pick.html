@@ -38,7 +38,6 @@
 
     <!-- Main Pick Portal Content -->
     <div id="pick-portal-content">
-      <!-- Header Banner -->
       <header class="bg-slate-900 border border-slate-800 rounded-2xl p-6 mb-6 shadow-xl">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
@@ -53,11 +52,9 @@
         </div>
       </header>
 
-      <!-- Matchups Form -->
       <form id="picks-form" class="space-y-3">
         <div id="matchups-container" class="space-y-3"></div>
 
-        <!-- Action Buttons -->
         <div class="pt-6 space-y-3">
           <button id="submit-btn" type="button" onclick="submitPicksToBackend()" disabled 
             class="w-full bg-slate-800 text-slate-500 cursor-not-allowed font-bold py-3.5 px-6 rounded-xl transition duration-200 shadow-lg text-sm uppercase tracking-wider">
@@ -79,7 +76,6 @@
   <script>
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwC1NpT8vKqmfsMFUxsPjc_23YhRPQAdMvEtz8GN05NVrm7IOtxnB9tu45ML4HgtLVD/exec";
 
-    // All Banked Week 0 Picks: Automatically triggers on that team's BYE week
     const BANKED_WEEK_0_PICKS = [
       { owner: "Weston", team: "TCU", result: "LOSS", desc: "Week 0 Result: Lost 10-15 vs North Carolina" },
       { owner: "Andy", team: "Florida State", result: "WIN", desc: "Week 0 Result: Beat 34-17 vs New Mexico State" },
@@ -101,7 +97,7 @@
     };
 
     const DEFAULT_DATA = {
-      current_week: 1,
+      current_week: 2,
       members: {
         "Jared": { "teams": ["Texas Tech", "Boise State", "Oklahoma", "Virginia Tech", "Oklahoma State", "Tulsa", "California", "Rutgers"] },
         "Cole": { "teams": ["Oregon", "San Diego State", "Louisville", "Pittsburgh", "Florida", "West Virginia", "Fresno State", "Colorado"] },
@@ -124,7 +120,13 @@
     async function init() {
       try {
         const res = await fetch('league_data.json?t=' + new Date().getTime());
-        if (res.ok) leagueData = await res.json();
+        if (res.ok) {
+          leagueData = await res.json();
+          const cw = String(leagueData.current_week || 2);
+          if (leagueData.season_schedule && leagueData.season_schedule[cw]) {
+            leagueData.week_matchups = leagueData.season_schedule[cw];
+          }
+        }
       } catch (err) {
         console.warn("Using default data", err);
       }
@@ -202,7 +204,8 @@
       const userObj = leagueData.members[currentUser];
       if (!userObj) return;
 
-      document.getElementById('user-title').innerText = `${currentUser}'s Week ${leagueData.current_week || 1} Picks`;
+      const activeWk = leagueData.current_week || 2;
+      document.getElementById('user-title').innerText = `${currentUser}'s Week ${activeWk} Picks`;
       const container = document.getElementById('matchups-container');
       container.innerHTML = '';
 
@@ -218,11 +221,8 @@
         };
 
         const safeId = team.replace(/[^a-zA-Z0-9]/g, '_');
-        
-        // Check if game is a BYE
-        const isBye = game.is_bye || game.opponent === 'BYE' || game.game_time === 'BYE WEEK' || (game.opponent && game.opponent.startsWith("@") === false && game.opponent.includes("North Carolina") && game.game_time.includes("08/29"));
+        const isBye = game.is_bye || game.opponent === 'BYE' || game.game_time === 'BYE WEEK';
 
-        // Check if this team has a Week 0 banked pick AND is on a BYE this week
         const bankedObj = BANKED_WEEK_0_PICKS.find(b => b.owner.toLowerCase() === currentUser.toLowerCase() && b.team.toLowerCase() === team.toLowerCase());
         const isAutoLockedWeek0Bye = isBye && bankedObj;
 
@@ -384,13 +384,15 @@
         }
       });
 
+      const activeWk = leagueData.current_week || 2;
+
       try {
         await fetch(GOOGLE_SCRIPT_URL, {
           method: 'POST',
           mode: 'no-cors',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            week: leagueData.current_week || 1,
+            week: activeWk,
             owner: currentUser,
             picks: picks
           })
@@ -400,7 +402,7 @@
       }
 
       const msg = document.getElementById('status-msg');
-      msg.innerText = `✓ ${currentUser}'s Week ${leagueData.current_week || 1} picks are locked in! Redirecting...`;
+      msg.innerText = `✓ ${currentUser}'s Week ${activeWk} picks are locked in! Redirecting...`;
       msg.classList.remove('hidden');
 
       setTimeout(() => {
@@ -410,7 +412,8 @@
 
     function copyPicks() {
       const userObj = leagueData.members[currentUser];
-      let summary = `🏈 ${currentUser}'s Week ${leagueData.current_week || 1} Picks (6 Picks):\n`;
+      const activeWk = leagueData.current_week || 2;
+      let summary = `🏈 ${currentUser}'s Week ${activeWk} Picks (6 Picks):\n`;
       summary += `─────────────────────────\n`;
 
       userObj.teams.forEach(team => {
