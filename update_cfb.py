@@ -5,6 +5,7 @@ import requests
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
+# Active Google Apps Script Web App Endpoint
 GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwC1NpT8vKqmfsMFUxsPjc_23YhRPQAdMvEtz8GN05NVrm7IOtxnB9tu45ML4HgtLVD/exec"
 
 ALIASES = {
@@ -77,9 +78,9 @@ def get_live_espn_data():
             if wk and isinstance(wk, int):
                 detected_week = wk
     except Exception as e:
-        print(f"Notice: Auto-detect live week: {e}")
+        print(f"Notice: Could not auto-detect live week: {e}")
 
-    # Query both prior week and active week to ensure no games are missed
+    # Query active week and prior week to ensure complete game coverage
     weeks_to_query = [max(1, detected_week - 1), detected_week]
     for w in set(weeks_to_query):
         for grp in [80, 81]:
@@ -195,7 +196,7 @@ def run_update():
         data["season_schedule"] = {}
 
     # -------------------------------------------------------------
-    # 1. SCORE WEEK 1 MATCHUPS
+    # 1. SCORE WEEK 1 MATCHUPS (Directly from verified schedule)
     # -------------------------------------------------------------
     week1_matchups = data["season_schedule"].get("1", [])
     week1_scores = {}
@@ -204,18 +205,25 @@ def run_update():
             week1_scores[m["team"].lower()] = m["result"]
 
     if week1_scores:
-        print(f"Syncing {len(week1_scores)} Week 1 results to Google Sheet...")
+        print(f"Syncing {len(week1_scores)} verified Week 1 results to Google Sheet...")
         auto_score_google_sheet(week1_scores, week_num=1)
 
     # -------------------------------------------------------------
-    # 2. REAL-TIME SCORING FOR WEEK 2 (AND ACTIVE WEEKS)
+    # 2. REAL-TIME SCORING & FULL RESET/SYNC FOR ACTIVE WEEK (WEEK 2)
     # -------------------------------------------------------------
     week2_matchups = data["season_schedule"].get(str(current_week), [])
-    week2_scores = {}
+    week2_sync_map = {}
 
-    # Match each game against ESPN live feed
     for m in week2_matchups:
         team_name = m["team"]
+        team_key = team_name.lower()
+
+        # Check if team is on an actual BYE
+        if m.get("is_bye") or m.get("opponent") == "BYE":
+            m["status"] = "STATUS_SCHEDULED"
+            m["result"] = "BYE"
+            continue
+
         matched_game = None
         is_home = False
 
@@ -230,13 +238,13 @@ def run_update():
                 break
 
         if matched_game:
-            # Update live odds / kickoff time
+            # Sync live spread / time if available
             if matched_game.get("spread") and matched_game["spread"] != "Line TBD":
                 m["spread"] = matched_game["spread"]
             if matched_game.get("game_time"):
                 m["game_time"] = matched_game["game_time"]
 
-            # CHECK IF GAME IS COMPLETED RIGHT NOW
+            # CASE A: Game is complete right now!
             if "FINAL" in matched_game["status"]:
                 h_score = int(matched_game["home_score"] or 0)
                 a_score = int(matched_game["away_score"] or 0)
@@ -245,33 +253,47 @@ def run_update():
 
                 m["status"] = "STATUS_FINAL"
                 m["result"] = res_str
-                week2_scores[team_name.lower()] = res_str
-                print(f"[Week {current_week} Final] {team_name}: {res_str} ({h_score}-{a_score})")
+                week2_sync_map[team_key] = res_str
+                print(f"[Week {current_week} Complete] {team_name}: {res_str} ({h_score}-{a_score})")
 
+            # CASE B: Game in progress
             elif "IN_PROGRESS" in matched_game["status"]:
                 m["status"] = "STATUS_IN_PROGRESS"
                 m["result"] = "PENDING"
+                week2_sync_map[team_key] = "PENDING"
+
+            # CASE C: Game not yet played
             else:
                 m["status"] = "STATUS_SCHEDULED"
-                # Keep existing result if already set, else PENDING
-                if m.get("result") not in ["WIN", "LOSS"]:
+                # Keep verified result if already final, else set PENDING
+                if m.get("status") != "STATUS_FINAL":
                     m["result"] = "PENDING"
+                    week2_sync_map[team_key] = "PENDING"
+                else:
+                    week2_sync_map[team_key] = m.get("result", "PENDING")
+        else:
+            # Game not in ESPN active feed — preserve valid status or keep PENDING
+            if m.get("status") == "STATUS_FINAL":
+                week2_sync_map[team_key] = m.get("result", "PENDING")
+            else:
+                m["status"] = "STATUS_SCHEDULED"
+                m["result"] = "PENDING"
+                week2_sync_map[team_key] = "PENDING"
 
     # Save active schedule
     data["season_schedule"][str(current_week)] = week2_matchups
     data["week_matchups"] = week2_matchups
 
-    # IMMEDIATELY auto-score any finished Week 2 games into Google Sheets!
-    if week2_scores:
-        print(f"Scoring {len(week2_scores)} completed Week {current_week} games in Google Sheet...")
-        auto_score_google_sheet(week2_scores, week_num=current_week)
-    else:
-        print(f"No new completed games to score yet for Week {current_week}.")
+    # FULL-SYNC: Overwrites the Google Sheet for Week 2
+    # Writes "WIN" or "LOSS" for finals, and overwrites all unplayed games back to "PENDING"
+    if week2_sync_map:
+        print(f"Syncing all {len(week2_sync_map)} Week {current_week} statuses to Google Sheet (wipes bad values back to PENDING)...")
+        auto_score_google_sheet(week2_sync_map, week_num=current_week)
 
     with open("league_data.json", "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
-    print("Live update and scoring complete.")
+    print("Complete autonomous update finished.")
 
 if __name__ == "__main__":
     run_update()
