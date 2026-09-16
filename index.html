@@ -372,7 +372,7 @@
     let selectedWeek = 2;
     let currentZoom = 1.0;
 
-    // DIRECT AUTHORITY ENGINE: Uses official schedule in league_data.json as truth
+    // DIRECT AUTHORITY ENGINE: Prioritizes verified final schedule, then falls back to Google Sheet
     function getVerifiedPickStatus(p, weekNum) {
       const w = String(weekNum);
 
@@ -384,16 +384,12 @@
       // 2. PRIMARY AUTHORITY: Check official game outcome in league_data.json
       if (leagueData && leagueData.season_schedule && leagueData.season_schedule[w]) {
         const match = leagueData.season_schedule[w].find(m => m.team && m.team.toLowerCase() === p.team.toLowerCase());
-        if (match) {
-          if (match.status === "STATUS_FINAL") {
-            return match.result; // Official WIN or LOSS from your schedule
-          } else {
-            return "PENDING";
-          }
+        if (match && match.status === "STATUS_FINAL" && (match.result === "WIN" || match.result === "LOSS")) {
+          return match.result; // Official WIN or LOSS from your schedule
         }
       }
 
-      // 3. Fallback to Google Sheet value if match not found in schedule
+      // 3. FALLBACK AUTHORITY: Use Google Sheet Result if schedule is not finalized
       if (p.result === "WIN" || p.result === "LOSS") {
         return p.result;
       }
