@@ -5,7 +5,6 @@ import requests
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
-# Active Google Apps Script Web App Endpoint
 GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwC1NpT8vKqmfsMFUxsPjc_23YhRPQAdMvEtz8GN05NVrm7IOtxnB9tu45ML4HgtLVD/exec"
 
 ALIASES = {
@@ -70,7 +69,6 @@ def matches_team(target_name, espn_team_obj):
     return (t_norm == loc or t_norm == disp or t_norm == short_disp or t_norm == abbrev)
 
 def get_live_espn_data_for_week(target_week):
-    """Queries ESPN specifically for target_week to prevent cross-week contamination"""
     events = []
     season_year = 2024
 
@@ -81,11 +79,11 @@ def get_live_espn_data_for_week(target_week):
             d = r.json()
             season_year = d.get("season", {}).get("year", 2024)
     except Exception as e:
-        print(f"Notice: Season autodetection fallback: {e}")
+        print(f"Notice: Live season autodetection fallback: {e}")
 
     print(f"Fetching ESPN games for Season {season_year}, strictly Week {target_week}...")
 
-    for grp in [80, 81]:
+    for grp in [80, 81]:  # FBS & FCS
         url = f"https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?dates={season_year}&week={target_week}&groups={grp}&limit=300"
         try:
             res = requests.get(url, timeout=12)
@@ -183,76 +181,63 @@ def run_update():
     with open("league_data.json", "r", encoding="utf-8") as f:
         data = json.load(f)
 
-    current_week = int(data.get("current_week", 2))
-    data["last_updated"] = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
-
-    # Fetch ONLY games for current_week to guarantee no Week 1 contamination
-    events = get_live_espn_data_for_week(current_week)
-    games = parse_events(events)
-
     if "season_schedule" not in data:
         data["season_schedule"] = {}
 
-    week_matchups = data["season_schedule"].get(str(current_week), [])
-    if not week_matchups:
-        all_teams = []
-        for m in data["members"].values():
-            all_teams.extend(m.get("teams", []))
-        week_matchups = [{"team": t} for t in sorted(list(set(all_teams)))]
+    all_teams = []
+    for m in data["members"].values():
+        all_teams.extend(m.get("teams", []))
+    all_teams = sorted(list(set(all_teams)))
 
-    current_sync_map = {}
+    # -------------------------------------------------------------
+    # STEP 1: SCORE & FINALIZE WEEK 2
+    # -------------------------------------------------------------
+    print("--- STEP 1: Finalizing and Scoring Week 2 ---")
+    w2_events = get_live_espn_data_for_week(2)
+    w2_games = parse_events(w2_events)
+    w2_matchups = data["season_schedule"].get("2", [])
+    if not w2_matchups:
+        w2_matchups = [{"team": t} for t in all_teams]
 
-    for m in week_matchups:
+    w2_sync_map = {}
+    for m in w2_matchups:
         team_name = m["team"]
         team_key = team_name.lower().strip()
-
-        matched_game = None
+        matched = None
         is_home = False
 
-        for g in games:
-            # STRICT GUARD: Never match games from another week
-            if g.get("week") != current_week:
+        for g in w2_games:
+            if g.get("week") != 2:
                 continue
-
             if matches_team(team_name, g["home_obj"]):
-                matched_game = g
+                matched = g
                 is_home = True
                 break
             elif matches_team(team_name, g["away_obj"]):
-                matched_game = g
+                matched = g
                 is_home = False
                 break
 
-        if matched_game:
+        if matched:
             m["is_bye"] = False
-            m["opponent"] = matched_game["away_loc"] if is_home else f"@{matched_game['home_loc']}"
-            m["game_time"] = matched_game["game_time"]
-            m["spread"] = matched_game["spread"]
-            m["over_under"] = matched_game["over_under"]
+            m["opponent"] = matched["away_loc"] if is_home else f"@{matched['home_loc']}"
+            m["game_time"] = matched["game_time"]
+            m["spread"] = matched["spread"]
+            m["over_under"] = matched["over_under"]
 
-            if "FINAL" in matched_game["status"]:
-                h_score = int(matched_game["home_score"] or 0)
-                a_score = int(matched_game["away_score"] or 0)
+            if "FINAL" in matched["status"]:
+                h_score = int(matched["home_score"] or 0)
+                a_score = int(matched["away_score"] or 0)
                 won = (h_score > a_score) if is_home else (a_score > h_score)
                 res_str = "WIN" if won else "LOSS"
-
                 m["status"] = "STATUS_FINAL"
                 m["result"] = res_str
-                current_sync_map[team_key] = res_str
-                print(f"[Week {current_week} FINAL] {team_name}: {res_str} ({matched_game['away_loc']} vs {matched_game['home_loc']})")
-
-            elif "IN_PROGRESS" in matched_game["status"]:
-                m["status"] = "STATUS_IN_PROGRESS"
-                m["result"] = "PENDING"
-                current_sync_map[team_key] = "PENDING"
-
+                w2_sync_map[team_key] = res_str
             else:
                 m["status"] = "STATUS_SCHEDULED"
                 m["result"] = "PENDING"
-                current_sync_map[team_key] = "PENDING"
-
+                w2_sync_map[team_key] = "PENDING"
         else:
-            # Genuine BYE week
             m["is_bye"] = True
             m["opponent"] = "BYE"
             m["game_time"] = "BYE WEEK"
@@ -260,18 +245,91 @@ def run_update():
             m["status"] = "STATUS_SCHEDULED"
             m["result"] = "BYE"
 
-    data["season_schedule"][str(current_week)] = week_matchups
-    data["week_matchups"] = week_matchups
+    data["season_schedule"]["2"] = w2_matchups
 
-    # Overwrite and sync Week 2 explicitly to Google Sheet
-    if current_sync_map:
-        print(f"Syncing verified Week {current_week} results to Google Sheet ({len(current_sync_map)} teams)...")
-        auto_score_google_sheet(current_sync_map, week_num=current_week)
+    if w2_sync_map:
+        print(f"Syncing Week 2 finalized results to Google Sheet ({len(w2_sync_map)} teams)...")
+        auto_score_google_sheet(w2_sync_map, week_num=2)
 
+    # -------------------------------------------------------------
+    # STEP 2: ADVANCE CURRENT WEEK TO WEEK 3 & POPULATE MATCHUPS
+    # -------------------------------------------------------------
+    ACTIVE_WEEK = 3
+    data["current_week"] = ACTIVE_WEEK
+    data["last_updated"] = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
+
+    print(f"\n--- STEP 2: Fetching Week {ACTIVE_WEEK} Matchups, Spreads & Times ---")
+    w3_events = get_live_espn_data_for_week(ACTIVE_WEEK)
+    w3_games = parse_events(w3_events)
+
+    w3_matchups = []
+    w3_sync_map = {}
+
+    for team_name in all_teams:
+        team_key = team_name.lower().strip()
+        matched = None
+        is_home = False
+
+        for g in w3_games:
+            if g.get("week") != ACTIVE_WEEK:
+                continue
+            if matches_team(team_name, g["home_obj"]):
+                matched = g
+                is_home = True
+                break
+            elif matches_team(team_name, g["away_obj"]):
+                matched = g
+                is_home = False
+                break
+
+        if matched:
+            opp_name = matched["away_loc"] if is_home else f"@{matched['home_loc']}"
+            game_status = matched["status"]
+            res_str = "PENDING"
+
+            if "FINAL" in game_status:
+                h_score = int(matched["home_score"] or 0)
+                a_score = int(matched["away_score"] or 0)
+                won = (h_score > a_score) if is_home else (a_score > h_score)
+                res_str = "WIN" if won else "LOSS"
+                game_status = "STATUS_FINAL"
+                w3_sync_map[team_key] = res_str
+
+            w3_matchups.append({
+                "team": team_name,
+                "opponent": opp_name,
+                "spread": matched["spread"],
+                "over_under": matched["over_under"],
+                "game_time": matched["game_time"],
+                "status": game_status,
+                "result": res_str,
+                "is_bye": False
+            })
+            print(f"[Week 3 Matchup] {team_name} vs {opp_name} | Line: {matched['spread']} | {matched['game_time']}")
+        else:
+            # Genuine BYE week in Week 3
+            w3_matchups.append({
+                "team": team_name,
+                "opponent": "BYE",
+                "spread": "N/A",
+                "over_under": "",
+                "game_time": "BYE WEEK",
+                "status": "STATUS_SCHEDULED",
+                "result": "BYE",
+                "is_bye": True
+            })
+
+    data["season_schedule"]["3"] = w3_matchups
+    data["week_matchups"] = w3_matchups
+
+    if w3_sync_map:
+        auto_score_google_sheet(w3_sync_map, week_num=ACTIVE_WEEK)
+
+    # Save to league_data.json
     with open("league_data.json", "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
-    print(f"Week {current_week} update complete.")
+    print(f"\nSuccessfully finalized Week 2 and loaded Week 3 matchups!")
 
 if __name__ == "__main__":
     run_update()
