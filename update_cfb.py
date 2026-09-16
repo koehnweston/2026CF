@@ -69,11 +69,10 @@ def matches_team(target_name, espn_team_obj):
 
     return (t_norm == loc or t_norm == disp or t_norm == short_disp or t_norm == abbrev)
 
-def get_live_espn_data(target_week):
-    """Dynamically queries live ESPN scoreboard without year or week deadlocks"""
+def get_live_espn_data_for_week(target_week):
+    """Queries ESPN specifically for target_week to prevent cross-week contamination"""
     events = []
     season_year = 2024
-    detected_week = target_week
 
     try:
         base_url = "https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard"
@@ -81,28 +80,22 @@ def get_live_espn_data(target_week):
         if r.status_code == 200:
             d = r.json()
             season_year = d.get("season", {}).get("year", 2024)
-            wk = d.get("week", {}).get("number")
-            if wk and isinstance(wk, int):
-                detected_week = wk
     except Exception as e:
-        print(f"Notice: Live season autodetection fallback: {e}")
+        print(f"Notice: Season autodetection fallback: {e}")
 
-    # Query target week, active week, and adjacent weeks
-    weeks_to_query = list(set([target_week, detected_week, max(1, target_week - 1)]))
-    print(f"Querying ESPN for season {season_year}, weeks: {weeks_to_query}...")
+    print(f"Fetching ESPN games for Season {season_year}, strictly Week {target_week}...")
 
-    for w in weeks_to_query:
-        for grp in [80, 81]:  # FBS (80) & FCS (81)
-            url = f"https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?dates={season_year}&week={w}&groups={grp}&limit=300"
-            try:
-                res = requests.get(url, timeout=12)
-                if res.status_code == 200:
-                    data = res.json()
-                    for ev in data.get("events", []):
-                        ev["_query_week"] = w
-                        events.append(ev)
-            except Exception as e:
-                print(f"Notice: Error fetching week {w} group {grp}: {e}")
+    for grp in [80, 81]:
+        url = f"https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?dates={season_year}&week={target_week}&groups={grp}&limit=300"
+        try:
+            res = requests.get(url, timeout=12)
+            if res.status_code == 200:
+                data = res.json()
+                for ev in data.get("events", []):
+                    ev["_query_week"] = target_week
+                    events.append(ev)
+        except Exception as e:
+            print(f"Notice: Error fetching week {target_week} group {grp}: {e}")
 
     return events
 
@@ -153,7 +146,7 @@ def parse_events(events):
 
         parsed_games.append({
             "id": game_id,
-            "week": ev.get("_query_week", 1),
+            "week": ev.get("_query_week"),
             "home_obj": home_team.get("team", {}),
             "away_obj": away_team.get("team", {}),
             "home_loc": home_team.get("team", {}).get("location") or home_team.get("team", {}).get("displayName", "Home"),
@@ -190,16 +183,16 @@ def run_update():
     with open("league_data.json", "r", encoding="utf-8") as f:
         data = json.load(f)
 
-    current_week = data.get("current_week", 2)
+    current_week = int(data.get("current_week", 2))
     data["last_updated"] = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
 
-    events = get_live_espn_data(current_week)
+    # Fetch ONLY games for current_week to guarantee no Week 1 contamination
+    events = get_live_espn_data_for_week(current_week)
     games = parse_events(events)
 
     if "season_schedule" not in data:
         data["season_schedule"] = {}
 
-    # Build or retrieve the matchup list for current week
     week_matchups = data["season_schedule"].get(str(current_week), [])
     if not week_matchups:
         all_teams = []
@@ -213,11 +206,14 @@ def run_update():
         team_name = m["team"]
         team_key = team_name.lower().strip()
 
-        # Search ESPN live events first
         matched_game = None
         is_home = False
 
         for g in games:
+            # STRICT GUARD: Never match games from another week
+            if g.get("week") != current_week:
+                continue
+
             if matches_team(team_name, g["home_obj"]):
                 matched_game = g
                 is_home = True
@@ -228,14 +224,12 @@ def run_update():
                 break
 
         if matched_game:
-            # Overwrite placeholder BYE with verified opponent and lines
             m["is_bye"] = False
             m["opponent"] = matched_game["away_loc"] if is_home else f"@{matched_game['home_loc']}"
             m["game_time"] = matched_game["game_time"]
             m["spread"] = matched_game["spread"]
             m["over_under"] = matched_game["over_under"]
 
-            # Evaluate Game Status
             if "FINAL" in matched_game["status"]:
                 h_score = int(matched_game["home_score"] or 0)
                 a_score = int(matched_game["away_score"] or 0)
@@ -258,7 +252,7 @@ def run_update():
                 current_sync_map[team_key] = "PENDING"
 
         else:
-            # If no ESPN game was found, verify if it is an actual BYE
+            # Genuine BYE week
             m["is_bye"] = True
             m["opponent"] = "BYE"
             m["game_time"] = "BYE WEEK"
@@ -266,30 +260,18 @@ def run_update():
             m["status"] = "STATUS_SCHEDULED"
             m["result"] = "BYE"
 
-    # Save to active schedule
     data["season_schedule"][str(current_week)] = week_matchups
     data["week_matchups"] = week_matchups
 
-    # Automatically score Google Sheet for Week 1 through current_week
-    for w in range(1, current_week + 1):
-        w_matchups = data["season_schedule"].get(str(w), [])
-        scores_to_send = {}
-        for match in w_matchups:
-            if match.get("status") == "STATUS_FINAL" and match.get("result") in ["WIN", "LOSS"]:
-                scores_to_send[match["team"].lower().strip()] = match["result"]
+    # Overwrite and sync Week 2 explicitly to Google Sheet
+    if current_sync_map:
+        print(f"Syncing verified Week {current_week} results to Google Sheet ({len(current_sync_map)} teams)...")
+        auto_score_google_sheet(current_sync_map, week_num=current_week)
 
-        if w == current_week:
-            scores_to_send.update(current_sync_map)
-
-        if scores_to_send:
-            print(f"Auto-scoring Google Sheet for Week {w} ({len(scores_to_send)} teams)...")
-            auto_score_google_sheet(scores_to_send, week_num=w)
-
-    # Save updated JSON
     with open("league_data.json", "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
-    print("Auto-update finished successfully.")
+    print(f"Week {current_week} update complete.")
 
 if __name__ == "__main__":
     run_update()
