@@ -5,7 +5,11 @@ import requests
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
+# Active Google Apps Script Web App Endpoint
 GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwC1NpT8vKqmfsMFUxsPjc_23YhRPQAdMvEtz8GN05NVrm7IOtxnB9tu45ML4HgtLVD/exec"
+
+# Optional: Set to an integer (e.g., 4) to force a specific week, or keep None for fully autonomous week progression
+FORCE_WEEK = None
 
 ALIASES = {
     "texas": ["texas longhorns", "texas"],
@@ -68,21 +72,26 @@ def matches_team(target_name, espn_team_obj):
 
     return (t_norm == loc or t_norm == disp or t_norm == short_disp or t_norm == abbrev)
 
-def get_live_espn_data_for_week(target_week):
-    events = []
+def get_espn_active_info():
+    """Detects current season year and current active week from ESPN root API"""
     season_year = 2024
-
+    espn_week = 4
     try:
         base_url = "https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard"
         r = requests.get(base_url, timeout=10)
         if r.status_code == 200:
             d = r.json()
             season_year = d.get("season", {}).get("year", 2024)
+            wk = d.get("week", {}).get("number")
+            if wk and isinstance(wk, int):
+                espn_week = wk
     except Exception as e:
-        print(f"Notice: Live season autodetection fallback: {e}")
+        print(f"Notice: ESPN auto-detection fallback: {e}")
+    return season_year, espn_week
 
-    print(f"Fetching ESPN games for Season {season_year}, strictly Week {target_week}...")
-
+def get_live_espn_data_for_week(target_week, season_year):
+    events = []
+    print(f"Fetching ESPN games for Season {season_year}, Week {target_week}...")
     for grp in [80, 81]:  # FBS & FCS
         url = f"https://site.api.espn.com/apis/site/v2/sports/football/college-football/scoreboard?dates={season_year}&week={target_week}&groups={grp}&limit=300"
         try:
@@ -94,7 +103,6 @@ def get_live_espn_data_for_week(target_week):
                     events.append(ev)
         except Exception as e:
             print(f"Notice: Error fetching week {target_week} group {grp}: {e}")
-
     return events
 
 def parse_events(events):
@@ -189,25 +197,32 @@ def run_update():
         all_teams.extend(m.get("teams", []))
     all_teams = sorted(list(set(all_teams)))
 
-    # -------------------------------------------------------------
-    # STEP 1: SCORE & FINALIZE WEEK 2
-    # -------------------------------------------------------------
-    print("--- STEP 1: Finalizing and Scoring Week 2 ---")
-    w2_events = get_live_espn_data_for_week(2)
-    w2_games = parse_events(w2_events)
-    w2_matchups = data["season_schedule"].get("2", [])
-    if not w2_matchups:
-        w2_matchups = [{"team": t} for t in all_teams]
+    season_year, espn_active_week = get_espn_active_info()
+    stored_week = int(data.get("current_week", 3))
 
-    w2_sync_map = {}
-    for m in w2_matchups:
+    # -------------------------------------------------------------
+    # 1. SCORE AND FINALIZE THE CURRENT WEEK
+    # -------------------------------------------------------------
+    print(f"--- Checking & Scoring Week {stored_week} ---")
+    w_events = get_live_espn_data_for_week(stored_week, season_year)
+    w_games = parse_events(w_events)
+
+    week_matchups = data["season_schedule"].get(str(stored_week), [])
+    if not week_matchups:
+        week_matchups = [{"team": t} for t in all_teams]
+
+    sync_map = {}
+    active_games_count = 0
+    final_games_count = 0
+
+    for m in week_matchups:
         team_name = m["team"]
         team_key = team_name.lower().strip()
         matched = None
         is_home = False
 
-        for g in w2_games:
-            if g.get("week") != 2:
+        for g in w_games:
+            if g.get("week") != stored_week:
                 continue
             if matches_team(team_name, g["home_obj"]):
                 matched = g
@@ -219,6 +234,7 @@ def run_update():
                 break
 
         if matched:
+            active_games_count += 1
             m["is_bye"] = False
             m["opponent"] = matched["away_loc"] if is_home else f"@{matched['home_loc']}"
             m["game_time"] = matched["game_time"]
@@ -226,17 +242,22 @@ def run_update():
             m["over_under"] = matched["over_under"]
 
             if "FINAL" in matched["status"]:
-                h_score = int(matched["home_score"] or 0)
-                a_score = int(matched["away_score"] or 0)
-                won = (h_score > a_score) if is_home else (a_score > h_score)
+                final_games_count += 1
+                h = int(matched["home_score"] or 0)
+                a = int(matched["away_score"] or 0)
+                won = (h > a) if is_home else (a > h)
                 res_str = "WIN" if won else "LOSS"
                 m["status"] = "STATUS_FINAL"
                 m["result"] = res_str
-                w2_sync_map[team_key] = res_str
+                sync_map[team_key] = res_str
+            elif "IN_PROGRESS" in matched["status"]:
+                m["status"] = "STATUS_IN_PROGRESS"
+                m["result"] = "PENDING"
+                sync_map[team_key] = "PENDING"
             else:
                 m["status"] = "STATUS_SCHEDULED"
                 m["result"] = "PENDING"
-                w2_sync_map[team_key] = "PENDING"
+                sync_map[team_key] = "PENDING"
         else:
             m["is_bye"] = True
             m["opponent"] = "BYE"
@@ -245,33 +266,50 @@ def run_update():
             m["status"] = "STATUS_SCHEDULED"
             m["result"] = "BYE"
 
-    data["season_schedule"]["2"] = w2_matchups
+    data["season_schedule"][str(stored_week)] = week_matchups
 
-    if w2_sync_map:
-        print(f"Syncing Week 2 finalized results to Google Sheet ({len(w2_sync_map)} teams)...")
-        auto_score_google_sheet(w2_sync_map, week_num=2)
+    if sync_map:
+        print(f"Syncing Week {stored_week} scores to Google Sheet ({len(sync_map)} teams)...")
+        auto_score_google_sheet(sync_map, week_num=stored_week)
 
     # -------------------------------------------------------------
-    # STEP 2: ADVANCE CURRENT WEEK TO WEEK 3 & POPULATE MATCHUPS
+    # 2. AUTONOMOUS ROLLOVER TO NEXT WEEK
     # -------------------------------------------------------------
-    ACTIVE_WEEK = 3
-    data["current_week"] = ACTIVE_WEEK
+    # A week is considered complete when either:
+    # A) All active games in that week are STATUS_FINAL
+    # B) ESPN's live week has advanced past stored_week
+    # C) FORCE_WEEK is explicitly specified
+    is_week_finished = (active_games_count > 0 and final_games_count >= active_games_count) or (espn_active_week > stored_week)
+
+    if FORCE_WEEK is not None:
+        target_active_week = FORCE_WEEK
+    elif is_week_finished:
+        target_active_week = stored_week + 1
+        print(f"★ All Week {stored_week} games are complete! Auto-advancing to Week {target_active_week}.")
+    else:
+        target_active_week = stored_week
+        print(f"Week {stored_week} is still active ({final_games_count}/{active_games_count} games completed).")
+
+    data["current_week"] = target_active_week
     data["last_updated"] = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
 
-    print(f"\n--- STEP 2: Fetching Week {ACTIVE_WEEK} Matchups, Spreads & Times ---")
-    w3_events = get_live_espn_data_for_week(ACTIVE_WEEK)
-    w3_games = parse_events(w3_events)
+    # -------------------------------------------------------------
+    # 3. POPULATE MATCHUPS & SPREADS FOR THE ACTIVE PICKING WEEK
+    # -------------------------------------------------------------
+    print(f"\n--- Loading Matchups, Lines & Times for Week {target_active_week} ---")
+    active_events = get_live_espn_data_for_week(target_active_week, season_year)
+    active_games = parse_events(active_events)
 
-    w3_matchups = []
-    w3_sync_map = {}
+    active_matchups = []
+    active_sync_map = {}
 
     for team_name in all_teams:
         team_key = team_name.lower().strip()
         matched = None
         is_home = False
 
-        for g in w3_games:
-            if g.get("week") != ACTIVE_WEEK:
+        for g in active_games:
+            if g.get("week") != target_active_week:
                 continue
             if matches_team(team_name, g["home_obj"]):
                 matched = g
@@ -288,14 +326,14 @@ def run_update():
             res_str = "PENDING"
 
             if "FINAL" in game_status:
-                h_score = int(matched["home_score"] or 0)
-                a_score = int(matched["away_score"] or 0)
-                won = (h_score > a_score) if is_home else (a_score > h_score)
+                h = int(matched["home_score"] or 0)
+                a = int(matched["away_score"] or 0)
+                won = (h > a) if is_home else (a > h)
                 res_str = "WIN" if won else "LOSS"
                 game_status = "STATUS_FINAL"
-                w3_sync_map[team_key] = res_str
+                active_sync_map[team_key] = res_str
 
-            w3_matchups.append({
+            active_matchups.append({
                 "team": team_name,
                 "opponent": opp_name,
                 "spread": matched["spread"],
@@ -305,10 +343,9 @@ def run_update():
                 "result": res_str,
                 "is_bye": False
             })
-            print(f"[Week 3 Matchup] {team_name} vs {opp_name} | Line: {matched['spread']} | {matched['game_time']}")
+            print(f"[Week {target_active_week} Matchup] {team_name} vs {opp_name} | {matched['spread']} | {matched['game_time']}")
         else:
-            # Genuine BYE week in Week 3
-            w3_matchups.append({
+            active_matchups.append({
                 "team": team_name,
                 "opponent": "BYE",
                 "spread": "N/A",
@@ -319,17 +356,16 @@ def run_update():
                 "is_bye": True
             })
 
-    data["season_schedule"]["3"] = w3_matchups
-    data["week_matchups"] = w3_matchups
+    data["season_schedule"][str(target_active_week)] = active_matchups
+    data["week_matchups"] = active_matchups
 
-    if w3_sync_map:
-        auto_score_google_sheet(w3_sync_map, week_num=ACTIVE_WEEK)
+    if active_sync_map:
+        auto_score_google_sheet(active_sync_map, week_num=target_active_week)
 
-    # Save to league_data.json
     with open("league_data.json", "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
-    print(f"\nSuccessfully finalized Week 2 and loaded Week 3 matchups!")
+    print(f"\nCompleted! Active week is now Week {target_active_week}.")
 
 if __name__ == "__main__":
     run_update()
