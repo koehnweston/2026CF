@@ -188,7 +188,7 @@
       <div id="weekly-picks-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
     </div>
 
-    <!-- ================= TAB 3: AARON'S CMT QUIZ (REPLACES CIRCLE OF TRUST) ================= -->
+    <!-- ================= TAB 3: AARON'S CMT REMEDIATION EXAM ================= -->
     <div id="tab-content-cmt" class="tab-pane hidden space-y-6">
       <!-- Callout Banner -->
       <div class="bg-gradient-to-r from-amber-950/60 via-slate-900 to-rose-950/40 border-2 border-amber-500/50 rounded-3xl p-6 shadow-2xl relative overflow-hidden">
@@ -204,8 +204,8 @@
             </div>
             <h2 class="text-2xl sm:text-3xl font-black text-white">Construction Materials Testing Certification</h2>
             <p class="text-xs sm:text-sm text-slate-300 mt-1 max-w-2xl">
-              Aaron has spent all week talking smack to <strong class="text-amber-400">Paul</strong> about Texas A&M falling to Kentucky, while neglecting to submit his own picks. 
-              Before Aaron can make his official Week 2 picks, he must prove his field competency with a passing grade (<strong>80% or higher</strong>).
+              Now that <strong class="text-indigo-400">Kentucky actually beat Texas A&M</strong>, Aaron has spent the entire week running his mouth, gloating to <strong class="text-amber-400">Paul</strong>, and acting like he personally called the plays—all while completely failing to submit his own picks! 
+              Before Aaron is permitted to lock in his Week 2 picks, he must prove his field competency with a passing grade (<strong>80% or higher</strong>) and formalize where he's buying lunch.
             </p>
           </div>
           <div class="bg-slate-950/80 border border-amber-500/40 rounded-2xl p-4 text-center min-w-[170px]">
@@ -379,7 +379,7 @@
       "Paul": { "teams": ["Georgia", "Texas A&M", "East Carolina", "Iowa", "Wisconsin", "Army", "Georgia Tech", "Syracuse"], "proj_wins": 56.4, "avg_fpi": 7.9 }
     };
 
-    // 10 Construction Materials Testing Quiz Questions
+    // 10 Construction Materials Testing Quiz Questions (With Question 10 Lunch Requirement)
     const CMT_QUESTIONS = [
       {
         q: "1. Under ASTM C143 (Slump Test), in how many equal volume layers must the cone be filled, and how many strokes of the tamping rod are applied per layer?",
@@ -422,7 +422,7 @@
         answer: 1
       },
       {
-        q: "5. When Paul's Texas A&M team plays Kentucky, and Aaron makes a nuclear density gauge test on base course (ASTM D6938), what test mode yields the most accurate density reading?",
+        q: "5. When Aaron is performing a nuclear density gauge test on base course (ASTM D6938) instead of submitting his CFB picks, what test mode yields the most accurate density reading?",
         options: [
           "Backscatter mode",
           "Direct transmission mode",
@@ -472,12 +472,12 @@
         answer: 1
       },
       {
-        q: "10. Aaron guaranteed Kentucky would upset Texas A&M. If Kentucky loses to Paul's Aggies by 20+ points, what is Aaron's required remedy?",
+        q: "10. Now that Kentucky ALREADY beat Texas A&M and Aaron has been insufferably running his mouth all week to Paul like he played quarterback himself, where is Aaron contractually obligated to buy Paul lunch to atone for his behavior?",
         options: [
-          "Blame the refs and complain in group chat",
-          "Re-rod every slump cone 100 times",
-          "Admit Paul is his superior and buy him lunch",
-          "Pretend he picked Texas A&M all along"
+          "McDonald's Dollar Menu (REJECTED: Cheapskate violation, automatic failure)",
+          "Gas station roller-grill hot dogs (REJECTED: Paul throws an ASTM slump cone at you)",
+          "Pappas Bros. Steakhouse — 42-day Dry-Aged A5 Japanese Wagyu Tomahawk Steaks, Alaskan King Crab, and top-shelf Bourbon billed 100% to Aaron's personal credit card",
+          "A room-temperature PB&J in the job trailer (REJECTED: Disqualification & 1-year league suspension)"
         ],
         answer: 2
       }
@@ -908,7 +908,7 @@
 
       if (passed) {
         localStorage.setItem('aaron_cmt_passed', 'true');
-        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+        confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
       }
 
       renderAaronAttemptBoard();
@@ -920,7 +920,7 @@
         banner.className = "mt-6 p-5 rounded-2xl border border-emerald-500 bg-emerald-950/50 text-emerald-300 text-center";
         banner.innerHTML = `
           <h4 class="text-lg font-black uppercase tracking-wider">🎉 CONGRATULATIONS AARON! YOU PASSED!</h4>
-          <p class="text-xs text-emerald-200 mt-1">Score: ${score} / 10 (${score * 10}%). Your pick sheet lock has been disengaged.</p>
+          <p class="text-xs text-emerald-200 mt-1">Score: ${score} / 10 (${score * 10}%). You passed the exam and formally agreed to buy Paul dry-aged Wagyu steaks.</p>
           <a href="pick.html?user=Aaron" class="inline-block mt-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs px-5 py-2.5 rounded-xl uppercase tracking-wider transition">
             Proceed to Submit Week 2 Picks ➔
           </a>
@@ -928,9 +928,9 @@
       } else {
         banner.className = "mt-6 p-5 rounded-2xl border border-rose-600 bg-rose-950/50 text-rose-300 text-center";
         banner.innerHTML = `
-          <h4 class="text-lg font-black uppercase tracking-wider">❌ FAILED: RE-TEST REQUIRED!</h4>
+          <h4 class="text-lg font-black uppercase tracking-wider">❌ FAILED: RETEST REQUIRED!</h4>
           <p class="text-xs text-rose-200 mt-1">Score: ${score} / 10 (${score * 10}%). Required to pass: 8 / 10. Paul remains completely unimpressed.</p>
-          <p class="text-[11px] font-mono text-rose-400 mt-1">Status: Picks are still LOCKED for Aaron until standard is met.</p>
+          <p class="text-[11px] font-mono text-rose-400 mt-1">Status: Picks REMAIN LOCKED for Aaron until standard is met.</p>
         `;
       }
     }
