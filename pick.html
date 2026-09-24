@@ -1,86 +1,356 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Make Picks (Pick 6 to Win) - CFB Pool</title>
+  <title>CFB Pool 2026 - Master Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&family=VT323&display=swap" rel="stylesheet">
+  
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .font-terminal { font-family: 'VT323', monospace; }
+    #zoom-container { transition: zoom 0.15s ease-out; width: 100%; margin: 0 auto; }
+  </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen font-sans">
-  <div class="max-w-3xl mx-auto px-4 py-8">
+<body class="bg-[#07090e] text-slate-100 min-h-screen selection:bg-indigo-500 selection:text-white relative overflow-x-hidden antialiased flex flex-col items-center">
+
+  <div class="fixed top-[-10%] left-[-5%] w-[45rem] h-[45rem] bg-indigo-600/10 rounded-full blur-[140px] pointer-events-none -z-10"></div>
+  <div class="fixed top-[30%] right-[-10%] w-[40rem] h-[40rem] bg-fuchsia-600/10 rounded-full blur-[160px] pointer-events-none -z-10"></div>
+  <div class="fixed bottom-[-10%] left-[20%] w-[50rem] h-[50rem] bg-amber-600/10 rounded-full blur-[150px] pointer-events-none -z-10"></div>
+
+  <div id="zoom-container" class="max-w-6xl px-4 sm:px-6 py-6">
     
-    <!-- Top Navigation -->
-    <div class="flex justify-between items-center mb-6">
-      <a href="index.html" class="text-sm font-medium text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition">
-        ← Back to Master Scoreboard
-      </a>
-      <div class="flex items-center gap-2 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg">
-        <span class="text-xs text-slate-400 uppercase font-semibold">User:</span>
-        <span id="locked-user-display" class="text-sm font-bold text-indigo-300">Loading...</span>
+    <!-- Header -->
+    <header class="flex flex-col md:flex-row justify-between items-center pb-6 border-b border-slate-800/80 mb-6 gap-4">
+      <div class="flex items-center gap-4">
+        <div class="h-12 w-12 rounded-2xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-cyan-400 p-[1px] shadow-lg shadow-indigo-500/20 flex items-center justify-center">
+          <div class="w-full h-full bg-slate-950 rounded-[15px] flex items-center justify-center text-xl">
+            🏈
+          </div>
+        </div>
+        <div>
+          <div class="flex items-center gap-2.5">
+            <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-white">
+              CFB POOL <span class="bg-gradient-to-r from-indigo-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent">2026</span>
+            </h1>
+            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold uppercase tracking-wider bg-gradient-to-r from-indigo-500/20 to-purple-500/20 border border-indigo-500/30 text-indigo-300 shadow-inner">
+              Week <span id="week-display">2</span>
+            </span>
+          </div>
+          <p class="text-slate-400 text-xs mt-0.5 font-medium">10 Owners • 80 Drafted Teams • Pick 6 to Win Weekly</p>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-3">
+        <button onclick="openLoginModal()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white font-bold text-xs shadow-lg shadow-indigo-600/30 flex items-center gap-2 transition hover:scale-[1.02]">
+          <span>🔑</span>
+          <span>Make Picks</span>
+        </button>
+
+        <div class="flex items-center bg-slate-900/90 border border-slate-800 rounded-xl p-1 shadow-inner">
+          <button onclick="changeZoom(-0.05)" class="w-7 h-7 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg text-sm font-bold transition">－</button>
+          <span id="zoom-text" class="text-[11px] font-mono font-bold text-slate-300 px-2 min-w-[45px] text-center">100%</span>
+          <button onclick="changeZoom(0.05)" class="w-7 h-7 flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg text-sm font-bold transition">＋</button>
+          <button onclick="resetZoom()" title="Reset Zoom" class="text-[10px] text-slate-500 hover:text-indigo-400 px-1.5 transition">↺</button>
+        </div>
+
+        <button onclick="loadData()" class="group relative px-3.5 py-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-slate-700/80 hover:border-indigo-500/50 text-xs font-bold transition shadow-lg flex items-center gap-2">
+          <span class="inline-block group-hover:rotate-180 transition duration-500">🔄</span>
+          <span>Refresh</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="flex space-x-2 p-1.5 bg-slate-900/80 border border-slate-800/80 rounded-2xl mb-8 max-w-xl backdrop-blur-md shadow-xl">
+      <button id="tab-btn-standings" onclick="switchTab('standings')" 
+        class="flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow-lg shadow-indigo-600/30">
+        <span>🏆</span> Standings
+      </button>
+      <button id="tab-btn-picks" onclick="switchTab('picks')" 
+        class="flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-800/60">
+        <span>📋</span> Weekly Picks
+      </button>
+      <button id="tab-btn-cmt" onclick="switchTab('cmt')" 
+        class="flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 text-amber-400 hover:text-amber-200 hover:bg-amber-950/40 border border-amber-800/40">
+        <span>🏗️</span> Aaron's CMT Quiz
+      </button>
+    </nav>
+
+    <!-- ================= TAB 1: SEASON STANDINGS ================= -->
+    <div id="tab-content-standings" class="tab-pane">
+      <div id="podium-cards" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8"></div>
+
+      <div class="rounded-3xl border border-slate-800/90 bg-slate-900/40 backdrop-blur-xl shadow-2xl overflow-hidden mb-6">
+        <div class="px-6 py-4 border-b border-slate-800/80 flex justify-between items-center bg-slate-900/60">
+          <div>
+            <h2 class="text-sm font-bold uppercase tracking-wider text-slate-300">Official Leaderboard</h2>
+            <p class="text-xs text-slate-500">Live Season Standings (All Completed Weeks + Week 0)</p>
+          </div>
+          <span class="text-xs font-mono bg-indigo-950/80 text-indigo-400 border border-indigo-800/50 px-3 py-1 rounded-full font-bold">
+            Live Verified Record
+          </span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="border-b border-slate-800/80 text-slate-400 text-[11px] uppercase tracking-wider bg-slate-950/40">
+                <th class="py-4 px-6 text-center w-16">Rank</th>
+                <th class="py-4 px-6">Owner</th>
+                <th class="py-4 px-6 text-center">Record (W-L)</th>
+                <th class="py-4 px-6 text-center">Win %</th>
+                <th class="py-4 px-6 text-center">Proj Wins</th>
+                <th class="py-4 px-6 text-center">Avg FPI</th>
+                <th class="py-4 px-6 text-right">Roster</th>
+              </tr>
+            </thead>
+            <tbody id="standings-body" class="divide-y divide-slate-800/50 text-sm"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Banked Week 0 Vault Card -->
+      <div class="bg-gradient-to-r from-slate-900/80 to-indigo-950/30 border border-slate-800 rounded-3xl p-5 backdrop-blur-md shadow-xl">
+        <div class="flex justify-between items-center pb-3 border-b border-slate-800/80 mb-3">
+          <div class="flex items-center gap-2">
+            <span class="text-lg">🏦</span>
+            <h3 class="text-sm font-extrabold text-white uppercase tracking-wider">Banked Week 0 Vault</h3>
+          </div>
+          <span class="text-[10px] font-mono text-indigo-400 uppercase tracking-widest bg-indigo-950 border border-indigo-800/60 px-2 py-0.5 rounded">Auto-Slots on Actual Bye Week</span>
+        </div>
+        <p class="text-xs text-slate-400 mb-4">These Week 0 results are baked into overall season records and auto-slot onto that owner's weekly card when the team has a BYE:</p>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+          <div class="bg-slate-950/80 border border-slate-800/80 p-3 rounded-2xl">
+            <div class="flex justify-between items-center mb-1">
+              <span class="font-bold text-white">Andy</span>
+              <span class="font-mono text-[10px] font-extrabold bg-emerald-950 text-emerald-300 border border-emerald-800/50 px-1.5 py-0.2 rounded">+1 WIN</span>
+            </div>
+            <p class="text-slate-300 font-semibold">Florida State</p>
+            <p class="text-[11px] text-slate-500">Won 34-17 (Slots on FSU Bye)</p>
+          </div>
+
+          <div class="bg-slate-950/80 border border-slate-800/80 p-3 rounded-2xl">
+            <div class="flex justify-between items-center mb-1">
+              <span class="font-bold text-white">Krystal</span>
+              <span class="font-mono text-[10px] font-extrabold bg-emerald-950 text-emerald-300 border border-emerald-800/50 px-1.5 py-0.2 rounded">+1 WIN</span>
+            </div>
+            <p class="text-slate-300 font-semibold">Memphis</p>
+            <p class="text-[11px] text-slate-500">Won 27-21 (Slots on Memphis Bye)</p>
+          </div>
+
+          <div class="bg-slate-950/80 border border-slate-800/80 p-3 rounded-2xl">
+            <div class="flex justify-between items-center mb-1">
+              <span class="font-bold text-white">Tucker</span>
+              <span class="font-mono text-[10px] font-extrabold bg-emerald-950 text-emerald-300 border border-emerald-800/50 px-1.5 py-0.2 rounded">+1 WIN</span>
+            </div>
+            <p class="text-slate-300 font-semibold">USC</p>
+            <p class="text-[11px] text-slate-500">Won 42-26 (Slots on USC Bye)</p>
+          </div>
+
+          <div class="bg-slate-950/80 border border-slate-800/80 p-3 rounded-2xl">
+            <div class="flex justify-between items-center mb-1">
+              <span class="font-bold text-white">Weston</span>
+              <span class="font-mono text-[10px] font-extrabold bg-rose-950 text-rose-300 border border-rose-800/50 px-1.5 py-0.2 rounded">+1 LOSS</span>
+            </div>
+            <p class="text-slate-300 font-semibold">TCU</p>
+            <p class="text-[11px] text-slate-500">Lost 10-15 (Slots on TCU Bye)</p>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Auth Lock Screen -->
-    <div id="auth-lock-screen" class="hidden bg-slate-900 border border-slate-800 rounded-3xl p-8 text-center max-w-md mx-auto my-12 shadow-2xl">
-      <span class="text-4xl block mb-3">🔒</span>
-      <h2 class="text-2xl font-black text-white">Authentication Required</h2>
-      <p class="text-xs text-slate-400 mt-1 mb-6">Enter your PIN to unlock your personal pick sheet.</p>
-      
-      <form onsubmit="verifyPageAuth(event)" class="space-y-4">
-        <input type="password" id="auth-password-input" placeholder="Enter PIN..." required
-          class="w-full bg-slate-950 border border-slate-800 text-white rounded-xl p-3 text-sm focus:outline-none focus:border-indigo-500 text-center">
-        <p id="auth-error-msg" class="text-xs font-semibold text-rose-400 hidden">Incorrect password.</p>
+    <!-- ================= TAB 2: WEEKLY PICKS ================= -->
+    <div id="tab-content-picks" class="tab-pane hidden">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 bg-slate-900/50 border border-slate-800/80 p-5 rounded-2xl backdrop-blur-md">
+        <div>
+          <h2 class="text-xl font-black text-white flex items-center gap-2">Weekly Pick Grid</h2>
+          <p class="text-xs text-slate-400 mt-0.5">Showing all 6 active teams picked to win with verified live outcome.</p>
+        </div>
+        
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2 bg-slate-950 border border-slate-800 px-3 py-1.5 rounded-xl shadow-inner">
+            <label for="week-filter-select" class="text-xs text-slate-400 font-bold uppercase">View Week:</label>
+            <select id="week-filter-select" onchange="onWeekFilterChange()" class="bg-slate-900 border border-slate-700 text-indigo-300 font-bold text-xs rounded-lg px-2.5 py-1 focus:outline-none focus:border-indigo-500 cursor-pointer"></select>
+          </div>
+          <span id="submitted-badge" class="px-3 py-2 rounded-xl text-xs font-mono font-bold bg-slate-950 border border-slate-800 text-slate-300">
+            0/10 Submitted
+          </span>
+        </div>
+      </div>
+
+      <div id="weekly-picks-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+    </div>
+
+    <!-- ================= TAB 3: AARON'S CMT QUIZ (REPLACES CIRCLE OF TRUST) ================= -->
+    <div id="tab-content-cmt" class="tab-pane hidden space-y-6">
+      <!-- Callout Banner -->
+      <div class="bg-gradient-to-r from-amber-950/60 via-slate-900 to-rose-950/40 border-2 border-amber-500/50 rounded-3xl p-6 shadow-2xl relative overflow-hidden">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-[10px] font-mono uppercase tracking-widest bg-amber-500 text-slate-950 font-black px-2.5 py-0.5 rounded-full">
+                MANDATORY REMEDIATION EXAM
+              </span>
+              <span class="text-[10px] font-mono text-rose-300 bg-rose-950 border border-rose-800 px-2 py-0.5 rounded-full">
+                Target: Aaron
+              </span>
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-black text-white">Construction Materials Testing Certification</h2>
+            <p class="text-xs sm:text-sm text-slate-300 mt-1 max-w-2xl">
+              Aaron has spent all week talking smack to <strong class="text-amber-400">Paul</strong> about Texas A&M falling to Kentucky, while neglecting to submit his own picks. 
+              Before Aaron can make his official Week 2 picks, he must prove his field competency with a passing grade (<strong>80% or higher</strong>).
+            </p>
+          </div>
+          <div class="bg-slate-950/80 border border-amber-500/40 rounded-2xl p-4 text-center min-w-[170px]">
+            <span class="text-[10px] uppercase font-mono tracking-wider text-slate-400 block">Aaron's Pick Status</span>
+            <span id="aaron-status-badge" class="text-sm font-black text-rose-400 uppercase tracking-wider block mt-1">
+              🔒 LOCKED OUT
+            </span>
+            <span class="text-[9px] text-slate-500 block mt-0.5">Requires 8/10 to Unlock</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Scoreboard & Exam Section -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Attempt Live Scoreboard -->
+        <div class="bg-slate-900/60 border border-slate-800 rounded-3xl p-5 backdrop-blur-xl h-fit">
+          <div class="flex justify-between items-center pb-3 border-b border-slate-800 mb-4">
+            <h3 class="font-extrabold text-sm text-white uppercase tracking-wider flex items-center gap-2">
+              <span>📊</span> Aaron's Attempt Log
+            </h3>
+            <span id="attempt-counter-pill" class="text-xs font-mono bg-slate-950 border border-slate-800 px-2.5 py-0.5 rounded-full text-indigo-400 font-bold">0 Attempts</span>
+          </div>
+          
+          <div id="attempt-history-list" class="space-y-2.5 max-h-96 overflow-y-auto pr-1 text-xs">
+            <!-- Dynamically populated from localStorage -->
+          </div>
+
+          <button onclick="resetAaronAttempts()" class="w-full mt-4 text-[11px] font-mono text-slate-500 hover:text-rose-400 py-1.5 transition">
+            [Clear Attempt History]
+          </button>
+        </div>
+
+        <!-- Quiz Form Card -->
+        <div class="lg:col-span-2 bg-slate-900/60 border border-slate-800 rounded-3xl p-6 backdrop-blur-xl shadow-xl">
+          <div class="flex justify-between items-center pb-4 border-b border-slate-800 mb-6">
+            <div>
+              <h3 class="text-lg font-black text-white">ASTM / ACI Standard 10-Question Field Exam</h3>
+              <p class="text-xs text-slate-400">Select the correct answer for all 10 field testing scenarios.</p>
+            </div>
+            <span class="text-xs font-mono font-black text-amber-400 bg-amber-950/80 border border-amber-800/60 px-3 py-1 rounded-full">
+              Passing: 8/10
+            </span>
+          </div>
+
+          <form id="cmt-quiz-form" onsubmit="handleQuizSubmit(event)" class="space-y-6">
+            <div id="quiz-questions-container" class="space-y-6 text-sm">
+              <!-- Dynamically rendered -->
+            </div>
+
+            <div class="pt-4 border-t border-slate-800 flex flex-col sm:flex-row gap-3">
+              <button type="submit" class="flex-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3.5 px-6 rounded-2xl text-xs uppercase tracking-wider transition shadow-lg shadow-amber-500/20">
+                Submit Exam for Grading ➔
+              </button>
+            </div>
+          </form>
+
+          <div id="quiz-result-banner" class="hidden mt-6 p-4 rounded-2xl border text-center"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- LOGIN MODAL -->
+  <div id="login-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-800 rounded-3xl max-w-sm w-full p-6 shadow-2xl relative">
+      <div class="flex justify-between items-center mb-5 pb-3 border-b border-slate-800">
+        <h3 class="text-xl font-extrabold text-white flex items-center gap-2">
+          <span>🔑</span> Member Portal Login
+        </h3>
+        <button onclick="closeLoginModal()" class="text-slate-400 hover:text-white font-bold p-1">✕</button>
+      </div>
+
+      <form onsubmit="handleLoginSubmit(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">Select Your Name</label>
+          <select id="login-user-select" class="w-full bg-slate-950 border border-slate-800 text-white rounded-xl p-3 text-sm focus:outline-none focus:border-indigo-500 cursor-pointer"></select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">Enter PIN / Password</label>
+          <input type="password" id="login-password-input" placeholder="Enter PIN..." required
+            class="w-full bg-slate-950 border border-slate-800 text-white rounded-xl p-3 text-sm focus:outline-none focus:border-indigo-500 placeholder-slate-600">
+          <p id="login-error" class="text-rose-400 text-xs font-semibold mt-1.5 hidden">Incorrect password. Try again.</p>
+        </div>
+
         <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl text-xs uppercase tracking-wider transition shadow-lg shadow-indigo-600/30">
-          Unlock Pick Sheet
+          Enter Pick Portal ➔
         </button>
       </form>
     </div>
+  </div>
 
-    <!-- Main Pick Portal Content -->
-    <div id="pick-portal-content">
-      <header class="bg-slate-900 border border-slate-800 rounded-2xl p-6 mb-6 shadow-xl">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <span class="text-xs font-bold text-indigo-400 uppercase tracking-widest">Personal Pick Sheet</span>
-            <h1 id="user-title" class="text-3xl font-extrabold text-white">Select Player</h1>
-            <p id="pick-subtitle" class="text-xs text-slate-400 mt-1">Select exactly <strong class="text-indigo-300">6 teams to WIN</strong> their matchups this week (All times Central).</p>
-          </div>
-          <div class="bg-slate-950/80 border border-slate-800 px-5 py-3 rounded-xl text-center sm:text-right min-w-[120px]">
-            <span class="text-xs uppercase tracking-wider text-slate-400 font-semibold block">Pick Counter</span>
-            <p id="pick-counter" class="text-2xl font-black text-amber-400">0 / 6</p>
-          </div>
+  <!-- ROSTER MODAL -->
+  <div id="roster-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative">
+      <div class="flex justify-between items-start mb-5 pb-4 border-b border-slate-800">
+        <div>
+          <span class="text-[10px] font-extrabold text-indigo-400 uppercase tracking-widest bg-indigo-950/70 border border-indigo-800/50 px-2 py-0.5 rounded">Draft Lineup</span>
+          <h3 id="modal-owner-name" class="text-2xl font-black text-white mt-1.5">Owner Name</h3>
         </div>
-      </header>
-
-      <form id="picks-form" class="space-y-3">
-        <div id="matchups-container" class="space-y-3"></div>
-
-        <div class="pt-6 space-y-3">
-          <button id="submit-btn" type="button" onclick="submitPicksToBackend()" disabled 
-            class="w-full bg-slate-800 text-slate-500 cursor-not-allowed font-bold py-3.5 px-6 rounded-xl transition duration-200 shadow-lg text-sm uppercase tracking-wider">
-            Select 6 Teams to Lock In Picks
-          </button>
-          <button type="button" onclick="copyPicks()" 
-            class="w-full bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white font-medium py-2.5 px-4 rounded-xl border border-slate-800 text-xs transition">
-            📋 Copy Text Summary to Clipboard
-          </button>
-          <p id="status-msg" class="text-center text-sm font-semibold text-emerald-400 hidden mt-3 bg-emerald-950/40 border border-emerald-800/50 py-2.5 rounded-lg shadow">
-            ✓ Picks submitted successfully!
-          </p>
+        <button onclick="closeModal()" class="text-slate-400 hover:text-white bg-slate-800/60 hover:bg-slate-800 w-8 h-8 rounded-full flex items-center justify-center transition">✕</button>
+      </div>
+      <div class="grid grid-cols-2 gap-3 mb-5 text-xs font-mono">
+        <div class="bg-slate-950/80 p-3 rounded-2xl border border-slate-800/80">
+          <span class="text-slate-500 block text-[10px] uppercase font-bold tracking-wider">Projected Wins</span>
+          <span id="modal-proj-wins" class="text-indigo-300 font-extrabold text-base">0.0</span>
         </div>
-      </form>
+        <div class="bg-slate-950/80 p-3 rounded-2xl border border-slate-800/80">
+          <span class="text-slate-500 block text-[10px] uppercase font-bold tracking-wider">Average FPI</span>
+          <span id="modal-avg-fpi" class="text-cyan-300 font-extrabold text-base">0.0</span>
+        </div>
+      </div>
+      <h4 class="text-xs font-extrabold uppercase tracking-wider text-slate-400 mb-3">8 Drafted Teams</h4>
+      <ul id="modal-teams-list" class="space-y-2 text-sm max-h-64 overflow-y-auto pr-1"></ul>
+      <div class="mt-6">
+        <button onclick="closeModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 rounded-xl text-xs uppercase tracking-wider transition">
+          Close
+        </button>
+      </div>
     </div>
-
   </div>
 
   <script>
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwC1NpT8vKqmfsMFUxsPjc_23YhRPQAdMvEtz8GN05NVrm7IOtxnB9tu45ML4HgtLVD/exec";
 
+    const WEEK_0_STANDINGS_BASE = {
+      "Andy": { wins: 1, losses: 0 },
+      "Krystal": { wins: 1, losses: 0 },
+      "Tucker": { wins: 1, losses: 0 },
+      "Weston": { wins: 0, losses: 1 },
+      "Jared": { wins: 0, losses: 0 },
+      "Cole": { wins: 0, losses: 0 },
+      "Brayson": { wins: 0, losses: 0 },
+      "Aaron": { wins: 0, losses: 0 },
+      "Rian": { wins: 0, losses: 0 },
+      "Paul": { wins: 0, losses: 0 }
+    };
+
     const BANKED_WEEK_0_PICKS = [
-      { owner: "Weston", team: "TCU", result: "LOSS", desc: "Week 0 Result: Lost 10-15 vs North Carolina" },
-      { owner: "Andy", team: "Florida State", result: "WIN", desc: "Week 0 Result: Beat 34-17 vs New Mexico State" },
-      { owner: "Krystal", team: "Memphis", result: "WIN", desc: "Week 0 Result: Beat 27-21 vs UNLV" },
-      { owner: "Tucker", team: "USC", result: "WIN", desc: "Week 0 Result: Beat 42-26 vs San Jose State" }
+      { owner: "Andy", team: "Florida State", result: "WIN", note: "Week 0 Banked (Beat NMSU 34-17)" },
+      { owner: "Krystal", team: "Memphis", result: "WIN", note: "Week 0 Banked (Beat UNLV 27-21)" },
+      { owner: "Tucker", team: "USC", result: "WIN", note: "Week 0 Banked (Beat SJSU 42-26)" },
+      { owner: "Weston", team: "TCU", result: "LOSS", note: "Week 0 Banked (Lost to UNC 10-15)" }
     ];
 
     const USER_CREDENTIALS = {
@@ -96,92 +366,181 @@
       "Paul": "paul26"
     };
 
-    const DEFAULT_DATA = {
-      current_week: 2,
-      members: {
-        "Jared": { "teams": ["Texas Tech", "Boise State", "Oklahoma", "Virginia Tech", "Oklahoma State", "Tulsa", "California", "Rutgers"] },
-        "Cole": { "teams": ["Oregon", "San Diego State", "Louisville", "Pittsburgh", "Florida", "West Virginia", "Fresno State", "Colorado"] },
-        "Tucker": { "teams": ["Penn State", "Houston", "USC", "Oregon State", "Nebraska", "North Carolina", "Kansas", "Arkansas"] },
-        "Brayson": { "teams": ["Notre Dame", "Alabama", "Clemson", "NC State", "Illinois", "Baylor", "UCF", "Mississippi State"] },
-        "Krystal": { "teams": ["Miami", "Navy", "Utah", "Memphis", "Auburn", "Vanderbilt", "Washington State", "Iowa State"] },
-        "Weston": { "teams": ["Texas", "LSU", "Virginia", "TCU", "UTSA", "Cincinnati", "Temple", "UCLA"] },
-        "Aaron": { "teams": ["BYU", "Ole Miss", "Michigan", "Washington", "South Carolina", "Northwestern", "Maryland", "Kentucky"] },
-        "Andy": { "teams": ["Ohio State", "South Florida", "SMU", "Arizona", "Arizona State", "Florida State", "Minnesota", "Duke"] },
-        "Rian": { "teams": ["Indiana", "Kansas State", "Tulane", "Tennessee", "Wake Forest", "Missouri", "North Texas", "Florida Atlantic"] },
-        "Paul": { "teams": ["Georgia", "Texas A&M", "East Carolina", "Iowa", "Wisconsin", "Army", "Georgia Tech", "Syracuse"] }
-      },
-      week_matchups: []
+    const LEAGUE_ROSTERS = {
+      "Jared": { "teams": ["Texas Tech", "Boise State", "Oklahoma", "Virginia Tech", "Oklahoma State", "Tulsa", "California", "Rutgers"], "proj_wins": 54.7, "avg_fpi": 5.7 },
+      "Cole": { "teams": ["Oregon", "San Diego State", "Louisville", "Pittsburgh", "Florida", "West Virginia", "Fresno State", "Colorado"], "proj_wins": 56.7, "avg_fpi": 8.5 },
+      "Tucker": { "teams": ["Penn State", "Houston", "USC", "Oregon State", "Nebraska", "North Carolina", "Kansas", "Arkansas"], "proj_wins": 51.8, "avg_fpi": 6.1 },
+      "Brayson": { "teams": ["Notre Dame", "Alabama", "Clemson", "NC State", "Illinois", "Baylor", "UCF", "Mississippi State"], "proj_wins": 57.5, "avg_fpi": 10.3 },
+      "Krystal": { "teams": ["Miami", "Navy", "Utah", "Memphis", "Auburn", "Vanderbilt", "Washington State", "Iowa State"], "proj_wins": 56.4, "avg_fpi": 5.5 },
+      "Weston": { "teams": ["Texas", "LSU", "Virginia", "TCU", "UTSA", "Cincinnati", "Temple", "UCLA"], "proj_wins": 56.1, "avg_fpi": 8.4 },
+      "Aaron": { "teams": ["BYU", "Ole Miss", "Michigan", "Washington", "South Carolina", "Northwestern", "Maryland", "Kentucky"], "proj_wins": 52.1, "avg_fpi": 9.9 },
+      "Andy": { "teams": ["Ohio State", "South Florida", "SMU", "Arizona", "Arizona State", "Florida State", "Minnesota", "Duke"], "proj_wins": 58.6, "avg_fpi": 8.0 },
+      "Rian": { "teams": ["Indiana", "Kansas State", "Tulane", "Tennessee", "Wake Forest", "Missouri", "North Texas", "Florida Atlantic"], "proj_wins": 56.9, "avg_fpi": 6.0 },
+      "Paul": { "teams": ["Georgia", "Texas A&M", "East Carolina", "Iowa", "Wisconsin", "Army", "Georgia Tech", "Syracuse"], "proj_wins": 56.4, "avg_fpi": 7.9 }
     };
 
-    let leagueData = DEFAULT_DATA;
-    let currentUser = null;
-    const MAX_PICKS = 6;
+    // 10 Construction Materials Testing Quiz Questions
+    const CMT_QUESTIONS = [
+      {
+        q: "1. Under ASTM C143 (Slump Test), in how many equal volume layers must the cone be filled, and how many strokes of the tamping rod are applied per layer?",
+        options: [
+          "2 layers, 20 roddings each",
+          "3 layers, 25 roddings each",
+          "4 layers, 25 roddings each",
+          "3 layers, 50 roddings each"
+        ],
+        answer: 1
+      },
+      {
+        q: "2. Under ASTM C31, what is the required standard curing temperature range for concrete test cylinders for initial curing in the field?",
+        options: [
+          "50°F to 70°F (10°C to 21°C)",
+          "60°F to 80°F (16°C to 27°C)",
+          "70°F to 90°F (21°C to 32°C)",
+          "Under 50°F only"
+        ],
+        answer: 1
+      },
+      {
+        q: "3. When performing a Standard Proctor test (ASTM D698), what is the weight of the rammer and the drop height?",
+        options: [
+          "5.5 lb rammer dropped from 12 inches",
+          "10.0 lb rammer dropped from 18 inches",
+          "5.5 lb rammer dropped from 18 inches",
+          "10.0 lb rammer dropped from 12 inches"
+        ],
+        answer: 0
+      },
+      {
+        q: "4. What is the allowable time limit from the start of mold filling to mold removal during a slump test (ASTM C143)?",
+        options: [
+          "1 minute",
+          "2 ½ minutes",
+          "5 minutes",
+          "7 minutes"
+        ],
+        answer: 1
+      },
+      {
+        q: "5. When Paul's Texas A&M team plays Kentucky, and Aaron makes a nuclear density gauge test on base course (ASTM D6938), what test mode yields the most accurate density reading?",
+        options: [
+          "Backscatter mode",
+          "Direct transmission mode",
+          "Air gap ratio mode",
+          "Vibration velocity mode"
+        ],
+        answer: 1
+      },
+      {
+        q: "6. Under ASTM C231 (Pressure Air Content), what must be done to the rim of the bowl before clamping the lid?",
+        options: [
+          "Spray it with WD-40",
+          "Thoroughly clean and wipe the rim and flange clean of concrete",
+          "Coat it with fine sand",
+          "Tap it 50 times with a 5 lb mallet"
+        ],
+        answer: 1
+      },
+      {
+        q: "7. When rodding the second and third layers of a standard 6x12 inch concrete cylinder, the rod should penetrate approximately how far into the underlying layer?",
+        options: [
+          "0.5 inches",
+          "Approximately 1 inch (25 mm)",
+          "All the way to the bottom of the mold",
+          "It should never touch the lower layer"
+        ],
+        answer: 1
+      },
+      {
+        q: "8. In soil classification (ASTM D2487), what sieve separates coarse aggregate from fine aggregate (sand)?",
+        options: [
+          "#4 Sieve (4.75 mm)",
+          "#10 Sieve (2.00 mm)",
+          "#40 Sieve (0.425 mm)",
+          "#200 Sieve (0.075 mm)"
+        ],
+        answer: 0
+      },
+      {
+        q: "9. What is the standard loading rate for a 6x12 inch cylinder undergoing compressive strength testing (ASTM C39)?",
+        options: [
+          "10 to 20 psi/sec",
+          "28 to 42 psi/sec (0.20 to 0.30 MPa/sec)",
+          "100 to 150 psi/sec",
+          "500 psi/sec constant blast"
+        ],
+        answer: 1
+      },
+      {
+        q: "10. Aaron guaranteed Kentucky would upset Texas A&M. If Kentucky loses to Paul's Aggies by 20+ points, what is Aaron's required remedy?",
+        options: [
+          "Blame the refs and complain in group chat",
+          "Re-rod every slump cone 100 times",
+          "Admit Paul is his superior and buy him lunch",
+          "Pretend he picked Texas A&M all along"
+        ],
+        answer: 2
+      }
+    ];
 
-    async function init() {
-      try {
-        const res = await fetch('league_data.json?t=' + new Date().getTime());
-        if (res.ok) {
-          leagueData = await res.json();
-          const cw = String(leagueData.current_week || 2);
-          if (leagueData.season_schedule && leagueData.season_schedule[cw]) {
-            leagueData.week_matchups = leagueData.season_schedule[cw];
-          }
+    let leagueData = null;
+    let cachedSheetPicks = [];
+    let selectedWeek = 2;
+    let currentZoom = 1.0;
+
+    function getVerifiedPickStatus(p, weekNum) {
+      const w = String(weekNum);
+      if (p.note && (p.result === "WIN" || p.result === "LOSS")) return p.result;
+
+      if (leagueData && leagueData.season_schedule && leagueData.season_schedule[w]) {
+        const match = leagueData.season_schedule[w].find(m => m.team && m.team.toLowerCase() === p.team.toLowerCase());
+        if (match && match.status === "STATUS_FINAL" && (match.result === "WIN" || match.result === "LOSS")) {
+          return match.result;
         }
-      } catch (err) {
-        console.warn("Using default data", err);
       }
 
-      const params = new URLSearchParams(window.location.search);
-      const requestedUser = params.get('user');
-
-      const memberNames = Object.keys(leagueData.members);
-      if (requestedUser) {
-        const matched = memberNames.find(n => n.toLowerCase() === requestedUser.toLowerCase());
-        currentUser = matched || memberNames[0];
-      } else {
-        currentUser = memberNames[0];
-      }
-
-      document.getElementById('locked-user-display').innerText = currentUser;
-
-      const authSession = sessionStorage.getItem('cfb_auth_user');
-      if (authSession && authSession.toLowerCase() === currentUser.toLowerCase()) {
-        unlockPortal();
-      } else {
-        lockPortal();
-      }
+      if (p.result === "WIN" || p.result === "LOSS") return p.result;
+      return "PENDING";
     }
 
-    function lockPortal() {
-      document.getElementById('auth-lock-screen').classList.remove('hidden');
-      document.getElementById('pick-portal-content').classList.add('hidden');
+    function openLoginModal() {
+      const select = document.getElementById('login-user-select');
+      select.innerHTML = '';
+      Object.keys(LEAGUE_ROSTERS).forEach(owner => {
+        const opt = document.createElement('option');
+        opt.value = owner;
+        opt.innerText = owner;
+        select.appendChild(opt);
+      });
+      document.getElementById('login-password-input').value = '';
+      document.getElementById('login-error').classList.add('hidden');
+      document.getElementById('login-modal').classList.remove('hidden');
     }
 
-    function unlockPortal() {
-      document.getElementById('auth-lock-screen').classList.add('hidden');
-      document.getElementById('pick-portal-content').classList.remove('hidden');
-      renderTeams();
+    function closeLoginModal() {
+      document.getElementById('login-modal').classList.add('hidden');
     }
 
-    function verifyPageAuth(e) {
+    function handleLoginSubmit(e) {
       e.preventDefault();
-      const pass = document.getElementById('auth-password-input').value.trim();
-      const expected = USER_CREDENTIALS[currentUser];
+      const user = document.getElementById('login-user-select').value;
+      const pass = document.getElementById('login-password-input').value.trim();
+      const expected = USER_CREDENTIALS[user];
 
       if (expected && expected.toLowerCase() === pass.toLowerCase()) {
-        sessionStorage.setItem('cfb_auth_user', currentUser);
-        unlockPortal();
+        sessionStorage.setItem('cfb_auth_user', user);
+        window.location.href = `pick.html?user=${encodeURIComponent(user)}`;
       } else {
-        document.getElementById('auth-error-msg').classList.remove('hidden');
+        document.getElementById('login-error').classList.remove('hidden');
       }
     }
 
     function getMoneyline(spreadStr) {
-      if (!spreadStr || spreadStr === 'N/A' || spreadStr === 'Line TBD') return '';
+      if (!spreadStr || spreadStr === 'N/A' || spreadStr === 'Line TBD') return 'ML N/A';
       const match = spreadStr.match(/[-+]?\d*\.?\d+/);
-      if (!match) return '';
+      if (!match) return 'ML N/A';
       const spread = parseFloat(match[0]);
-      if (isNaN(spread)) return '';
+      if (isNaN(spread)) return 'ML N/A';
       if (spread === 0) return 'ML 110';
       const isFav = spreadStr.includes('-') || spread < 0;
       const abs = Math.abs(spread);
@@ -200,246 +559,471 @@
       }
     }
 
-    function renderTeams() {
-      const userObj = leagueData.members[currentUser];
-      if (!userObj) return;
+    function changeZoom(delta) {
+      currentZoom = Math.min(Math.max(0.70, currentZoom + delta), 1.40);
+      applyZoom();
+    }
+    function resetZoom() {
+      currentZoom = 1.0;
+      applyZoom();
+    }
+    function applyZoom() {
+      const container = document.getElementById('zoom-container');
+      container.style.zoom = currentZoom;
+      document.getElementById('zoom-text').innerText = `${Math.round(currentZoom * 100)}%`;
+    }
 
-      const activeWk = leagueData.current_week || 2;
-      document.getElementById('user-title').innerText = `${currentUser}'s Week ${activeWk} Picks`;
-      const container = document.getElementById('matchups-container');
+    function switchTab(tab) {
+      const standingsPane = document.getElementById('tab-content-standings');
+      const picksPane = document.getElementById('tab-content-picks');
+      const cmtPane = document.getElementById('tab-content-cmt');
+      
+      const btnStandings = document.getElementById('tab-btn-standings');
+      const btnPicks = document.getElementById('tab-btn-picks');
+      const btnCmt = document.getElementById('tab-btn-cmt');
+
+      standingsPane.classList.add('hidden');
+      picksPane.classList.add('hidden');
+      cmtPane.classList.add('hidden');
+
+      const defaultBtn = "flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-800/60";
+      btnStandings.className = defaultBtn;
+      btnPicks.className = defaultBtn;
+      btnCmt.className = "flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 text-amber-400 hover:text-amber-200 hover:bg-amber-950/40 border border-transparent";
+
+      if (tab === 'standings') {
+        standingsPane.classList.remove('hidden');
+        btnStandings.className = "flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow-lg shadow-indigo-600/30";
+      } else if (tab === 'picks') {
+        picksPane.classList.remove('hidden');
+        btnPicks.className = "flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow-lg shadow-indigo-600/30";
+      } else if (tab === 'cmt') {
+        cmtPane.classList.remove('hidden');
+        btnCmt.className = "flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 bg-gradient-to-r from-amber-600 to-yellow-600 text-slate-950 shadow-lg shadow-amber-600/30 font-extrabold";
+        renderCmtQuiz();
+        renderAaronAttemptBoard();
+      }
+    }
+
+    function populateWeekDropdown(currentWeek) {
+      const select = document.getElementById('week-filter-select');
+      select.innerHTML = '';
+      for (let w = 1; w <= 15; w++) {
+        const opt = document.createElement('option');
+        opt.value = w;
+        opt.innerText = `Week ${w} ${w === currentWeek ? '(Current)' : ''}`;
+        if (w === selectedWeek) opt.selected = true;
+        select.appendChild(opt);
+      }
+    }
+
+    function onWeekFilterChange() {
+      const select = document.getElementById('week-filter-select');
+      selectedWeek = parseInt(select.value, 10);
+      renderLivePicksGrid(cachedSheetPicks, selectedWeek);
+    }
+
+    async function loadData() {
+      try {
+        const res = await fetch('league_data.json?t=' + new Date().getTime());
+        if (res.ok) {
+          leagueData = await res.json();
+        }
+      } catch (e) {
+        console.warn("Using default league data", e);
+        leagueData = { current_week: 2, members: LEAGUE_ROSTERS, week_matchups: [], season_schedule: {} };
+      }
+
+      const curWeek = leagueData?.current_week || 2;
+      selectedWeek = curWeek;
+      document.getElementById('week-display').innerText = curWeek;
+
+      populateWeekDropdown(curWeek);
+
+      cachedSheetPicks = [];
+      try {
+        const resSheet = await fetch(GOOGLE_SCRIPT_URL);
+        const rawText = await resSheet.text();
+
+        if (!rawText.trim().startsWith('<')) {
+          cachedSheetPicks = JSON.parse(rawText);
+        }
+      } catch(err) {
+        console.warn("Could not fetch Google Sheet picks", err);
+      }
+
+      renderStandings(cachedSheetPicks);
+      renderLivePicksGrid(cachedSheetPicks, selectedWeek);
+      renderAaronAttemptBoard();
+    }
+
+    function renderStandings(picks) {
+      const tbody = document.getElementById('standings-body');
+      const podium = document.getElementById('podium-cards');
+      tbody.innerHTML = '';
+      podium.innerHTML = '';
+
+      const currentWk = leagueData?.current_week || 2;
+
+      const memberStats = Object.keys(LEAGUE_ROSTERS).map(name => {
+        let verifiedWins = 0;
+        let verifiedLosses = 0;
+
+        (picks || []).forEach(p => {
+          if (p.owner && p.owner.toLowerCase() === name.toLowerCase()) {
+            const pWeek = parseInt(p.week, 10);
+            if (pWeek <= currentWk) {
+              const status = getVerifiedPickStatus(p, pWeek);
+              if (status === "WIN") verifiedWins++;
+              if (status === "LOSS") verifiedLosses++;
+            }
+          }
+        });
+
+        const base = WEEK_0_STANDINGS_BASE[name] || { wins: 0, losses: 0 };
+        const wins = verifiedWins + base.wins;
+        const losses = verifiedLosses + base.losses;
+
+        const total = wins + losses;
+        const winPct = total > 0 ? ((wins / total) * 100).toFixed(1) + '%' : '0.0%';
+
+        return {
+          name,
+          wins,
+          losses,
+          winPct,
+          proj_wins: LEAGUE_ROSTERS[name].proj_wins,
+          avg_fpi: LEAGUE_ROSTERS[name].avg_fpi
+        };
+      });
+
+      memberStats.sort((a, b) => (b.wins - a.wins) || (a.losses - b.losses));
+
+      const top3 = memberStats.slice(0, 3);
+      const podiumColors = [
+        { border: 'border-amber-500/60', bg: 'bg-gradient-to-b from-amber-950/30 to-slate-900/60', badge: 'bg-amber-500 text-slate-950', label: '👑 1st Place' },
+        { border: 'border-slate-400/50', bg: 'bg-gradient-to-b from-slate-800/30 to-slate-900/60', badge: 'bg-slate-300 text-slate-950', label: '🥈 2nd Place' },
+        { border: 'border-amber-700/50', bg: 'bg-gradient-to-b from-orange-950/30 to-slate-900/60', badge: 'bg-amber-700 text-slate-950', label: '🥉 3rd Place' }
+      ];
+
+      top3.forEach((m, idx) => {
+        const card = document.createElement('div');
+        const style = podiumColors[idx];
+        card.className = `p-5 rounded-3xl border ${style.border} ${style.bg} backdrop-blur-md shadow-xl flex justify-between items-center cursor-pointer hover:scale-[1.02] transition duration-200`;
+        card.onclick = () => openModal(m.name);
+        card.innerHTML = `
+          <div>
+            <span class="text-[10px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded-full ${style.badge}">
+              ${style.label}
+            </span>
+            <h3 class="text-xl font-black text-white mt-1.5">${m.name}</h3>
+            <p class="text-xs text-slate-400 font-mono mt-0.5">Win %: ${m.winPct}</p>
+          </div>
+          <div class="text-right font-mono">
+            <span class="text-2xl font-black text-emerald-400">${m.wins}</span>
+            <span class="text-slate-500 text-sm">-${m.losses}</span>
+          </div>
+        `;
+        podium.appendChild(card);
+      });
+
+      memberStats.forEach((m, idx) => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-800/40 transition group";
+        
+        let rankBadge = `<span class="font-mono text-slate-500 font-bold">#${idx + 1}</span>`;
+        if (idx === 0) rankBadge = `<span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/40 font-mono font-bold text-xs">#1</span>`;
+        else if (idx === 1) rankBadge = `<span class="px-2 py-0.5 rounded-full bg-slate-400/20 text-slate-300 border border-slate-400/40 font-mono font-bold text-xs">#2</span>`;
+        else if (idx === 2) rankBadge = `<span class="px-2 py-0.5 rounded-full bg-amber-700/20 text-amber-500 border border-amber-700/40 font-mono font-bold text-xs">#3</span>`;
+
+        tr.innerHTML = `
+          <td class="py-4 px-6 text-center">${rankBadge}</td>
+          <td class="py-4 px-6">
+            <button onclick="openModal('${m.name}')" class="font-extrabold text-white group-hover:text-indigo-400 text-left transition flex items-center gap-2">
+              <span>${m.name}</span>
+            </button>
+          </td>
+          <td class="py-4 px-6 text-center font-bold font-mono text-emerald-400 text-base">${m.wins} - ${m.losses}</td>
+          <td class="py-4 px-6 text-center font-mono text-slate-300 font-medium">${m.winPct}</td>
+          <td class="py-4 px-6 text-center font-mono text-slate-400">${m.proj_wins}</td>
+          <td class="py-4 px-6 text-center font-mono text-slate-400">${m.avg_fpi}</td>
+          <td class="py-4 px-6 text-right">
+            <button onclick="openModal('${m.name}')" class="text-xs bg-slate-800/80 hover:bg-indigo-600 text-slate-300 hover:text-white px-3 py-1.5 rounded-xl border border-slate-700/80 hover:border-indigo-500 transition shadow">
+              View Lineup ➔
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderLivePicksGrid(picks, week) {
+      const grid = document.getElementById('weekly-picks-grid');
+      grid.innerHTML = '';
+
+      let submittedCount = 0;
+      const targetWeek = parseInt(week, 10);
+      
+      let weekSchedule = [];
+      if (leagueData && leagueData.season_schedule && leagueData.season_schedule[String(targetWeek)]) {
+        weekSchedule = leagueData.season_schedule[String(targetWeek)];
+      } else if (leagueData) {
+        weekSchedule = leagueData.week_matchups || [];
+      }
+
+      Object.keys(LEAGUE_ROSTERS).forEach(owner => {
+        const ownerPicks = (picks || []).filter(p => p.owner && p.owner.toLowerCase() === owner.toLowerCase() && parseInt(p.week, 10) === targetWeek);
+        
+        const displayPicks = [...ownerPicks];
+        BANKED_WEEK_0_PICKS.forEach(banked => {
+          if (banked.owner.toLowerCase() === owner.toLowerCase()) {
+            const game = weekSchedule.find(m => m.team && m.team.toLowerCase() === banked.team.toLowerCase());
+            if (game && (game.is_bye || game.opponent === 'BYE' || game.game_time === 'BYE WEEK')) {
+              displayPicks.unshift({
+                week: targetWeek,
+                team: banked.team,
+                pick: "WIN",
+                result: banked.result,
+                note: `Auto-Slotted from Week 0 (${banked.team} BYE)`
+              });
+            }
+          }
+        });
+
+        const card = document.createElement('div');
+        if (ownerPicks.length === 6) submittedCount++;
+        const isComplete = ownerPicks.length === 6;
+        card.className = `p-5 rounded-3xl border ${isComplete ? 'border-slate-800 bg-slate-900/60 shadow-xl' : 'border-slate-800/60 bg-slate-950/40'} backdrop-blur-md flex flex-col justify-between transition hover:border-slate-700`;
+
+        let picksListHtml = '';
+        if (displayPicks.length === 0) {
+          picksListHtml = `
+            <div class="py-8 text-center">
+              <span class="text-2xl opacity-40 block mb-1">⏳</span>
+              <p class="text-xs text-slate-500 italic">No picks submitted for Week ${targetWeek}.</p>
+            </div>`;
+        } else {
+          picksListHtml = `<ul class="space-y-2.5 mt-4">` + displayPicks.map(p => {
+            const matchup = weekSchedule.find(m => m.team && m.team.toLowerCase() === p.team.toLowerCase()) || {};
+            const spread = matchup.spread && matchup.spread !== 'N/A' && matchup.spread !== 'Line TBD' ? matchup.spread : '';
+            const ml = matchup.spread ? getMoneyline(matchup.spread) : '';
+            const oppText = matchup.opponent && matchup.opponent !== 'BYE' ? `vs ${matchup.opponent}` : '';
+
+            const verifiedResult = getVerifiedPickStatus(p, targetWeek);
+
+            let resultBadge = '';
+            if (verifiedResult === 'WIN') {
+              resultBadge = `<span class="font-mono font-black px-2 py-0.5 rounded text-[10px] bg-emerald-500 text-slate-950">WIN ✓</span>`;
+            } else if (verifiedResult === 'LOSS') {
+              resultBadge = `<span class="font-mono font-black px-2 py-0.5 rounded text-[10px] bg-rose-600 text-white">LOSS ✕</span>`;
+            } else {
+              resultBadge = `<span class="font-mono font-black px-2.5 py-1 rounded-lg text-[10px] bg-emerald-950 text-emerald-300 border border-emerald-800/60">TO WIN</span>`;
+            }
+
+            return `
+              <li class="bg-slate-950/90 p-3 rounded-2xl border border-slate-800/80 flex flex-col gap-1.5">
+                <div class="flex justify-between items-center">
+                  <div class="flex items-center gap-2">
+                    <span class="font-extrabold text-white text-sm">${p.team}</span>
+                    ${spread ? `<span class="text-[10px] font-mono font-bold bg-indigo-950 text-indigo-300 border border-indigo-800/60 px-1.5 py-0.5 rounded">${spread}</span>` : ''}
+                    ${ml && ml !== 'ML N/A' ? `<span class="text-[10px] font-mono font-semibold bg-slate-900 text-cyan-300 border border-cyan-800/40 px-1.5 py-0.5 rounded">${ml}</span>` : ''}
+                  </div>
+                  ${resultBadge}
+                </div>
+                ${oppText ? `<div class="text-[11px] text-slate-400 font-medium">${oppText}</div>` : (p.note ? `<div class="text-[11px] text-indigo-300 font-medium">${p.note}</div>` : '')}
+              </li>
+            `;
+          }).join('') + `</ul>`;
+        }
+
+        card.innerHTML = `
+          <div>
+            <div class="flex justify-between items-center pb-3 border-b border-slate-800">
+              <button onclick="openModal('${owner}')" class="font-black text-white text-base hover:text-indigo-400 transition">${owner}</button>
+              <span class="text-xs font-mono font-extrabold px-2.5 py-1 rounded-full ${isComplete ? 'bg-emerald-950/80 text-emerald-400 border border-emerald-800/50' : 'bg-amber-950/80 text-amber-400 border border-amber-800/50'}">
+                ${ownerPicks.length}/6 Picks
+              </span>
+            </div>
+            ${picksListHtml}
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+
+      document.getElementById('submitted-badge').innerText = `${submittedCount}/10 Submitted`;
+    }
+
+    // ================= AARON CMT QUIZ LOGIC =================
+    function renderCmtQuiz() {
+      const container = document.getElementById('quiz-questions-container');
       container.innerHTML = '';
 
-      let lockedBankedTeam = null;
-
-      userObj.teams.forEach(team => {
-        const game = (leagueData.week_matchups || []).find(m => m.team && m.team.toLowerCase() === team.toLowerCase()) || {
-          opponent: "BYE",
-          spread: "",
-          over_under: "",
-          game_time: "BYE WEEK",
-          is_bye: true
-        };
-
-        const safeId = team.replace(/[^a-zA-Z0-9]/g, '_');
-        const isBye = game.is_bye || game.opponent === 'BYE' || game.game_time === 'BYE WEEK';
-
-        const bankedObj = BANKED_WEEK_0_PICKS.find(b => b.owner.toLowerCase() === currentUser.toLowerCase() && b.team.toLowerCase() === team.toLowerCase());
-        const isAutoLockedWeek0Bye = isBye && bankedObj;
-
-        const ml = getMoneyline(game.spread);
-        const card = document.createElement('div');
-        card.id = `card_${safeId}`;
-
-        if (isAutoLockedWeek0Bye) {
-          lockedBankedTeam = bankedObj;
-          card.className = "team-card bg-indigo-950/30 border-2 border-indigo-500/70 rounded-xl p-4 flex justify-between items-center shadow-lg";
-          card.innerHTML = `
-            <div class="flex items-center gap-4 w-full">
-              <input type="checkbox" id="check_${safeId}" checked disabled 
-                class="team-checkbox w-6 h-6 rounded-lg border-indigo-500 bg-indigo-900 text-indigo-500 cursor-not-allowed">
-              <div class="flex-1">
-                <div class="flex items-center gap-2">
-                  <h3 class="font-bold text-white text-base">${team}</h3>
-                  <span class="text-[10px] font-mono font-black uppercase px-2 py-0.5 rounded ${bankedObj.result === 'WIN' ? 'bg-emerald-950 text-emerald-300 border border-emerald-800' : 'bg-rose-950 text-rose-300 border border-rose-800'}">
-                    WEEK 0 BYE AUTO-LOCK (${bankedObj.result})
-                  </span>
-                </div>
-                <p class="text-xs text-slate-300 mt-0.5">${bankedObj.desc}</p>
-                <p class="text-[11px] font-mono text-indigo-400 mt-1">🔒 Auto-Applied on Bye Week (Pick 1 of 6)</p>
-              </div>
-              <div class="hidden sm:block">
-                <span class="text-xs font-black uppercase tracking-wider px-3 py-1.5 rounded-lg border ${bankedObj.result === 'WIN' ? 'border-emerald-500 bg-emerald-500 text-slate-950' : 'border-rose-600 bg-rose-600 text-white'}">
-                  ${bankedObj.result} LOCKED
-                </span>
-              </div>
-            </div>
+      CMT_QUESTIONS.forEach((item, qIdx) => {
+        const qDiv = document.createElement('div');
+        qDiv.className = "bg-slate-950/80 border border-slate-800/90 rounded-2xl p-4";
+        
+        let optsHtml = '';
+        item.options.forEach((opt, oIdx) => {
+          optsHtml += `
+            <label class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-900 border border-transparent hover:border-slate-800 cursor-pointer transition">
+              <input type="radio" name="q_${qIdx}" value="${oIdx}" required class="w-4 h-4 text-amber-500 bg-slate-900 border-slate-700 focus:ring-amber-500">
+              <span class="text-slate-300 text-xs">${opt}</span>
+            </label>
           `;
-        } else {
-          card.className = `team-card ${isBye ? 'bg-slate-900/40 border-dashed border-slate-800 opacity-60' : 'bg-slate-900 border-slate-800 hover:border-slate-700 cursor-pointer'} border rounded-xl p-4 flex justify-between items-center transition duration-150`;
-
-          if (!isBye) {
-            card.onclick = (e) => {
-              if (e.target.tagName !== 'INPUT') {
-                const cb = document.getElementById(`check_${safeId}`);
-                if (!cb.disabled || cb.checked) {
-                  cb.checked = !cb.checked;
-                  updateState();
-                }
-              }
-            };
-          }
-
-          card.innerHTML = `
-            <div class="flex items-center gap-4 w-full">
-              ${!isBye ? `
-                <input type="checkbox" id="check_${safeId}" onchange="updateState()" 
-                  class="team-checkbox w-6 h-6 rounded-lg border-slate-700 bg-slate-950 text-indigo-600 focus:ring-0 cursor-pointer">
-              ` : `
-                <div class="w-6 h-6 flex items-center justify-center text-slate-600 text-xs font-mono font-bold">✕</div>
-              `}
-              <div class="flex-1">
-                <div class="flex items-center gap-2">
-                  <h3 class="font-bold text-white text-base">${team}</h3>
-                  ${game.spread && game.spread !== 'N/A' && game.spread !== 'Line TBD' && !isBye ? `
-                    <span class="text-xs font-mono font-semibold bg-indigo-950 text-indigo-300 border border-indigo-800/60 px-2 py-0.5 rounded">
-                      ${game.spread}
-                    </span>` : ''}
-                  ${ml ? `
-                    <span class="text-xs font-mono font-semibold bg-slate-900 text-cyan-300 border border-cyan-800/40 px-2 py-0.5 rounded">
-                      ${ml}
-                    </span>` : ''}
-                  ${isBye ? `<span class="text-xs font-bold uppercase bg-amber-950/80 text-amber-400 border border-amber-800/60 px-2 py-0.5 rounded">BYE WEEK</span>` : ''}
-                </div>
-                <p class="text-xs text-slate-400 mt-0.5">
-                  ${!isBye ? `vs <span class="text-slate-200 font-medium">${game.opponent}</span>` : `<span class="text-slate-500">No scheduled game this week</span>`}
-                  ${game.over_under && !isBye ? `<span class="text-slate-500 ml-1">(${game.over_under})</span>` : ''}
-                </p>
-                <p class="text-[11px] font-mono text-indigo-400 mt-1">🕒 ${game.game_time || 'Time TBD'}</p>
-              </div>
-
-              ${!isBye ? `
-                <div class="hidden sm:block">
-                  <span class="pick-indicator text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-950 text-slate-500 transition">
-                    PICK TO WIN
-                  </span>
-                </div>
-              ` : ''}
-            </div>
-          `;
-        }
-
-        container.appendChild(card);
-      });
-
-      if (lockedBankedTeam) {
-        document.getElementById('pick-subtitle').innerHTML = `★ <strong>${lockedBankedTeam.team}</strong> (Week 0 Bye) is auto-locked. Select <strong class="text-indigo-300">5 more teams to WIN</strong>.`;
-      } else {
-        document.getElementById('pick-subtitle').innerHTML = `Select exactly <strong class="text-indigo-300">6 teams to WIN</strong> their matchups this week (All times Central).`;
-      }
-
-      updateState();
-    }
-
-    function updateState() {
-      const checkboxes = document.querySelectorAll('.team-checkbox');
-      const checkedBoxes = document.querySelectorAll('.team-checkbox:checked');
-      const count = checkedBoxes.length;
-
-      const counter = document.getElementById('pick-counter');
-      counter.innerText = `${count} / ${MAX_PICKS}`;
-      counter.className = count === MAX_PICKS ? "text-2xl font-black text-emerald-400" : "text-2xl font-black text-amber-400";
-
-      checkboxes.forEach(cb => {
-        if (cb.disabled && cb.checked) return;
-
-        const safeId = cb.id.replace('check_', '');
-        const card = document.getElementById(`card_${safeId}`);
-        const indicator = card.querySelector('.pick-indicator');
-
-        if (cb.checked) {
-          card.classList.add('border-emerald-500/70', 'bg-emerald-950/20');
-          card.classList.remove('bg-slate-900', 'border-slate-800');
-          if (indicator) {
-            indicator.className = "pick-indicator text-xs font-black uppercase tracking-wider px-3 py-1.5 rounded-lg border border-emerald-500 bg-emerald-500 text-slate-950 transition shadow-lg shadow-emerald-500/20";
-            indicator.innerText = "✓ PICKED TO WIN";
-          }
-        } else {
-          card.classList.remove('border-emerald-500/70', 'bg-emerald-950/20');
-          card.classList.add('bg-slate-900', 'border-slate-800');
-          cb.disabled = (count >= MAX_PICKS);
-          if (indicator) {
-            indicator.className = "pick-indicator text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-950 text-slate-500 transition";
-            indicator.innerText = "PICK TO WIN";
-          }
-        }
-      });
-
-      const submitBtn = document.getElementById('submit-btn');
-      if (count === MAX_PICKS) {
-        submitBtn.disabled = false;
-        submitBtn.className = "w-full bg-indigo-600 hover:bg-indigo-500 text-white cursor-pointer font-bold py-3.5 px-6 rounded-xl transition duration-200 shadow-lg shadow-indigo-600/30 text-sm uppercase tracking-wider";
-        submitBtn.innerText = "🚀 Lock in 6 Picks to Win";
-      } else {
-        submitBtn.disabled = true;
-        submitBtn.className = "w-full bg-slate-800 text-slate-500 cursor-not-allowed font-bold py-3.5 px-6 rounded-xl transition duration-200 shadow-lg text-sm uppercase tracking-wider";
-        submitBtn.innerText = `Select ${MAX_PICKS - count} more team${MAX_PICKS - count === 1 ? '' : 's'} to Win (${count}/6)`;
-      }
-    }
-
-    async function submitPicksToBackend() {
-      const submitBtn = document.getElementById('submit-btn');
-      submitBtn.disabled = true;
-      submitBtn.innerText = "Saving Picks...";
-
-      const userObj = leagueData.members[currentUser];
-      const picks = [];
-
-      userObj.teams.forEach(team => {
-        const safeId = team.replace(/[^a-zA-Z0-9]/g, '_');
-        const cb = document.getElementById(`check_${safeId}`);
-        if (cb && cb.checked) {
-          const bankedObj = BANKED_WEEK_0_PICKS.find(b => b.owner.toLowerCase() === currentUser.toLowerCase() && b.team.toLowerCase() === team.toLowerCase());
-          const pickVal = (cb.disabled && bankedObj) ? bankedObj.result : "WIN";
-          picks.push({ team, pick: pickVal });
-        }
-      });
-
-      const activeWk = leagueData.current_week || 2;
-
-      try {
-        await fetch(GOOGLE_SCRIPT_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            week: activeWk,
-            owner: currentUser,
-            picks: picks
-          })
         });
-      } catch(err) {
-        console.error("Error submitting to Google Sheet", err);
-      }
 
-      const msg = document.getElementById('status-msg');
-      msg.innerText = `✓ ${currentUser}'s Week ${activeWk} picks are locked in! Redirecting...`;
-      msg.classList.remove('hidden');
-
-      setTimeout(() => {
-        window.location.href = 'index.html';
-      }, 1500);
+        qDiv.innerHTML = `
+          <p class="font-bold text-white mb-2.5 text-xs sm:text-sm">${item.q}</p>
+          <div class="space-y-1">${optsHtml}</div>
+        `;
+        container.appendChild(qDiv);
+      });
     }
 
-    function copyPicks() {
-      const userObj = leagueData.members[currentUser];
-      const activeWk = leagueData.current_week || 2;
-      let summary = `🏈 ${currentUser}'s Week ${activeWk} Picks (6 Picks):\n`;
-      summary += `─────────────────────────\n`;
+    function handleQuizSubmit(e) {
+      e.preventDefault();
+      const form = document.getElementById('cmt-quiz-form');
+      let score = 0;
 
-      userObj.teams.forEach(team => {
-        const safeId = team.replace(/[^a-zA-Z0-9]/g, '_');
-        const cb = document.getElementById(`check_${safeId}`);
-        if (cb && cb.checked) {
-          const game = (leagueData.week_matchups || []).find(m => m.team && m.team.toLowerCase() === team.toLowerCase());
-          let lineDetails = '';
-          if (game && !game.is_bye && game.opponent !== 'BYE') {
-            lineDetails = ` (vs ${game.opponent}${game.spread ? ` [${game.spread}]` : ''})`;
-          }
-          const bankedObj = BANKED_WEEK_0_PICKS.find(b => b.owner.toLowerCase() === currentUser.toLowerCase() && b.team.toLowerCase() === team.toLowerCase());
-          const statusTxt = (cb.disabled && bankedObj) ? `[WEEK 0 AUTO-APPLIED: ${bankedObj.result}]` : "TO WIN";
-          summary += `• ${team}${lineDetails}: ${statusTxt}\n`;
+      CMT_QUESTIONS.forEach((item, qIdx) => {
+        const selected = form.querySelector(`input[name="q_${qIdx}"]:checked`);
+        if (selected && parseInt(selected.value, 10) === item.answer) {
+          score++;
         }
       });
 
-      navigator.clipboard.writeText(summary).then(() => {
-        const msg = document.getElementById('status-msg');
-        msg.innerText = "✓ Picks copied to clipboard!";
-        msg.classList.remove('hidden');
-        setTimeout(() => msg.classList.add('hidden'), 3500);
-      });
+      const passed = score >= 8;
+      const history = JSON.parse(localStorage.getItem('aaron_cmt_attempts') || '[]');
+      const attemptNum = history.length + 1;
+      
+      const attemptObj = {
+        attempt: attemptNum,
+        score: score,
+        passed: passed,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+      };
+
+      history.unshift(attemptObj);
+      localStorage.setItem('aaron_cmt_attempts', JSON.stringify(history));
+
+      if (passed) {
+        localStorage.setItem('aaron_cmt_passed', 'true');
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+      }
+
+      renderAaronAttemptBoard();
+
+      const banner = document.getElementById('quiz-result-banner');
+      banner.classList.remove('hidden');
+
+      if (passed) {
+        banner.className = "mt-6 p-5 rounded-2xl border border-emerald-500 bg-emerald-950/50 text-emerald-300 text-center";
+        banner.innerHTML = `
+          <h4 class="text-lg font-black uppercase tracking-wider">🎉 CONGRATULATIONS AARON! YOU PASSED!</h4>
+          <p class="text-xs text-emerald-200 mt-1">Score: ${score} / 10 (${score * 10}%). Your pick sheet lock has been disengaged.</p>
+          <a href="pick.html?user=Aaron" class="inline-block mt-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs px-5 py-2.5 rounded-xl uppercase tracking-wider transition">
+            Proceed to Submit Week 2 Picks ➔
+          </a>
+        `;
+      } else {
+        banner.className = "mt-6 p-5 rounded-2xl border border-rose-600 bg-rose-950/50 text-rose-300 text-center";
+        banner.innerHTML = `
+          <h4 class="text-lg font-black uppercase tracking-wider">❌ FAILED: RE-TEST REQUIRED!</h4>
+          <p class="text-xs text-rose-200 mt-1">Score: ${score} / 10 (${score * 10}%). Required to pass: 8 / 10. Paul remains completely unimpressed.</p>
+          <p class="text-[11px] font-mono text-rose-400 mt-1">Status: Picks are still LOCKED for Aaron until standard is met.</p>
+        `;
+      }
     }
 
-    init();
+    function renderAaronAttemptBoard() {
+      const history = JSON.parse(localStorage.getItem('aaron_cmt_attempts') || '[]');
+      const container = document.getElementById('attempt-history-list');
+      const counterPill = document.getElementById('attempt-counter-pill');
+      const statusBadge = document.getElementById('aaron-status-badge');
+
+      counterPill.innerText = `${history.length} Attempt${history.length === 1 ? '' : 's'}`;
+
+      const hasPassed = history.some(h => h.passed);
+      if (statusBadge) {
+        if (hasPassed) {
+          statusBadge.innerText = "✓ CERTIFIED & UNLOCKED";
+          statusBadge.className = "text-sm font-black text-emerald-400 uppercase tracking-wider block mt-1";
+        } else {
+          statusBadge.innerText = "🔒 LOCKED OUT";
+          statusBadge.className = "text-sm font-black text-rose-400 uppercase tracking-wider block mt-1";
+        }
+      }
+
+      if (history.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-8 text-slate-500">
+            <span class="text-2xl block mb-1">📋</span>
+            <p class="italic">No attempts logged yet.<br>Aaron hasn't stepped up to the plate.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = history.map(item => `
+        <div class="p-3 rounded-2xl border ${item.passed ? 'border-emerald-800 bg-emerald-950/30' : 'border-rose-900/60 bg-rose-950/20'} flex justify-between items-center">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-extrabold text-white text-xs">Attempt #${item.attempt}</span>
+              <span class="text-[9px] font-mono font-black uppercase px-2 py-0.5 rounded ${item.passed ? 'bg-emerald-500 text-slate-950' : 'bg-rose-950 text-rose-300 border border-rose-800'}">
+                ${item.passed ? 'PASS' : 'FAIL'}
+              </span>
+            </div>
+            <p class="text-[10px] text-slate-400 mt-0.5 font-mono">Logged at ${item.timestamp}</p>
+          </div>
+          <div class="text-right">
+            <span class="font-mono text-base font-black ${item.passed ? 'text-emerald-400' : 'text-rose-400'}">${item.score}/10</span>
+            <span class="block text-[9px] text-slate-500 font-mono">${item.score * 10}%</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function resetAaronAttempts() {
+      if (confirm("Reset Aaron's test attempts?")) {
+        localStorage.removeItem('aaron_cmt_attempts');
+        localStorage.removeItem('aaron_cmt_passed');
+        renderAaronAttemptBoard();
+        document.getElementById('quiz-result-banner').classList.add('hidden');
+      }
+    }
+
+    function openModal(owner) {
+      const roster = LEAGUE_ROSTERS[owner];
+      if (!roster) return;
+
+      document.getElementById('modal-owner-name').innerText = `${owner}'s Lineup`;
+      document.getElementById('modal-proj-wins').innerText = roster.proj_wins;
+      document.getElementById('modal-avg-fpi').innerText = roster.avg_fpi;
+
+      const list = document.getElementById('modal-teams-list');
+      list.innerHTML = '';
+      roster.teams.forEach((t, i) => {
+        const li = document.createElement('li');
+        li.className = "flex items-center gap-3 bg-slate-950/70 border border-slate-800/80 px-3.5 py-2 rounded-xl";
+        li.innerHTML = `
+          <span class="text-xs font-mono text-indigo-400 font-black">#${i + 1}</span> 
+          <span class="font-bold text-slate-100">${t}</span>
+        `;
+        list.appendChild(li);
+      });
+
+      document.getElementById('roster-modal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('roster-modal').classList.add('hidden');
+    }
+
+    document.getElementById('roster-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'roster-modal') closeModal();
+    });
+
+    loadData();
   </script>
 </body>
 </html>
