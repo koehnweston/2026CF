@@ -15,25 +15,13 @@
     .font-mono { font-family: 'JetBrains Mono', monospace; }
     .font-terminal { font-family: 'VT323', monospace; }
     #zoom-container { transition: zoom 0.15s ease-out; width: 100%; margin: 0 auto; }
-    @keyframes wag {
-      0%, 100% { transform: rotate(0deg); }
-      25% { transform: rotate(-28deg); }
-      75% { transform: rotate(28deg); }
-    }
-    .animate-wag {
-      display: inline-block;
-      animation: wag 0.3s infinite ease-in-out;
-      transform-origin: bottom center;
-    }
-    .draggable-name { cursor: grab; user-select: none; touch-action: none; }
-    .draggable-name:active { cursor: grabbing; }
   </style>
 </head>
 <body class="bg-[#07090e] text-slate-100 min-h-screen selection:bg-indigo-500 selection:text-white relative overflow-x-hidden antialiased flex flex-col items-center">
 
   <div class="fixed top-[-10%] left-[-5%] w-[45rem] h-[45rem] bg-indigo-600/10 rounded-full blur-[140px] pointer-events-none -z-10"></div>
   <div class="fixed top-[30%] right-[-10%] w-[40rem] h-[40rem] bg-fuchsia-600/10 rounded-full blur-[160px] pointer-events-none -z-10"></div>
-  <div class="fixed bottom-[-10%] left-[20%] w-[50rem] h-[50rem] bg-cyan-600/10 rounded-full blur-[150px] pointer-events-none -z-10"></div>
+  <div class="fixed bottom-[-10%] left-[20%] w-[50rem] h-[50rem] bg-amber-600/10 rounded-full blur-[150px] pointer-events-none -z-10"></div>
 
   <div id="zoom-container" class="max-w-6xl px-4 sm:px-6 py-6">
     
@@ -88,9 +76,9 @@
         class="flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-800/60">
         <span>📋</span> Weekly Picks
       </button>
-      <button id="tab-btn-prank" onclick="switchTab('prank')" 
-        class="flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 text-rose-400 hover:text-rose-200 hover:bg-rose-950/40 border border-transparent hover:border-rose-800/50">
-        <span>🔒</span> Circle of Trust
+      <button id="tab-btn-cmt" onclick="switchTab('cmt')" 
+        class="flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 text-amber-400 hover:text-amber-200 hover:bg-amber-950/40 border border-amber-800/40">
+        <span>🏗️</span> Aaron's CMT Quiz
       </button>
     </nav>
 
@@ -200,38 +188,82 @@
       <div id="weekly-picks-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
     </div>
 
-    <!-- ================= TAB 3: CIRCLE OF TRUST (PRANK TAB) ================= -->
-    <div id="tab-content-prank" class="tab-pane hidden">
-      <div class="bg-slate-900/60 border border-slate-800 rounded-3xl p-6 backdrop-blur-xl shadow-2xl relative overflow-hidden">
-        <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6 pb-4 border-b border-slate-800">
+    <!-- ================= TAB 3: AARON'S CMT QUIZ (REPLACES CIRCLE OF TRUST) ================= -->
+    <div id="tab-content-cmt" class="tab-pane hidden space-y-6">
+      <!-- Callout Banner -->
+      <div class="bg-gradient-to-r from-amber-950/60 via-slate-900 to-rose-950/40 border-2 border-amber-500/50 rounded-3xl p-6 shadow-2xl relative overflow-hidden">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <div class="flex items-center gap-2">
-              <span class="text-[10px] font-mono uppercase tracking-widest bg-rose-950 text-rose-300 border border-rose-800/60 px-2.5 py-0.5 rounded-full font-bold">Security Level: Maximum</span>
-              <span class="text-[10px] font-mono uppercase tracking-widest bg-amber-950 text-amber-300 border border-amber-800/60 px-2.5 py-0.5 rounded-full font-bold">Jared Exiled</span>
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-[10px] font-mono uppercase tracking-widest bg-amber-500 text-slate-950 font-black px-2.5 py-0.5 rounded-full">
+                MANDATORY REMEDIATION EXAM
+              </span>
+              <span class="text-[10px] font-mono text-rose-300 bg-rose-950 border border-rose-800 px-2 py-0.5 rounded-full">
+                Target: Aaron
+              </span>
             </div>
-            <h2 class="text-2xl font-black text-white mt-1">The Official Circle of Trust</h2>
-            <p class="text-xs text-slate-400">Drag your name inside to enter.</p>
+            <h2 class="text-2xl sm:text-3xl font-black text-white">Construction Materials Testing Certification</h2>
+            <p class="text-xs sm:text-sm text-slate-300 mt-1 max-w-2xl">
+              Aaron has spent all week talking smack to <strong class="text-amber-400">Paul</strong> about Texas A&M falling to Kentucky, while neglecting to submit his own picks. 
+              Before Aaron can make his official Week 2 picks, he must prove his field competency with a passing grade (<strong>80% or higher</strong>).
+            </p>
+          </div>
+          <div class="bg-slate-950/80 border border-amber-500/40 rounded-2xl p-4 text-center min-w-[170px]">
+            <span class="text-[10px] uppercase font-mono tracking-wider text-slate-400 block">Aaron's Pick Status</span>
+            <span id="aaron-status-badge" class="text-sm font-black text-rose-400 uppercase tracking-wider block mt-1">
+              🔒 LOCKED OUT
+            </span>
+            <span class="text-[9px] text-slate-500 block mt-0.5">Requires 8/10 to Unlock</span>
           </div>
         </div>
+      </div>
 
-        <div id="arena" class="relative w-full h-[580px] bg-slate-950 border border-slate-800/80 rounded-3xl overflow-hidden flex items-center justify-center">
-          <div class="absolute bottom-0 right-0 w-64 h-48 border-t-2 border-l-2 border-dashed border-rose-900/40 bg-rose-950/10 rounded-tl-3xl p-3 flex flex-col justify-end items-end pointer-events-none">
-            <span class="text-[10px] font-mono font-black text-rose-500/80 uppercase tracking-widest flex items-center gap-1 animate-pulse">
-              ⚠️ MAXIMUM EXILE ZONE (JARED)
-            </span>
-            <span class="text-[9px] text-slate-600 font-mono">Distance from Trust: 50,000 km</span>
+      <!-- Scoreboard & Exam Section -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Attempt Live Scoreboard -->
+        <div class="bg-slate-900/60 border border-slate-800 rounded-3xl p-5 backdrop-blur-xl h-fit">
+          <div class="flex justify-between items-center pb-3 border-b border-slate-800 mb-4">
+            <h3 class="font-extrabold text-sm text-white uppercase tracking-wider flex items-center gap-2">
+              <span>📊</span> Aaron's Attempt Log
+            </h3>
+            <span id="attempt-counter-pill" class="text-xs font-mono bg-slate-950 border border-slate-800 px-2.5 py-0.5 rounded-full text-indigo-400 font-bold">0 Attempts</span>
+          </div>
+          
+          <div id="attempt-history-list" class="space-y-2.5 max-h-96 overflow-y-auto pr-1 text-xs">
+            <!-- Dynamically populated from localStorage -->
           </div>
 
-          <div id="trust-circle" class="w-64 h-64 sm:w-72 sm:h-72 rounded-full border-2 border-dashed border-emerald-500/40 bg-emerald-950/20 flex flex-col items-center justify-center text-center p-4 relative shadow-[0_0_80px_-10px_rgba(16,185,129,0.3)] transition">
-            <span class="text-2xl mb-1">👑</span>
-            <span class="text-xs font-black uppercase tracking-wider text-emerald-400">Circle of Trust</span>
-            <span class="text-[10px] text-emerald-500/70 font-mono mt-0.5">Lead Architect & Dev Supreme</span>
-            <div class="mt-3 bg-emerald-500/20 border border-emerald-500/60 text-emerald-200 text-xs font-black px-4 py-1.5 rounded-full shadow-lg">
-              ★ Weston ★
+          <button onclick="resetAaronAttempts()" class="w-full mt-4 text-[11px] font-mono text-slate-500 hover:text-rose-400 py-1.5 transition">
+            [Clear Attempt History]
+          </button>
+        </div>
+
+        <!-- Quiz Form Card -->
+        <div class="lg:col-span-2 bg-slate-900/60 border border-slate-800 rounded-3xl p-6 backdrop-blur-xl shadow-xl">
+          <div class="flex justify-between items-center pb-4 border-b border-slate-800 mb-6">
+            <div>
+              <h3 class="text-lg font-black text-white">ASTM / ACI Standard 10-Question Field Exam</h3>
+              <p class="text-xs text-slate-400">Select the correct answer for all 10 field testing scenarios.</p>
             </div>
+            <span class="text-xs font-mono font-black text-amber-400 bg-amber-950/80 border border-amber-800/60 px-3 py-1 rounded-full">
+              Passing: 8/10
+            </span>
           </div>
 
-          <div id="draggables-layer" class="absolute inset-0 pointer-events-auto"></div>
+          <form id="cmt-quiz-form" onsubmit="handleQuizSubmit(event)" class="space-y-6">
+            <div id="quiz-questions-container" class="space-y-6 text-sm">
+              <!-- Dynamically rendered -->
+            </div>
+
+            <div class="pt-4 border-t border-slate-800 flex flex-col sm:flex-row gap-3">
+              <button type="submit" class="flex-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3.5 px-6 rounded-2xl text-xs uppercase tracking-wider transition shadow-lg shadow-amber-500/20">
+                Submit Exam for Grading ➔
+              </button>
+            </div>
+          </form>
+
+          <div id="quiz-result-banner" class="hidden mt-6 p-4 rounded-2xl border text-center"></div>
         </div>
       </div>
     </div>
@@ -268,24 +300,6 @@
     </div>
   </div>
 
-  <!-- NEDRY MODAL -->
-  <div id="nedry-modal" class="fixed inset-0 bg-black/95 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
-    <div class="bg-[#0b140d] border-2 border-emerald-500 rounded-2xl max-w-lg w-full p-6 shadow-[0_0_90px_rgba(16,185,129,0.5)] text-center relative font-terminal animate-pulse">
-      <div class="flex justify-between items-center pb-3 border-b border-emerald-500/40 text-emerald-400 text-sm tracking-wider">
-        <span>SECURITY PROTOCOL 1993 // ACCESS DENIED</span>
-        <button onclick="closeNedryModal()" class="text-emerald-400 hover:text-white font-bold text-lg">✕</button>
-      </div>
-      <div class="my-6 flex flex-col items-center justify-center">
-        <div class="text-7xl select-none animate-wag mb-2">☝️🤓</div>
-        <h3 class="text-3xl font-extrabold text-emerald-400 tracking-wider">AH AH AH!</h3>
-        <p class="text-xl text-emerald-300 mt-2">YOU DIDN'T SAY THE MAGIC WORD!</p>
-      </div>
-      <button onclick="closeNedryModal()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-black font-extrabold py-3.5 rounded-xl text-lg font-terminal tracking-widest uppercase transition shadow-lg shadow-emerald-600/40">
-        [ RETURN TO SHAME ZONE ]
-      </button>
-    </div>
-  </div>
-
   <!-- ROSTER MODAL -->
   <div id="roster-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
     <div class="bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative">
@@ -315,8 +329,6 @@
       </div>
     </div>
   </div>
-
-  <audio id="nedry-audio" preload="auto" loop src="https://www.myinstants.com/media/sounds/ah-ah-ah-you-didnt-say-the-magic-word.mp3"></audio>
 
   <script>
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwC1NpT8vKqmfsMFUxsPjc_23YhRPQAdMvEtz8GN05NVrm7IOtxnB9tu45ML4HgtLVD/exec";
@@ -367,33 +379,127 @@
       "Paul": { "teams": ["Georgia", "Texas A&M", "East Carolina", "Iowa", "Wisconsin", "Army", "Georgia Tech", "Syracuse"], "proj_wins": 56.4, "avg_fpi": 7.9 }
     };
 
+    // 10 Construction Materials Testing Quiz Questions
+    const CMT_QUESTIONS = [
+      {
+        q: "1. Under ASTM C143 (Slump Test), in how many equal volume layers must the cone be filled, and how many strokes of the tamping rod are applied per layer?",
+        options: [
+          "2 layers, 20 roddings each",
+          "3 layers, 25 roddings each",
+          "4 layers, 25 roddings each",
+          "3 layers, 50 roddings each"
+        ],
+        answer: 1
+      },
+      {
+        q: "2. Under ASTM C31, what is the required standard curing temperature range for concrete test cylinders for initial curing in the field?",
+        options: [
+          "50°F to 70°F (10°C to 21°C)",
+          "60°F to 80°F (16°C to 27°C)",
+          "70°F to 90°F (21°C to 32°C)",
+          "Under 50°F only"
+        ],
+        answer: 1
+      },
+      {
+        q: "3. When performing a Standard Proctor test (ASTM D698), what is the weight of the rammer and the drop height?",
+        options: [
+          "5.5 lb rammer dropped from 12 inches",
+          "10.0 lb rammer dropped from 18 inches",
+          "5.5 lb rammer dropped from 18 inches",
+          "10.0 lb rammer dropped from 12 inches"
+        ],
+        answer: 0
+      },
+      {
+        q: "4. What is the allowable time limit from the start of mold filling to mold removal during a slump test (ASTM C143)?",
+        options: [
+          "1 minute",
+          "2 ½ minutes",
+          "5 minutes",
+          "7 minutes"
+        ],
+        answer: 1
+      },
+      {
+        q: "5. When Paul's Texas A&M team plays Kentucky, and Aaron makes a nuclear density gauge test on base course (ASTM D6938), what test mode yields the most accurate density reading?",
+        options: [
+          "Backscatter mode",
+          "Direct transmission mode",
+          "Air gap ratio mode",
+          "Vibration velocity mode"
+        ],
+        answer: 1
+      },
+      {
+        q: "6. Under ASTM C231 (Pressure Air Content), what must be done to the rim of the bowl before clamping the lid?",
+        options: [
+          "Spray it with WD-40",
+          "Thoroughly clean and wipe the rim and flange clean of concrete",
+          "Coat it with fine sand",
+          "Tap it 50 times with a 5 lb mallet"
+        ],
+        answer: 1
+      },
+      {
+        q: "7. When rodding the second and third layers of a standard 6x12 inch concrete cylinder, the rod should penetrate approximately how far into the underlying layer?",
+        options: [
+          "0.5 inches",
+          "Approximately 1 inch (25 mm)",
+          "All the way to the bottom of the mold",
+          "It should never touch the lower layer"
+        ],
+        answer: 1
+      },
+      {
+        q: "8. In soil classification (ASTM D2487), what sieve separates coarse aggregate from fine aggregate (sand)?",
+        options: [
+          "#4 Sieve (4.75 mm)",
+          "#10 Sieve (2.00 mm)",
+          "#40 Sieve (0.425 mm)",
+          "#200 Sieve (0.075 mm)"
+        ],
+        answer: 0
+      },
+      {
+        q: "9. What is the standard loading rate for a 6x12 inch cylinder undergoing compressive strength testing (ASTM C39)?",
+        options: [
+          "10 to 20 psi/sec",
+          "28 to 42 psi/sec (0.20 to 0.30 MPa/sec)",
+          "100 to 150 psi/sec",
+          "500 psi/sec constant blast"
+        ],
+        answer: 1
+      },
+      {
+        q: "10. Aaron guaranteed Kentucky would upset Texas A&M. If Kentucky loses to Paul's Aggies by 20+ points, what is Aaron's required remedy?",
+        options: [
+          "Blame the refs and complain in group chat",
+          "Re-rod every slump cone 100 times",
+          "Admit Paul is his superior and buy him lunch",
+          "Pretend he picked Texas A&M all along"
+        ],
+        answer: 2
+      }
+    ];
+
     let leagueData = null;
     let cachedSheetPicks = [];
     let selectedWeek = 2;
     let currentZoom = 1.0;
 
-    // DIRECT AUTHORITY ENGINE: Prioritizes verified final schedule, then falls back to Google Sheet
     function getVerifiedPickStatus(p, weekNum) {
       const w = String(weekNum);
+      if (p.note && (p.result === "WIN" || p.result === "LOSS")) return p.result;
 
-      // 1. Check Banked Week 0 auto-slotted pick
-      if (p.note && (p.result === "WIN" || p.result === "LOSS")) {
-        return p.result;
-      }
-
-      // 2. PRIMARY AUTHORITY: Check official game outcome in league_data.json
       if (leagueData && leagueData.season_schedule && leagueData.season_schedule[w]) {
         const match = leagueData.season_schedule[w].find(m => m.team && m.team.toLowerCase() === p.team.toLowerCase());
         if (match && match.status === "STATUS_FINAL" && (match.result === "WIN" || match.result === "LOSS")) {
-          return match.result; // Official WIN or LOSS from your schedule
+          return match.result;
         }
       }
 
-      // 3. FALLBACK AUTHORITY: Use Google Sheet Result if schedule is not finalized
-      if (p.result === "WIN" || p.result === "LOSS") {
-        return p.result;
-      }
-
+      if (p.result === "WIN" || p.result === "LOSS") return p.result;
       return "PENDING";
     }
 
@@ -470,20 +576,20 @@
     function switchTab(tab) {
       const standingsPane = document.getElementById('tab-content-standings');
       const picksPane = document.getElementById('tab-content-picks');
-      const prankPane = document.getElementById('tab-content-prank');
+      const cmtPane = document.getElementById('tab-content-cmt');
       
       const btnStandings = document.getElementById('tab-btn-standings');
       const btnPicks = document.getElementById('tab-btn-picks');
-      const btnPrank = document.getElementById('tab-btn-prank');
+      const btnCmt = document.getElementById('tab-btn-cmt');
 
       standingsPane.classList.add('hidden');
       picksPane.classList.add('hidden');
-      prankPane.classList.add('hidden');
+      cmtPane.classList.add('hidden');
 
       const defaultBtn = "flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-800/60";
       btnStandings.className = defaultBtn;
       btnPicks.className = defaultBtn;
-      btnPrank.className = defaultBtn;
+      btnCmt.className = "flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 text-amber-400 hover:text-amber-200 hover:bg-amber-950/40 border border-transparent";
 
       if (tab === 'standings') {
         standingsPane.classList.remove('hidden');
@@ -491,10 +597,11 @@
       } else if (tab === 'picks') {
         picksPane.classList.remove('hidden');
         btnPicks.className = "flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow-lg shadow-indigo-600/30";
-      } else if (tab === 'prank') {
-        prankPane.classList.remove('hidden');
-        btnPrank.className = "flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 bg-gradient-to-r from-rose-600 to-red-700 text-white shadow-lg shadow-rose-600/30";
-        initPrankArena();
+      } else if (tab === 'cmt') {
+        cmtPane.classList.remove('hidden');
+        btnCmt.className = "flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 bg-gradient-to-r from-amber-600 to-yellow-600 text-slate-950 shadow-lg shadow-amber-600/30 font-extrabold";
+        renderCmtQuiz();
+        renderAaronAttemptBoard();
       }
     }
 
@@ -533,15 +640,12 @@
 
       populateWeekDropdown(curWeek);
 
-      // Safe Google Sheet Fetch (Handles any HTML redirect without crashing)
       cachedSheetPicks = [];
       try {
         const resSheet = await fetch(GOOGLE_SCRIPT_URL);
         const rawText = await resSheet.text();
 
-        if (rawText.trim().startsWith('<')) {
-          console.warn("Google Apps Script returned an HTML page. Ensure 'Who has access' is set to 'Anyone'.");
-        } else {
+        if (!rawText.trim().startsWith('<')) {
           cachedSheetPicks = JSON.parse(rawText);
         }
       } catch(err) {
@@ -550,6 +654,7 @@
 
       renderStandings(cachedSheetPicks);
       renderLivePicksGrid(cachedSheetPicks, selectedWeek);
+      renderAaronAttemptBoard();
     }
 
     function renderStandings(picks) {
@@ -673,7 +778,6 @@
         BANKED_WEEK_0_PICKS.forEach(banked => {
           if (banked.owner.toLowerCase() === owner.toLowerCase()) {
             const game = weekSchedule.find(m => m.team && m.team.toLowerCase() === banked.team.toLowerCase());
-            // Strictly slot ONLY when the team is actually on an off-week (genuine BYE)
             if (game && (game.is_bye || game.opponent === 'BYE' || game.game_time === 'BYE WEEK')) {
               displayPicks.unshift({
                 week: targetWeek,
@@ -749,125 +853,142 @@
       document.getElementById('submitted-badge').innerText = `${submittedCount}/10 Submitted`;
     }
 
-    const coworkerPlacements = [
-      { name: "Cole", top: '35px', left: '50px' },
-      { name: "Tucker", top: '35px', right: '50px' },
-      { name: "Brayson", top: '160px', left: '30px' },
-      { name: "Krystal", top: '160px', right: '30px' },
-      { name: "Aaron", top: '300px', left: '40px' },
-      { name: "Andy", top: '300px', right: '40px' },
-      { name: "Rian", bottom: '30px', left: '70px' },
-      { name: "Paul", bottom: '30px', left: '40%' },
-      { name: "Jared", bottom: '25px', right: '30px', isExiled: true }
-    ];
+    // ================= AARON CMT QUIZ LOGIC =================
+    function renderCmtQuiz() {
+      const container = document.getElementById('quiz-questions-container');
+      container.innerHTML = '';
 
-    function initPrankArena() {
-      const layer = document.getElementById('draggables-layer');
-      layer.innerHTML = '';
+      CMT_QUESTIONS.forEach((item, qIdx) => {
+        const qDiv = document.createElement('div');
+        qDiv.className = "bg-slate-950/80 border border-slate-800/90 rounded-2xl p-4";
+        
+        let optsHtml = '';
+        item.options.forEach((opt, oIdx) => {
+          optsHtml += `
+            <label class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-900 border border-transparent hover:border-slate-800 cursor-pointer transition">
+              <input type="radio" name="q_${qIdx}" value="${oIdx}" required class="w-4 h-4 text-amber-500 bg-slate-900 border-slate-700 focus:ring-amber-500">
+              <span class="text-slate-300 text-xs">${opt}</span>
+            </label>
+          `;
+        });
 
-      coworkerPlacements.forEach(person => {
-        const badge = document.createElement('div');
-        badge.id = `drag-${person.name}`;
-
-        if (person.isExiled) {
-          badge.className = "draggable-name absolute z-20 bg-rose-950/90 hover:bg-rose-900 text-rose-200 border-2 border-rose-600 font-black text-xs px-4 py-2.5 rounded-2xl shadow-[0_0_30px_rgba(225,29,72,0.4)] flex items-center gap-2 cursor-grab active:cursor-grabbing hover:scale-105";
-          badge.innerHTML = `<span>☣️</span> <span>Jared (Exile Penalty)</span>`;
-        } else {
-          badge.className = "draggable-name absolute z-20 bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 font-extrabold text-xs px-4 py-2.5 rounded-2xl shadow-xl flex items-center gap-2 cursor-grab active:cursor-grabbing hover:border-indigo-500";
-          badge.innerHTML = `<span>🚫</span> <span>${person.name}</span>`;
-        }
-
-        if (person.top) badge.style.top = person.top;
-        if (person.bottom) badge.style.bottom = person.bottom;
-        if (person.left) badge.style.left = person.left;
-        if (person.right) badge.style.right = person.right;
-
-        layer.appendChild(badge);
-        makeDraggable(badge);
+        qDiv.innerHTML = `
+          <p class="font-bold text-white mb-2.5 text-xs sm:text-sm">${item.q}</p>
+          <div class="space-y-1">${optsHtml}</div>
+        `;
+        container.appendChild(qDiv);
       });
     }
 
-    function makeDraggable(el) {
-      let isDragging = false;
-      let startX, startY, origX, origY;
+    function handleQuizSubmit(e) {
+      e.preventDefault();
+      const form = document.getElementById('cmt-quiz-form');
+      let score = 0;
 
-      el.addEventListener('pointerdown', (e) => {
-        isDragging = true;
-        el.setPointerCapture(e.pointerId);
-        startX = e.clientX;
-        startY = e.clientY;
-        
-        const rect = el.getBoundingClientRect();
-        const arenaRect = document.getElementById('arena').getBoundingClientRect();
-        
-        origX = rect.left - arenaRect.left;
-        origY = rect.top - arenaRect.top;
-        
-        el.style.left = `${origX}px`;
-        el.style.top = `${origY}px`;
-        el.style.right = 'auto';
-        el.style.bottom = 'auto';
-        el.style.zIndex = '50';
-      });
-
-      el.addEventListener('pointermove', (e) => {
-        if (!isDragging) return;
-        
-        const dx = e.clientX - startX;
-        const dy = e.clientY - startY;
-        
-        const newLeft = origX + dx;
-        const newTop = origY + dy;
-        
-        el.style.left = `${newLeft}px`;
-        el.style.top = `${newTop}px`;
-
-        const circle = document.getElementById('trust-circle');
-        const elRect = el.getBoundingClientRect();
-        const circleRect = circle.getBoundingClientRect();
-
-        const elCenterX = elRect.left + elRect.width / 2;
-        const elCenterY = elRect.top + elRect.height / 2;
-        const circleCenterX = circleRect.left + circleRect.width / 2;
-        const circleCenterY = circleRect.top + circleRect.height / 2;
-
-        const distance = Math.hypot(elCenterX - circleCenterX, elCenterY - circleCenterY);
-        const circleRadius = circleRect.width / 2;
-
-        if (distance < circleRadius) {
-          isDragging = false;
-          el.releasePointerCapture(e.pointerId);
-          triggerNedryAlarm(el, origX, origY);
+      CMT_QUESTIONS.forEach((item, qIdx) => {
+        const selected = form.querySelector(`input[name="q_${qIdx}"]:checked`);
+        if (selected && parseInt(selected.value, 10) === item.answer) {
+          score++;
         }
       });
 
-      el.addEventListener('pointerup', (e) => {
-        isDragging = false;
-        el.style.zIndex = '20';
-      });
-    }
+      const passed = score >= 8;
+      const history = JSON.parse(localStorage.getItem('aaron_cmt_attempts') || '[]');
+      const attemptNum = history.length + 1;
+      
+      const attemptObj = {
+        attempt: attemptNum,
+        score: score,
+        passed: passed,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+      };
 
-    function triggerNedryAlarm(el, resetX, resetY) {
-      el.style.left = `${resetX}px`;
-      el.style.top = `${resetY}px`;
-      document.getElementById('nedry-modal').classList.remove('hidden');
-      playNedryAudio();
-    }
+      history.unshift(attemptObj);
+      localStorage.setItem('aaron_cmt_attempts', JSON.stringify(history));
 
-    function playNedryAudio() {
-      const audio = document.getElementById('nedry-audio');
-      if (audio) {
-        audio.currentTime = 0;
-        audio.play().catch(e => {});
+      if (passed) {
+        localStorage.setItem('aaron_cmt_passed', 'true');
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+      }
+
+      renderAaronAttemptBoard();
+
+      const banner = document.getElementById('quiz-result-banner');
+      banner.classList.remove('hidden');
+
+      if (passed) {
+        banner.className = "mt-6 p-5 rounded-2xl border border-emerald-500 bg-emerald-950/50 text-emerald-300 text-center";
+        banner.innerHTML = `
+          <h4 class="text-lg font-black uppercase tracking-wider">🎉 CONGRATULATIONS AARON! YOU PASSED!</h4>
+          <p class="text-xs text-emerald-200 mt-1">Score: ${score} / 10 (${score * 10}%). Your pick sheet lock has been disengaged.</p>
+          <a href="pick.html?user=Aaron" class="inline-block mt-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs px-5 py-2.5 rounded-xl uppercase tracking-wider transition">
+            Proceed to Submit Week 2 Picks ➔
+          </a>
+        `;
+      } else {
+        banner.className = "mt-6 p-5 rounded-2xl border border-rose-600 bg-rose-950/50 text-rose-300 text-center";
+        banner.innerHTML = `
+          <h4 class="text-lg font-black uppercase tracking-wider">❌ FAILED: RE-TEST REQUIRED!</h4>
+          <p class="text-xs text-rose-200 mt-1">Score: ${score} / 10 (${score * 10}%). Required to pass: 8 / 10. Paul remains completely unimpressed.</p>
+          <p class="text-[11px] font-mono text-rose-400 mt-1">Status: Picks are still LOCKED for Aaron until standard is met.</p>
+        `;
       }
     }
 
-    function closeNedryModal() {
-      document.getElementById('nedry-modal').classList.add('hidden');
-      const audio = document.getElementById('nedry-audio');
-      if (audio) {
-        audio.pause();
-        audio.currentTime = 0;
+    function renderAaronAttemptBoard() {
+      const history = JSON.parse(localStorage.getItem('aaron_cmt_attempts') || '[]');
+      const container = document.getElementById('attempt-history-list');
+      const counterPill = document.getElementById('attempt-counter-pill');
+      const statusBadge = document.getElementById('aaron-status-badge');
+
+      counterPill.innerText = `${history.length} Attempt${history.length === 1 ? '' : 's'}`;
+
+      const hasPassed = history.some(h => h.passed);
+      if (statusBadge) {
+        if (hasPassed) {
+          statusBadge.innerText = "✓ CERTIFIED & UNLOCKED";
+          statusBadge.className = "text-sm font-black text-emerald-400 uppercase tracking-wider block mt-1";
+        } else {
+          statusBadge.innerText = "🔒 LOCKED OUT";
+          statusBadge.className = "text-sm font-black text-rose-400 uppercase tracking-wider block mt-1";
+        }
+      }
+
+      if (history.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-8 text-slate-500">
+            <span class="text-2xl block mb-1">📋</span>
+            <p class="italic">No attempts logged yet.<br>Aaron hasn't stepped up to the plate.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = history.map(item => `
+        <div class="p-3 rounded-2xl border ${item.passed ? 'border-emerald-800 bg-emerald-950/30' : 'border-rose-900/60 bg-rose-950/20'} flex justify-between items-center">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-extrabold text-white text-xs">Attempt #${item.attempt}</span>
+              <span class="text-[9px] font-mono font-black uppercase px-2 py-0.5 rounded ${item.passed ? 'bg-emerald-500 text-slate-950' : 'bg-rose-950 text-rose-300 border border-rose-800'}">
+                ${item.passed ? 'PASS' : 'FAIL'}
+              </span>
+            </div>
+            <p class="text-[10px] text-slate-400 mt-0.5 font-mono">Logged at ${item.timestamp}</p>
+          </div>
+          <div class="text-right">
+            <span class="font-mono text-base font-black ${item.passed ? 'text-emerald-400' : 'text-rose-400'}">${item.score}/10</span>
+            <span class="block text-[9px] text-slate-500 font-mono">${item.score * 10}%</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function resetAaronAttempts() {
+      if (confirm("Reset Aaron's test attempts?")) {
+        localStorage.removeItem('aaron_cmt_attempts');
+        localStorage.removeItem('aaron_cmt_passed');
+        renderAaronAttemptBoard();
+        document.getElementById('quiz-result-banner').classList.add('hidden');
       }
     }
 
