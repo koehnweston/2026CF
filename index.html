@@ -15,6 +15,12 @@
     .font-mono { font-family: 'JetBrains Mono', monospace; }
     .font-terminal { font-family: 'VT323', monospace; }
     #zoom-container { transition: zoom 0.15s ease-out; width: 100%; margin: 0 auto; }
+    @keyframes yetiShake {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      10%, 30%, 50%, 70%, 90% { transform: translate(-8px, -6px) rotate(-1.5deg); }
+      20%, 40%, 60%, 80% { transform: translate(8px, 6px) rotate(1.5deg); }
+    }
+    .shake-intense { animation: yetiShake 0.45s ease-in-out infinite; }
   </style>
 </head>
 <body class="bg-[#07090e] text-slate-100 min-h-screen selection:bg-indigo-500 selection:text-white relative overflow-x-hidden antialiased flex flex-col items-center">
@@ -66,8 +72,8 @@
       </div>
     </header>
 
-    <!-- Navigation Tabs -->
-    <nav class="flex space-x-2 p-1.5 bg-slate-900/80 border border-slate-800/80 rounded-2xl mb-8 max-w-xl backdrop-blur-md shadow-xl">
+    <!-- Navigation Tabs (4 Tabs) -->
+    <nav class="flex flex-wrap sm:flex-nowrap space-x-1 sm:space-x-2 p-1.5 bg-slate-900/80 border border-slate-800/80 rounded-2xl mb-8 max-w-2xl backdrop-blur-md shadow-xl">
       <button id="tab-btn-standings" onclick="switchTab('standings')" 
         class="flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow-lg shadow-indigo-600/30">
         <span>🏆</span> Standings
@@ -76,9 +82,13 @@
         class="flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-800/60">
         <span>📋</span> Weekly Picks
       </button>
-      <button id="tab-btn-cmt" onclick="switchTab('cmt')" 
-        class="flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 text-amber-400 hover:text-amber-200 hover:bg-amber-950/40 border border-amber-800/40">
-        <span>🏗️</span> Aaron's CMT Quiz
+      <button id="tab-btn-jared" onclick="switchTab('jared')" 
+        class="flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 text-rose-400 hover:text-rose-200 hover:bg-rose-950/40 border border-rose-900/30">
+        <span>📐</span> Jared's PE Exam
+      </button>
+      <button id="tab-btn-minesweeper" onclick="switchTab('minesweeper')" 
+        class="flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 text-cyan-400 hover:text-cyan-200 hover:bg-cyan-950/40 border border-cyan-900/30">
+        <span>💣</span> League Minesweeper
       </button>
     </nav>
 
@@ -188,89 +198,238 @@
       <div id="weekly-picks-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
     </div>
 
-    <!-- ================= TAB 3: AARON'S CMT REMEDIATION EXAM ================= -->
-    <div id="tab-content-cmt" class="tab-pane hidden space-y-6">
+    <!-- ================= TAB 3: JARED'S CIVIL PE REMEDIATION EXAM ================= -->
+    <div id="tab-content-jared" class="tab-pane hidden space-y-6">
       <!-- Callout Banner -->
-      <div class="bg-gradient-to-r from-amber-950/60 via-slate-900 to-rose-950/40 border-2 border-amber-500/50 rounded-3xl p-6 shadow-2xl relative overflow-hidden">
+      <div class="bg-gradient-to-r from-rose-950/70 via-slate-900 to-amber-950/40 border-2 border-rose-500/50 rounded-3xl p-6 shadow-2xl relative overflow-hidden">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <div class="flex items-center gap-2 mb-2">
-              <span class="text-[10px] font-mono uppercase tracking-widest bg-amber-500 text-slate-950 font-black px-2.5 py-0.5 rounded-full">
-                MANDATORY REMEDIATION EXAM
+              <span class="text-[10px] font-mono uppercase tracking-widest bg-rose-500 text-white font-black px-2.5 py-0.5 rounded-full">
+                MANDATORY DISCIPLINARY RE-EXAM
               </span>
-              <span class="text-[10px] font-mono text-rose-300 bg-rose-950 border border-rose-800 px-2 py-0.5 rounded-full">
-                Target: Aaron
+              <span class="text-[10px] font-mono text-amber-300 bg-amber-950 border border-amber-800 px-2 py-0.5 rounded-full">
+                Target: Jared
               </span>
             </div>
-            <h2 class="text-2xl sm:text-3xl font-black text-white">Construction Materials Testing Certification</h2>
+            <h2 class="text-2xl sm:text-3xl font-black text-white">Civil PE Site Design Certification & Remediation</h2>
             <p class="text-xs sm:text-sm text-slate-300 mt-1 max-w-2xl">
-              Now that <strong class="text-indigo-400">Kentucky actually beat Texas A&M</strong>, Aaron has spent the entire season running his mouth, gloating to <strong class="text-amber-400">Paul</strong>, and acting like he personally called the plays—all while completely failing to submit his own picks! 
-              Before Aaron is permitted to lock in picks for any week, he must prove his field competency with a passing grade (<strong>80% or higher</strong>) and formalize where he's buying lunch.
+              Last week, <strong class="text-rose-400">Jared completely ghosted his picks</strong> despite having <strong class="text-indigo-400">6 active teams playing</strong>! As official league restitution, Jared is locked out of making any further picks until he proves his engineering credentials on this 10-Question Civil Site Design PE Exam (Multiple Choice, Fill-in-the-Blank, and 2 Numerical Workout Calculations).
             </p>
           </div>
-          <div class="bg-slate-950/80 border border-amber-500/40 rounded-2xl p-4 text-center min-w-[170px]">
-            <span class="text-[10px] uppercase font-mono tracking-wider text-slate-400 block">Aaron's Pick Status</span>
-            <span id="aaron-status-badge" class="text-sm font-black text-rose-400 uppercase tracking-wider block mt-1">
+          <div class="bg-slate-950/80 border border-rose-500/40 rounded-2xl p-4 text-center min-w-[170px]">
+            <span class="text-[10px] uppercase font-mono tracking-wider text-slate-400 block">Jared's Pick Status</span>
+            <span id="jared-status-badge" class="text-sm font-black text-rose-400 uppercase tracking-wider block mt-1">
               🔒 LOCKED OUT
             </span>
-            <span class="text-[9px] text-slate-500 block mt-0.5">Requires 8/10 to Unlock</span>
+            <span class="text-[9px] text-slate-500 block mt-0.5">Passing Score: 80% (8/10)</span>
           </div>
         </div>
       </div>
 
-      <!-- Scoreboard & Exam Section -->
+      <!-- Scoreboard, Exam, and League Vlog Section -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        <!-- Attempt Live Scoreboard -->
-        <div class="bg-slate-900/60 border border-slate-800 rounded-3xl p-5 backdrop-blur-xl h-fit">
-          <div class="flex justify-between items-center pb-3 border-b border-slate-800 mb-4">
-            <h3 class="font-extrabold text-sm text-white uppercase tracking-wider flex items-center gap-2">
-              <span>📊</span> Aaron's Attempt Log
-            </h3>
-            <span id="attempt-counter-pill" class="text-xs font-mono bg-slate-950 border border-slate-800 px-2.5 py-0.5 rounded-full text-indigo-400 font-bold">0 Attempts</span>
-          </div>
-          
-          <div id="attempt-history-list" class="space-y-2.5 max-h-96 overflow-y-auto pr-1 text-xs">
-            <!-- Dynamically populated from localStorage -->
+        <!-- Left Column: Live Scoreboard & Responses Viewer -->
+        <div class="space-y-6">
+          <div class="bg-slate-900/60 border border-slate-800 rounded-3xl p-5 backdrop-blur-xl">
+            <div class="flex justify-between items-center pb-3 border-b border-slate-800 mb-4">
+              <h3 class="font-extrabold text-sm text-white uppercase tracking-wider flex items-center gap-2">
+                <span>📊</span> Live Attempt Log
+              </h3>
+              <span id="jared-attempt-counter-pill" class="text-xs font-mono bg-slate-950 border border-slate-800 px-2.5 py-0.5 rounded-full text-indigo-400 font-bold">0 Attempts</span>
+            </div>
+            <p class="text-[11px] text-slate-400 mb-3">Live feed of Jared's attempts. Click any attempt to inspect his submitted answers.</p>
+            
+            <div id="jared-attempt-history-list" class="space-y-2.5 max-h-64 overflow-y-auto pr-1 text-xs"></div>
+
+            <button onclick="resetJaredAttempts()" class="w-full mt-4 text-[10px] font-mono text-slate-500 hover:text-rose-400 py-1 transition text-center block">
+              [Reset Jared's Attempts]
+            </button>
           </div>
 
-          <button onclick="resetAaronAttempts()" class="w-full mt-4 text-[11px] font-mono text-slate-500 hover:text-rose-400 py-1.5 transition">
-            [Clear Attempt History]
-          </button>
+          <!-- League Vlog & Commentary Section -->
+          <div class="bg-slate-900/60 border border-slate-800 rounded-3xl p-5 backdrop-blur-xl space-y-4">
+            <div class="flex justify-between items-center pb-3 border-b border-slate-800">
+              <h3 class="font-extrabold text-sm text-white uppercase tracking-wider flex items-center gap-2">
+                <span>📹</span> League Vlog & Roast Feed
+              </h3>
+              <span class="text-[10px] font-mono bg-rose-950 text-rose-300 border border-rose-800 px-2 py-0.5 rounded">Live Banter</span>
+            </div>
+            
+            <div id="vlog-posts-container" class="space-y-3 max-h-72 overflow-y-auto pr-1 text-xs"></div>
+
+            <!-- Post New Comment/Vlog -->
+            <form onsubmit="handlePostVlog(event)" class="pt-3 border-t border-slate-800 space-y-2">
+              <div class="flex gap-2">
+                <select id="vlog-author-select" class="bg-slate-950 border border-slate-700 text-xs text-white rounded-lg px-2 py-1.5 focus:outline-none focus:border-indigo-500"></select>
+                <input type="text" id="vlog-input" placeholder="Drop your roast / PE analysis..." required class="flex-1 bg-slate-950 border border-slate-700 text-xs text-white rounded-lg px-3 py-1.5 focus:outline-none focus:border-indigo-500">
+              </div>
+              <button type="submit" class="w-full bg-rose-600 hover:bg-rose-500 text-white font-bold py-1.5 rounded-lg text-[11px] uppercase tracking-wider transition">
+                Post Vlog Reaction 💬
+              </button>
+            </form>
+          </div>
         </div>
 
-        <!-- Quiz Form Card -->
+        <!-- Right 2 Columns: PE Exam Form Card -->
         <div class="lg:col-span-2 bg-slate-900/60 border border-slate-800 rounded-3xl p-6 backdrop-blur-xl shadow-xl">
           <div class="flex justify-between items-center pb-4 border-b border-slate-800 mb-6">
             <div>
-              <h3 class="text-lg font-black text-white">ASTM / ACI Standard 10-Question Field Exam</h3>
-              <p class="text-xs text-slate-400">Select the correct answer for all 10 field testing scenarios.</p>
+              <h3 class="text-lg font-black text-white">Official Civil PE Site Design Examination</h3>
+              <p class="text-xs text-slate-400">Multiple choice, fill-in-the-blank, and 2 numerical workout calculations.</p>
             </div>
-            <span class="text-xs font-mono font-black text-amber-400 bg-amber-950/80 border border-amber-800/60 px-3 py-1 rounded-full">
+            <span class="text-xs font-mono font-black text-rose-400 bg-rose-950/80 border border-rose-800/60 px-3 py-1 rounded-full">
               Passing: 8/10
             </span>
           </div>
 
-          <form id="cmt-quiz-form" onsubmit="handleQuizSubmit(event)" class="space-y-6">
-            <div id="quiz-questions-container" class="space-y-6 text-sm">
-              <!-- Dynamically rendered -->
-            </div>
+          <form id="jared-pe-quiz-form" onsubmit="handleJaredQuizSubmit(event)" class="space-y-6">
+            <div id="jared-quiz-questions-container" class="space-y-6 text-sm"></div>
 
             <div class="pt-4 border-t border-slate-800 flex flex-col sm:flex-row gap-3">
-              <button type="submit" class="flex-1 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3.5 px-6 rounded-2xl text-xs uppercase tracking-wider transition shadow-lg shadow-amber-500/20">
-                Submit Exam for Grading ➔
+              <button type="submit" class="flex-1 bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white font-black py-3.5 px-6 rounded-2xl text-xs uppercase tracking-wider transition shadow-lg shadow-rose-600/30">
+                Submit PE Exam for Grading ➔
               </button>
             </div>
           </form>
 
-          <div id="quiz-result-banner" class="hidden mt-6 p-4 rounded-2xl border text-center"></div>
+          <div id="jared-quiz-result-banner" class="hidden mt-6 p-4 rounded-2xl border text-center"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= TAB 4: LEAGUE MINESWEEPER (IMPOSSIBLE YETI EDITION) ================= -->
+    <div id="tab-content-minesweeper" class="tab-pane hidden space-y-6">
+      <div class="bg-gradient-to-r from-cyan-950/60 via-slate-900 to-indigo-950/40 border-2 border-cyan-500/50 rounded-3xl p-6 shadow-2xl relative overflow-hidden">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-[10px] font-mono uppercase tracking-widest bg-cyan-500 text-slate-950 font-black px-2.5 py-0.5 rounded-full">
+                LEAGUE ARCADE CHALLENGE
+              </span>
+              <span class="text-[10px] font-mono text-cyan-300 bg-cyan-950 border border-cyan-800 px-2 py-0.5 rounded-full">
+                All 10 Owners
+              </span>
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-black text-white">Impossible Mountain Minesweeper</h2>
+            <p class="text-xs sm:text-sm text-slate-300 mt-1 max-w-xl">
+              Can any owner conquer the grid? Clear safe cells and flag the 8 hidden mines. A live weekly scoreboard ranks everyone's progress and survival rate!
+            </p>
+          </div>
+          <div class="flex items-center gap-3 bg-slate-950 border border-cyan-500/30 p-3 rounded-2xl">
+            <div>
+              <span class="text-[10px] text-slate-400 font-bold uppercase block">Player Name:</span>
+              <select id="minesweeper-player-select" class="bg-slate-900 border border-slate-700 text-cyan-300 font-bold text-xs rounded-lg px-2 py-1 mt-0.5"></select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Minesweeper Game Board -->
+        <div class="lg:col-span-2 bg-slate-900/60 border border-slate-800 rounded-3xl p-6 backdrop-blur-xl shadow-xl flex flex-col items-center">
+          
+          <!-- Top bar with Mine counter, Smiley, and Timer -->
+          <div class="w-full max-w-md bg-slate-950 border border-slate-800 rounded-2xl p-4 flex justify-between items-center mb-6 shadow-inner">
+            <div class="bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-xl font-mono text-rose-400 font-black text-lg">
+              💣 <span id="mines-left-display">08</span>
+            </div>
+            
+            <button onclick="resetMinesweeper()" id="ms-face-btn" class="text-2xl hover:scale-110 active:scale-95 transition bg-slate-900 border border-slate-800 w-12 h-12 rounded-2xl flex items-center justify-center shadow">
+              😎
+            </button>
+            
+            <div class="bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-xl font-mono text-cyan-400 font-black text-lg">
+              ⏱️ <span id="ms-timer-display">000</span>
+            </div>
+          </div>
+
+          <!-- Mode button for Mobile (Flag vs Dig) -->
+          <div class="flex items-center gap-3 mb-4">
+            <button onclick="toggleFlagMode()" id="flag-mode-toggle" class="px-3.5 py-1.5 rounded-xl text-xs font-bold border border-slate-700 bg-slate-800 text-slate-300 transition">
+              Mode: ⛏️ Dig Cell
+            </button>
+            <span class="text-[11px] text-slate-500">(Right-click or toggle to flag mines)</span>
+          </div>
+
+          <!-- The Grid Container -->
+          <div id="minesweeper-board" class="grid grid-cols-8 gap-1.5 bg-slate-950 p-3 rounded-2xl border border-slate-800 shadow-2xl select-none"></div>
+
+          <p id="ms-status-text" class="text-xs text-slate-400 mt-4 font-mono font-semibold">Click any cell to begin your ascent.</p>
+        </div>
+
+        <!-- Live Minesweeper Leaderboard -->
+        <div class="bg-slate-900/60 border border-slate-800 rounded-3xl p-5 backdrop-blur-xl h-fit">
+          <div class="flex justify-between items-center pb-3 border-b border-slate-800 mb-4">
+            <h3 class="font-extrabold text-sm text-white uppercase tracking-wider flex items-center gap-2">
+              <span>🏆</span> Weekly Ascent Standings
+            </h3>
+            <span class="text-xs font-mono bg-cyan-950 text-cyan-300 border border-cyan-800 px-2 py-0.5 rounded">All Owners</span>
+          </div>
+
+          <div id="ms-leaderboard-list" class="space-y-2 text-xs"></div>
+
+          <button onclick="resetMsLeaderboard()" class="w-full mt-4 text-[10px] font-mono text-slate-500 hover:text-cyan-400 py-1 transition text-center block">
+            [Reset Arcade Scores]
+          </button>
         </div>
       </div>
     </div>
 
   </div>
 
-  <!-- LOGIN MODAL (With Week Selector for Prior & Current Weeks) -->
+  <!-- YETI "YOU SHALL NOT PASS" JUMPSCARE MODAL -->
+  <div id="yeti-modal" class="fixed inset-0 bg-slate-950/95 backdrop-blur-xl z-50 flex items-center justify-center hidden p-4">
+    <div id="yeti-card" class="bg-gradient-to-b from-cyan-950 via-slate-950 to-slate-900 border-4 border-cyan-400 rounded-3xl max-w-lg w-full p-8 text-center shadow-2xl relative overflow-hidden shake-intense">
+      <div class="text-8xl block mb-2">👹❄️🧙‍♂️</div>
+      
+      <span class="text-[11px] font-mono uppercase tracking-widest bg-rose-600 text-white font-black px-3 py-1 rounded-full shadow-lg animate-pulse">
+        ANCIENT BALROG-YETI CONFRONTATION
+      </span>
+
+      <h2 class="text-3xl sm:text-4xl font-black text-cyan-300 tracking-tight mt-4 uppercase">
+        "YOU SHALL NOT PASS!"
+      </h2>
+
+      <p class="text-sm text-slate-200 mt-3 font-medium leading-relaxed">
+        The towering Frost Yeti of the College Football Mountains smashes his icicle staff upon the grid! 
+        <br><br>
+        <em class="text-cyan-200 italic">"I am a servant of the Secret Fire, wielder of the draft board of Arda. The dark mines will not avail you, flame of Udûn! Go back to the shadow! <strong class="text-white">YOU SHALL NOT PASS!</strong>"</em>
+      </p>
+
+      <div class="bg-slate-950/80 border border-cyan-500/40 p-4 rounded-2xl my-5 text-xs font-mono text-cyan-400">
+        💀 RESULT: You reached 98.2% completion, but no mortal may win this pool's Minesweeper.
+      </div>
+
+      <button onclick="closeYetiModal()" class="w-full bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black py-3.5 px-6 rounded-2xl text-xs uppercase tracking-wider transition shadow-lg shadow-cyan-500/30">
+        Flee into the Shadows ➔
+      </button>
+    </div>
+  </div>
+
+  <!-- INSPECT JARED'S EXAM MODAL (EVERYONE CAN VIEW RESPONSES) -->
+  <div id="inspect-exam-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-800 rounded-3xl max-w-xl w-full p-6 shadow-2xl relative max-h-[90vh] flex flex-col">
+      <div class="flex justify-between items-start pb-4 border-b border-slate-800 mb-4">
+        <div>
+          <span class="text-[10px] font-mono uppercase text-rose-400 font-bold tracking-widest">Public Examination Audit</span>
+          <h3 id="inspect-modal-title" class="text-xl font-black text-white mt-0.5">Jared's Exam Submission</h3>
+        </div>
+        <button onclick="closeInspectModal()" class="text-slate-400 hover:text-white bg-slate-800/60 hover:bg-slate-800 w-8 h-8 rounded-full flex items-center justify-center transition">✕</button>
+      </div>
+
+      <div id="inspect-modal-body" class="space-y-4 overflow-y-auto pr-2 text-xs flex-1"></div>
+
+      <div class="pt-4 border-t border-slate-800 mt-4">
+        <button onclick="closeInspectModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-2.5 rounded-xl text-xs uppercase tracking-wider transition">
+          Close Audit
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOGIN MODAL -->
   <div id="login-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
     <div class="bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-800 rounded-3xl max-w-sm w-full p-6 shadow-2xl relative">
       <div class="flex justify-between items-center mb-5 pb-3 border-b border-slate-800">
@@ -384,107 +543,127 @@
       "Paul": { "teams": ["Georgia", "Texas A&M", "East Carolina", "Iowa", "Wisconsin", "Army", "Georgia Tech", "Syracuse"], "proj_wins": 56.4, "avg_fpi": 7.9 }
     };
 
-    const CMT_QUESTIONS = [
+    // 10 Civil Site Design PE Style Questions for Jared
+    const JARED_PE_QUESTIONS = [
       {
-        q: "1. Under ASTM C143 (Slump Test), in how many equal volume layers must the cone be filled, and how many strokes of the tamping rod are applied per layer?",
+        id: 1,
+        type: "mc",
+        q: "1. (Hydrology - Rational Method) According to ASCE / TR-55 standards, what is the recommended Rational Method runoff coefficient (C) for an asphalt/concrete parking lot in a commercial retail site development?",
         options: [
-          "2 layers, 20 roddings each",
-          "3 layers, 25 roddings each",
-          "4 layers, 25 roddings each",
-          "3 layers, 50 roddings each"
-        ],
-        answer: 1
-      },
-      {
-        q: "2. Under ASTM C31, what is the required standard curing temperature range for concrete test cylinders for initial curing in the field?",
-        options: [
-          "50°F to 70°F (10°C to 21°C)",
-          "60°F to 80°F (16°C to 27°C)",
-          "70°F to 90°F (21°C to 32°C)",
-          "Under 50°F only"
-        ],
-        answer: 1
-      },
-      {
-        q: "3. When performing a Standard Proctor test (ASTM D698), what is the weight of the rammer and the drop height?",
-        options: [
-          "5.5 lb rammer dropped from 12 inches",
-          "10.0 lb rammer dropped from 18 inches",
-          "5.5 lb rammer dropped from 18 inches",
-          "10.0 lb rammer dropped from 12 inches"
-        ],
-        answer: 0
-      },
-      {
-        q: "4. What is the allowable time limit from the start of mold filling to mold removal during a slump test (ASTM C143)?",
-        options: [
-          "1 minute",
-          "2 ½ minutes",
-          "5 minutes",
-          "7 minutes"
-        ],
-        answer: 1
-      },
-      {
-        q: "5. When Aaron is performing a nuclear density gauge test on base course (ASTM D6938) instead of submitting his CFB picks, what test mode yields the most accurate density reading?",
-        options: [
-          "Backscatter mode",
-          "Direct transmission mode",
-          "Air gap ratio mode",
-          "Vibration velocity mode"
-        ],
-        answer: 1
-      },
-      {
-        q: "6. Under ASTM C231 (Pressure Air Content), what must be done to the rim of the bowl before clamping the lid?",
-        options: [
-          "Spray it with WD-40",
-          "Thoroughly clean and wipe the rim and flange clean of concrete",
-          "Coat it with fine sand",
-          "Tap it 50 times with a 5 lb mallet"
-        ],
-        answer: 1
-      },
-      {
-        q: "7. When rodding the second and third layers of a standard 6x12 inch concrete cylinder, the rod should penetrate approximately how far into the underlying layer?",
-        options: [
-          "0.5 inches",
-          "Approximately 1 inch (25 mm)",
-          "All the way to the bottom of the mold",
-          "It should never touch the lower layer"
-        ],
-        answer: 1
-      },
-      {
-        q: "8. In soil classification (ASTM D2487), what sieve separates coarse aggregate from fine aggregate (sand)?",
-        options: [
-          "#4 Sieve (4.75 mm)",
-          "#10 Sieve (2.00 mm)",
-          "#40 Sieve (0.425 mm)",
-          "#200 Sieve (0.075 mm)"
-        ],
-        answer: 0
-      },
-      {
-        q: "9. What is the standard loading rate for a 6x12 inch cylinder undergoing compressive strength testing (ASTM C39)?",
-        options: [
-          "10 to 20 psi/sec",
-          "28 to 42 psi/sec (0.20 to 0.30 MPa/sec)",
-          "100 to 150 psi/sec",
-          "500 psi/sec constant blast"
-        ],
-        answer: 1
-      },
-      {
-        q: "10. Now that Kentucky ALREADY beat Texas A&M and Aaron has been insufferably running his mouth all week to Paul like he played quarterback himself, where is Aaron contractually obligated to buy Paul lunch to atone for his behavior?",
-        options: [
-          "McDonald's Dollar Menu (REJECTED: Cheapskate violation, automatic failure)",
-          "Gas station roller-grill hot dogs (REJECTED: Paul throws an ASTM slump cone at you)",
-          "Pappas Bros. Steakhouse — 42-day Dry-Aged A5 Japanese Wagyu Tomahawk Steaks, Alaskan King Crab, and top-shelf Bourbon billed 100% to Aaron's personal credit card",
-          "A room-temperature PB&J in the job trailer (REJECTED: Disqualification & 1-year league suspension)"
+          "0.10 to 0.25 (Pervious lawn/meadow)",
+          "0.35 to 0.50 (Residential single-family)",
+          "0.70 to 0.95 (Impervious pavement/roofs)",
+          "1.45 to 1.80 (Runoff exceeds gross precipitation)"
         ],
         answer: 2
+      },
+      {
+        id: 2,
+        type: "mc",
+        q: "2. (Sanitary Sewer Hydraulics) For an 8-inch diameter standard PVC gravity sewer lateral (Manning's n = 0.010), what is the minimum slope required by typical 10-State Standards to maintain a self-cleansing velocity of 2.0 ft/s flowing full?",
+        options: [
+          "0.08%",
+          "0.40%",
+          "2.50%",
+          "8.00%"
+        ],
+        answer: 1
+      },
+      {
+        id: 3,
+        type: "mc",
+        q: "3. (ADA Site Design) Under ADA Standards for Accessible Design, what is the maximum allowable slope in ANY direction for an accessible parking stall and its adjoining access aisle?",
+        options: [
+          "1:48 (2.08% / ~2.0%)",
+          "1:20 (5.00%)",
+          "1:12 (8.33%)",
+          "1:8 (12.50%)"
+        ],
+        answer: 0
+      },
+      {
+        id: 4,
+        type: "fill",
+        q: "4. (Stormwater Hydrology - Fill in the Blank) In NRCS / SCS stormwater hydrology, what dimensionless integer parameter ranging from 30 to 98 represents the runoff potential of a specific soil-cover complex? (Enter the two-letter acronym)",
+        placeholder: "e.g. TC, CN, GI...",
+        validate: (val) => ["cn", "curve number", "curve-number"].includes(val.toLowerCase().trim()),
+        correctDisplay: "CN (Curve Number)"
+      },
+      {
+        id: 5,
+        type: "mc",
+        q: "5. (Geotechnical Earth Retention) When designing a cantilever cast-in-place concrete retaining wall without backfill slope (β = 0°), using Rankine's Theory with a granular soil friction angle φ = 30°, what is the coefficient of active lateral earth pressure (Ka)?",
+        options: [
+          "0.250",
+          "0.333",
+          "0.500",
+          "3.000"
+        ],
+        answer: 1
+      },
+      {
+        id: 6,
+        type: "fill",
+        q: "6. (Geometric Roadway Design - Fill in the Blank) What 3-letter acronym denotes the total distance required by a vehicle driver traveling at design speed to bring the vehicle to a safe stop before reaching a stationary obstacle? (Enter acronym)",
+        placeholder: "e.g. AADT, SSD, MUTCD...",
+        validate: (val) => ["ssd", "stopping sight distance"].includes(val.toLowerCase().trim()),
+        correctDisplay: "SSD (Stopping Sight Distance)"
+      },
+      {
+        id: 7,
+        type: "mc",
+        q: "7. (Erosion & Sediment Control) Under standard EPA construction stormwater BMP guidance, what is the maximum allowable contributing slope length discharging into a standard wire-backed sediment silt fence on a 2:1 (50%) steep cut slope?",
+        options: [
+          "20 feet",
+          "50 feet",
+          "100 feet",
+          "300 feet"
+        ],
+        answer: 0
+      },
+      {
+        id: 8,
+        type: "fill",
+        q: "8. (Water Utility Fire Flow - Fill in the Blank) According to the International Fire Code (IFC) and NFPA 24, what is the standard minimum residual pressure required in the municipal water main during a design fire flow demand event? (Enter numerical value in psi)",
+        placeholder: "Enter number in psi...",
+        validate: (val) => {
+          const num = parseFloat(val);
+          return num === 20 || val.trim().toLowerCase() === "20 psi";
+        },
+        correctDisplay: "20 psi"
+      },
+      {
+        id: 9,
+        type: "workout",
+        q: "9. [NUMERICAL WORKOUT #1 - Peak Storm Discharge]\nA proposed 14.5-acre mixed-use development has a weighted Rational runoff coefficient C = 0.72. The 10-year design rainfall intensity for the site's calculated time of concentration is I = 3.50 inches/hour.\nUsing the Rational Method formula:\n   Q = C × I × A\nCalculate the peak storm discharge Q in cubic feet per second (cfs). (Round to one decimal place, e.g. 36.5)",
+        placeholder: "Enter calculated cfs...",
+        validate: (val) => {
+          const num = parseFloat(val);
+          // Q = 0.72 * 3.50 * 14.5 = 36.54 cfs
+          return !isNaN(num) && num >= 36.0 && num <= 37.0;
+        },
+        correctDisplay: "36.5 cfs (0.72 × 3.50 × 14.5 = 36.54 cfs)"
+      },
+      {
+        id: 10,
+        type: "workout",
+        q: "10. [NUMERICAL WORKOUT #2 - Mass Grading Earthwork Volume]\nJared must calculate the mass grading cut volume between two station cross-sections for a building pad:\n• Station 10+00: Cross-sectional cut area A1 = 640 sq ft\n• Station 12+50: Cross-sectional cut area A2 = 1,160 sq ft\n• Distance between stations L = 250 ft\nUsing the Average End Area formula:\n   Volume (Cubic Yards) = [(A1 + A2) / 2] × [L / 27]\nCalculate the total cut volume in Cubic Yards (CY). (Enter whole number rounded to the nearest CY)",
+        placeholder: "Enter calculated CY...",
+        validate: (val) => {
+          const clean = val.replace(/,/g, '').trim();
+          const num = parseFloat(clean);
+          // Avg Area = 900 sq ft. Volume = 900 * 250 / 27 = 8333.33 CY -> 8333
+          return !isNaN(num) && num >= 8330 && num <= 8336;
+        },
+        correctDisplay: "8,333 CY ([(640 + 1160)/2] × 250 / 27 = 8,333.33 CY)"
       }
+    ];
+
+    const DEFAULT_VLOG_POSTS = [
+      { author: "Paul", text: "Jared had 6 teams playing and didn't submit a single pick! Back to Civil Site Design 101 for him.", time: "Yesterday 4:15 PM" },
+      { author: "Tucker", text: "If Jared can't calculate 36.5 cfs, we're revoking his parking lot grading privileges.", time: "Yesterday 5:20 PM" },
+      { author: "Andy", text: "Don't let him forget to divide by 27 for cubic yards... every intern forgets that at least once.", time: "Today 9:10 AM" },
+      { author: "Aaron", text: "Finally someone else is in the hot seat! Welcome to remediation, buddy! 😂", time: "Today 10:45 AM" }
     ];
 
     let leagueData = null;
@@ -600,34 +779,43 @@
     }
 
     function switchTab(tab) {
-      const standingsPane = document.getElementById('tab-content-standings');
-      const picksPane = document.getElementById('tab-content-picks');
-      const cmtPane = document.getElementById('tab-content-cmt');
-      
-      const btnStandings = document.getElementById('tab-btn-standings');
-      const btnPicks = document.getElementById('tab-btn-picks');
-      const btnCmt = document.getElementById('tab-btn-cmt');
+      const panes = {
+        'standings': document.getElementById('tab-content-standings'),
+        'picks': document.getElementById('tab-content-picks'),
+        'jared': document.getElementById('tab-content-jared'),
+        'minesweeper': document.getElementById('tab-content-minesweeper')
+      };
+      const btns = {
+        'standings': document.getElementById('tab-btn-standings'),
+        'picks': document.getElementById('tab-btn-picks'),
+        'jared': document.getElementById('tab-btn-jared'),
+        'minesweeper': document.getElementById('tab-btn-minesweeper')
+      };
 
-      standingsPane.classList.add('hidden');
-      picksPane.classList.add('hidden');
-      cmtPane.classList.add('hidden');
+      Object.values(panes).forEach(p => p.classList.add('hidden'));
 
       const defaultBtn = "flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-800/60";
-      btnStandings.className = defaultBtn;
-      btnPicks.className = defaultBtn;
-      btnCmt.className = "flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 text-amber-400 hover:text-amber-200 hover:bg-amber-950/40 border border-transparent";
+      btns.standings.className = defaultBtn;
+      btns.picks.className = defaultBtn;
+      btns.jared.className = "flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 text-rose-400 hover:text-rose-200 hover:bg-rose-950/40 border border-transparent";
+      btns.minesweeper.className = "flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 text-cyan-400 hover:text-cyan-200 hover:bg-cyan-950/40 border border-transparent";
 
       if (tab === 'standings') {
-        standingsPane.classList.remove('hidden');
-        btnStandings.className = "flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow-lg shadow-indigo-600/30";
+        panes.standings.classList.remove('hidden');
+        btns.standings.className = "flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow-lg shadow-indigo-600/30";
       } else if (tab === 'picks') {
-        picksPane.classList.remove('hidden');
-        btnPicks.className = "flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow-lg shadow-indigo-600/30";
-      } else if (tab === 'cmt') {
-        cmtPane.classList.remove('hidden');
-        btnCmt.className = "flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 bg-gradient-to-r from-amber-600 to-yellow-600 text-slate-950 shadow-lg shadow-amber-600/30 font-extrabold";
-        renderCmtQuiz();
-        renderAaronAttemptBoard();
+        panes.picks.classList.remove('hidden');
+        btns.picks.className = "flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow-lg shadow-indigo-600/30";
+      } else if (tab === 'jared') {
+        panes.jared.classList.remove('hidden');
+        btns.jared.className = "flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 bg-gradient-to-r from-rose-600 to-amber-600 text-white shadow-lg shadow-rose-600/30 font-extrabold";
+        renderJaredQuiz();
+        renderJaredAttemptBoard();
+        renderVlogPosts();
+      } else if (tab === 'minesweeper') {
+        panes.minesweeper.classList.remove('hidden');
+        btns.minesweeper.className = "flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 bg-gradient-to-r from-cyan-600 to-indigo-600 text-white shadow-lg shadow-cyan-600/30 font-extrabold";
+        initMinesweeper();
       }
     }
 
@@ -683,11 +871,12 @@
 
       renderStandings(cachedSheetPicks);
       renderLivePicksGrid(cachedSheetPicks, selectedWeek);
-      renderAaronAttemptBoard();
+      renderJaredAttemptBoard();
+      populateVlogAuthors();
+      populateMsPlayers();
     }
 
     function getDeduplicatedPicks(rawPicks) {
-      // Keeps the latest pick submission for each owner, week, and team
       const deduplicated = [];
       const seen = new Set();
       for (let i = (rawPicks || []).length - 1; i >= 0; i--) {
@@ -720,7 +909,6 @@
             const pWeek = parseInt(p.week, 10);
             if (pWeek <= currentWk) {
               const status = getVerifiedPickStatus(p, pWeek);
-              // Avoid double counting banked week 0 bye picks because they are already in WEEK_0_STANDINGS_BASE
               const isBankedByePick = isBankedWeek0Bye(p.team, pWeek) && BANKED_WEEK_0_PICKS.some(b => b.owner.toLowerCase() === name.toLowerCase() && b.team.toLowerCase() === p.team.toLowerCase());
               
               if (!isBankedByePick) {
@@ -827,7 +1015,6 @@
         const ownerRoster = LEAGUE_ROSTERS[owner]?.teams || [];
         const ownerPicks = picks.filter(p => p.owner && p.owner.toLowerCase() === owner.toLowerCase() && parseInt(p.week, 10) === targetWeek);
         
-        // Calculate eligible playable teams count for this owner
         let eligibleCount = 0;
         ownerRoster.forEach(team => {
           const game = weekSchedule.find(m => m.team && m.team.toLowerCase() === team.toLowerCase());
@@ -836,7 +1023,6 @@
           if (!isBye || bankedObj) eligibleCount++;
         });
 
-        // Dynamic quota for owners with bye weeks
         const requiredPicks = Math.min(6, eligibleCount);
 
         const displayPicks = [...ownerPicks];
@@ -844,7 +1030,6 @@
           if (banked.owner.toLowerCase() === owner.toLowerCase()) {
             const game = weekSchedule.find(m => m.team && m.team.toLowerCase() === banked.team.toLowerCase());
             if (game && (game.is_bye || game.opponent === 'BYE' || game.game_time === 'BYE WEEK')) {
-              // Ensure not duplicated
               if (!displayPicks.some(dp => dp.team.toLowerCase() === banked.team.toLowerCase())) {
                 displayPicks.unshift({
                   week: targetWeek,
@@ -933,100 +1118,135 @@
       document.getElementById('submitted-badge').innerText = `${submittedCount}/10 Submitted`;
     }
 
-    // ================= AARON CMT QUIZ LOGIC =================
-    function renderCmtQuiz() {
-      const container = document.getElementById('quiz-questions-container');
+    // ================= JARED PE QUIZ LOGIC =================
+    function renderJaredQuiz() {
+      const container = document.getElementById('jared-quiz-questions-container');
       container.innerHTML = '';
 
-      CMT_QUESTIONS.forEach((item, qIdx) => {
+      JARED_PE_QUESTIONS.forEach((item, qIdx) => {
         const qDiv = document.createElement('div');
         qDiv.className = "bg-slate-950/80 border border-slate-800/90 rounded-2xl p-4";
         
-        let optsHtml = '';
-        item.options.forEach((opt, oIdx) => {
-          optsHtml += `
-            <label class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-900 border border-transparent hover:border-slate-800 cursor-pointer transition">
-              <input type="radio" name="q_${qIdx}" value="${oIdx}" required class="w-4 h-4 text-amber-500 bg-slate-900 border-slate-700 focus:ring-amber-500">
-              <span class="text-slate-300 text-xs">${opt}</span>
-            </label>
+        let bodyHtml = '';
+        if (item.type === 'mc') {
+          item.options.forEach((opt, oIdx) => {
+            bodyHtml += `
+              <label class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-900 border border-transparent hover:border-slate-800 cursor-pointer transition">
+                <input type="radio" name="jq_${item.id}" value="${oIdx}" required class="w-4 h-4 text-rose-500 bg-slate-900 border-slate-700 focus:ring-rose-500">
+                <span class="text-slate-300 text-xs">${opt}</span>
+              </label>
+            `;
+          });
+        } else {
+          // Fill-in-the-blank or numerical workout
+          bodyHtml = `
+            <div class="mt-2">
+              <input type="text" name="jq_${item.id}" placeholder="${item.placeholder}" required
+                class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-rose-500 placeholder-slate-600 font-mono">
+            </div>
           `;
-        });
+        }
 
         qDiv.innerHTML = `
-          <p class="font-bold text-white mb-2.5 text-xs sm:text-sm">${item.q}</p>
-          <div class="space-y-1">${optsHtml}</div>
+          <p class="font-bold text-white mb-2 text-xs sm:text-sm whitespace-pre-line">${item.q}</p>
+          <div class="space-y-1">${bodyHtml}</div>
         `;
         container.appendChild(qDiv);
       });
     }
 
-    function handleQuizSubmit(e) {
+    function handleJaredQuizSubmit(e) {
       e.preventDefault();
-      const form = document.getElementById('cmt-quiz-form');
+      const form = document.getElementById('jared-pe-quiz-form');
       let score = 0;
+      const responseDetails = [];
 
-      CMT_QUESTIONS.forEach((item, qIdx) => {
-        const selected = form.querySelector(`input[name="q_${qIdx}"]:checked`);
-        if (selected && parseInt(selected.value, 10) === item.answer) {
-          score++;
+      JARED_PE_QUESTIONS.forEach(item => {
+        let isCorrect = false;
+        let givenAnswer = "";
+
+        if (item.type === 'mc') {
+          const selected = form.querySelector(`input[name="jq_${item.id}"]:checked`);
+          if (selected) {
+            const chosenIdx = parseInt(selected.value, 10);
+            givenAnswer = item.options[chosenIdx];
+            isCorrect = (chosenIdx === item.answer);
+          }
+        } else {
+          const input = form.querySelector(`input[name="jq_${item.id}"]`);
+          if (input) {
+            givenAnswer = input.value.trim();
+            isCorrect = item.validate(givenAnswer);
+          }
         }
+
+        if (isCorrect) score++;
+
+        responseDetails.push({
+          id: item.id,
+          question: item.q,
+          given: givenAnswer || "(No Answer)",
+          correct: item.type === 'mc' ? item.options[item.answer] : item.correctDisplay,
+          isCorrect: isCorrect
+        });
       });
 
       const passed = score >= 8;
-      const history = JSON.parse(localStorage.getItem('aaron_cmt_attempts') || '[]');
+      const history = JSON.parse(localStorage.getItem('jared_pe_attempts') || '[]');
       const attemptNum = history.length + 1;
       
       const attemptObj = {
         attempt: attemptNum,
         score: score,
         passed: passed,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+        responses: responseDetails
       };
 
       history.unshift(attemptObj);
-      localStorage.setItem('aaron_cmt_attempts', JSON.stringify(history));
+      localStorage.setItem('jared_pe_attempts', JSON.stringify(history));
 
       if (passed) {
-        localStorage.setItem('aaron_cmt_passed', 'true');
-        confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+        localStorage.setItem('jared_pe_passed', 'true');
+        confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
       }
 
-      renderAaronAttemptBoard();
+      renderJaredAttemptBoard();
 
-      const banner = document.getElementById('quiz-result-banner');
+      const banner = document.getElementById('jared-quiz-result-banner');
       banner.classList.remove('hidden');
 
       if (passed) {
         banner.className = "mt-6 p-5 rounded-2xl border border-emerald-500 bg-emerald-950/50 text-emerald-300 text-center";
         banner.innerHTML = `
-          <h4 class="text-lg font-black uppercase tracking-wider">🎉 CONGRATULATIONS AARON! YOU PASSED!</h4>
-          <p class="text-xs text-emerald-200 mt-1">Score: ${score} / 10 (${score * 10}%). You passed the exam and formally agreed to buy Paul dry-aged Wagyu steaks.</p>
-          <a href="pick.html?user=Aaron&week=${selectedWeek}" class="inline-block mt-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs px-5 py-2.5 rounded-xl uppercase tracking-wider transition">
-            Proceed to Submit Week ${selectedWeek} Picks ➔
+          <h4 class="text-lg font-black uppercase tracking-wider">🎉 CONGRATULATIONS JARED! PE EXAM PASSED!</h4>
+          <p class="text-xs text-emerald-200 mt-1">Score: ${score} / 10 (${score * 10}%). You have proved your site design competency and your pick lockout is lifted.</p>
+          <a href="pick.html?user=Jared&week=${selectedWeek}" class="inline-block mt-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs px-5 py-2.5 rounded-xl uppercase tracking-wider transition">
+            Proceed to Make Picks ➔
           </a>
         `;
       } else {
         banner.className = "mt-6 p-5 rounded-2xl border border-rose-600 bg-rose-950/50 text-rose-300 text-center";
         banner.innerHTML = `
-          <h4 class="text-lg font-black uppercase tracking-wider">❌ FAILED: RETEST REQUIRED!</h4>
-          <p class="text-xs text-rose-200 mt-1">Score: ${score} / 10 (${score * 10}%). Required to pass: 8 / 10. Paul remains completely unimpressed.</p>
-          <p class="text-[11px] font-mono text-rose-400 mt-1">Status: Picks REMAIN LOCKED for Aaron until standard is met.</p>
+          <h4 class="text-lg font-black uppercase tracking-wider">❌ FAILED: LICENSE SUSPENDED!</h4>
+          <p class="text-xs text-rose-200 mt-1">Score: ${score} / 10 (${score * 10}%). Passing grade requires 8 / 10. The league review board is not amused.</p>
+          <p class="text-[11px] font-mono text-rose-400 mt-1">Status: Picks REMAIN LOCKED for Jared until standard is achieved.</p>
         `;
       }
     }
 
-    function renderAaronAttemptBoard() {
-      const history = JSON.parse(localStorage.getItem('aaron_cmt_attempts') || '[]');
-      const container = document.getElementById('attempt-history-list');
-      const counterPill = document.getElementById('attempt-counter-pill');
-      const statusBadge = document.getElementById('aaron-status-badge');
+    function renderJaredAttemptBoard() {
+      const history = JSON.parse(localStorage.getItem('jared_pe_attempts') || '[]');
+      const container = document.getElementById('jared-attempt-history-list');
+      const counterPill = document.getElementById('jared-attempt-counter-pill');
+      const statusBadge = document.getElementById('jared-status-badge');
 
-      counterPill.innerText = `${history.length} Attempt${history.length === 1 ? '' : 's'}`;
+      if (counterPill) counterPill.innerText = `${history.length} Attempt${history.length === 1 ? '' : 's'}`;
 
       const hasPassed = history.some(h => h.passed);
       if (statusBadge) {
         if (hasPassed) {
-          statusBadge.innerText = "✓ CERTIFIED & UNLOCKED";
+          statusBadge.innerText = "✓ PE CERTIFIED & UNLOCKED";
           statusBadge.className = "text-sm font-black text-emerald-400 uppercase tracking-wider block mt-1";
         } else {
           statusBadge.innerText = "🔒 LOCKED OUT";
@@ -1034,18 +1254,20 @@
         }
       }
 
+      if (!container) return;
+
       if (history.length === 0) {
         container.innerHTML = `
-          <div class="text-center py-8 text-slate-500">
-            <span class="text-2xl block mb-1">📋</span>
-            <p class="italic">No attempts logged yet.<br>Aaron hasn't stepped up to the plate.</p>
+          <div class="text-center py-6 text-slate-500">
+            <span class="text-2xl block mb-1">📐</span>
+            <p class="italic">No attempts logged yet.<br>Jared hasn't stepped up to the board.</p>
           </div>
         `;
         return;
       }
 
-      container.innerHTML = history.map(item => `
-        <div class="p-3 rounded-2xl border ${item.passed ? 'border-emerald-800 bg-emerald-950/30' : 'border-rose-900/60 bg-rose-950/20'} flex justify-between items-center">
+      container.innerHTML = history.map((item, idx) => `
+        <div onclick="openInspectModal(${idx})" class="p-3 rounded-2xl border ${item.passed ? 'border-emerald-800 bg-emerald-950/30' : 'border-rose-900/60 bg-rose-950/20'} flex justify-between items-center cursor-pointer hover:border-slate-600 transition">
           <div>
             <div class="flex items-center gap-2">
               <span class="font-extrabold text-white text-xs">Attempt #${item.attempt}</span>
@@ -1053,7 +1275,7 @@
                 ${item.passed ? 'PASS' : 'FAIL'}
               </span>
             </div>
-            <p class="text-[10px] text-slate-400 mt-0.5 font-mono">Logged at ${item.timestamp}</p>
+            <p class="text-[10px] text-slate-400 mt-0.5 font-mono">Logged at ${item.timestamp} • <span class="text-indigo-400 underline">Audit Responses ➔</span></p>
           </div>
           <div class="text-right">
             <span class="font-mono text-base font-black ${item.passed ? 'text-emerald-400' : 'text-rose-400'}">${item.score}/10</span>
@@ -1063,12 +1285,404 @@
       `).join('');
     }
 
-    function resetAaronAttempts() {
-      if (confirm("Reset Aaron's test attempts?")) {
-        localStorage.removeItem('aaron_cmt_attempts');
-        localStorage.removeItem('aaron_cmt_passed');
-        renderAaronAttemptBoard();
-        document.getElementById('quiz-result-banner').classList.add('hidden');
+    function openInspectModal(attemptIdx) {
+      const history = JSON.parse(localStorage.getItem('jared_pe_attempts') || '[]');
+      const attempt = history[attemptIdx];
+      if (!attempt) return;
+
+      document.getElementById('inspect-modal-title').innerText = `Jared's PE Attempt #${attempt.attempt} (Score: ${attempt.score}/10)`;
+      const body = document.getElementById('inspect-modal-body');
+      
+      body.innerHTML = (attempt.responses || []).map((r, i) => `
+        <div class="bg-slate-950/80 p-3.5 rounded-2xl border ${r.isCorrect ? 'border-emerald-800/80' : 'border-rose-900/80'}">
+          <div class="flex justify-between items-center mb-1">
+            <span class="font-bold text-white text-xs">Question ${i + 1}</span>
+            <span class="font-mono text-[9px] font-black uppercase px-2 py-0.5 rounded ${r.isCorrect ? 'bg-emerald-500 text-slate-950' : 'bg-rose-600 text-white'}">
+              ${r.isCorrect ? 'CORRECT ✓' : 'INCORRECT ✕'}
+            </span>
+          </div>
+          <p class="text-slate-300 text-[11px] mb-2 whitespace-pre-line">${r.question}</p>
+          <div class="space-y-1 font-mono text-[11px]">
+            <p class="${r.isCorrect ? 'text-emerald-300' : 'text-rose-400'}"><strong>Jared's Answer:</strong> ${r.given}</p>
+            ${!r.isCorrect ? `<p class="text-slate-400"><strong>Required Answer:</strong> ${r.correct}</p>` : ''}
+          </div>
+        </div>
+      `).join('');
+
+      document.getElementById('inspect-exam-modal').classList.remove('hidden');
+    }
+
+    function closeInspectModal() {
+      document.getElementById('inspect-exam-modal').classList.add('hidden');
+    }
+
+    function resetJaredAttempts() {
+      if (confirm("Reset Jared's PE exam attempts?")) {
+        localStorage.removeItem('jared_pe_attempts');
+        localStorage.removeItem('jared_pe_passed');
+        renderJaredAttemptBoard();
+        document.getElementById('jared-quiz-result-banner').classList.add('hidden');
+      }
+    }
+
+    // ================= LEAGUE VLOG REACTION SYSTEM =================
+    function populateVlogAuthors() {
+      const select = document.getElementById('vlog-author-select');
+      if (!select) return;
+      select.innerHTML = '';
+      Object.keys(LEAGUE_ROSTERS).forEach(owner => {
+        const opt = document.createElement('option');
+        opt.value = owner;
+        opt.innerText = owner;
+        select.appendChild(opt);
+      });
+    }
+
+    function renderVlogPosts() {
+      const stored = JSON.parse(localStorage.getItem('cfb_jared_vlog_posts') || '[]');
+      const allPosts = stored.length > 0 ? stored : DEFAULT_VLOG_POSTS;
+      const container = document.getElementById('vlog-posts-container');
+      if (!container) return;
+
+      container.innerHTML = allPosts.map(p => `
+        <div class="bg-slate-950/80 p-3 rounded-2xl border border-slate-800/80">
+          <div class="flex justify-between items-center mb-1">
+            <span class="font-bold text-rose-300">${p.author}</span>
+            <span class="text-[9px] font-mono text-slate-500">${p.time}</span>
+          </div>
+          <p class="text-slate-200 text-xs">${p.text}</p>
+        </div>
+      `).join('');
+    }
+
+    function handlePostVlog(e) {
+      e.preventDefault();
+      const author = document.getElementById('vlog-author-select').value;
+      const input = document.getElementById('vlog-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const stored = JSON.parse(localStorage.getItem('cfb_jared_vlog_posts') || JSON.stringify(DEFAULT_VLOG_POSTS));
+      stored.unshift({
+        author: author,
+        text: text,
+        time: "Just now"
+      });
+
+      localStorage.setItem('cfb_jared_vlog_posts', JSON.stringify(stored));
+      input.value = '';
+      renderVlogPosts();
+    }
+
+    // ================= TAB 4: LEAGUE MINESWEEPER WITH YETI JUMPSCARE =================
+    const MS_ROWS = 8;
+    const MS_COLS = 8;
+    const MS_TOTAL_MINES = 8;
+    let msBoard = [];
+    let msGameOver = false;
+    let msFirstClick = true;
+    let msFlagsLeft = MS_TOTAL_MINES;
+    let msTimer = 0;
+    let msTimerInterval = null;
+    let msFlagMode = false;
+    let msClearedSafeCount = 0;
+    const MS_TOTAL_SAFE = (MS_ROWS * MS_COLS) - MS_TOTAL_MINES; // 56 safe cells
+
+    function populateMsPlayers() {
+      const select = document.getElementById('minesweeper-player-select');
+      if (!select) return;
+      select.innerHTML = '';
+      Object.keys(LEAGUE_ROSTERS).forEach(owner => {
+        const opt = document.createElement('option');
+        opt.value = owner;
+        opt.innerText = owner;
+        select.appendChild(opt);
+      });
+    }
+
+    function initMinesweeper() {
+      clearInterval(msTimerInterval);
+      msTimer = 0;
+      msGameOver = false;
+      msFirstClick = true;
+      msClearedSafeCount = 0;
+      msFlagsLeft = MS_TOTAL_MINES;
+      document.getElementById('mines-left-display').innerText = String(msFlagsLeft).padStart(2, '0');
+      document.getElementById('ms-timer-display').innerText = "000";
+      document.getElementById('ms-face-btn').innerText = "😎";
+      document.getElementById('ms-status-text').innerText = "Click any cell to begin your ascent.";
+
+      msBoard = [];
+      for (let r = 0; r < MS_ROWS; r++) {
+        const row = [];
+        for (let c = 0; c < MS_COLS; c++) {
+          row.push({
+            r: r,
+            c: c,
+            mine: false,
+            revealed: false,
+            flagged: false,
+            count: 0
+          });
+        }
+        msBoard.push(row);
+      }
+
+      renderMsGrid();
+      renderMsLeaderboard();
+    }
+
+    function resetMinesweeper() {
+      initMinesweeper();
+    }
+
+    function toggleFlagMode() {
+      msFlagMode = !msFlagMode;
+      const btn = document.getElementById('flag-mode-toggle');
+      if (msFlagMode) {
+        btn.className = "px-3.5 py-1.5 rounded-xl text-xs font-bold border border-rose-500 bg-rose-950 text-rose-300 transition";
+        btn.innerText = "Mode: 🚩 Flag Cell";
+      } else {
+        btn.className = "px-3.5 py-1.5 rounded-xl text-xs font-bold border border-slate-700 bg-slate-800 text-slate-300 transition";
+        btn.innerText = "Mode: ⛏️ Dig Cell";
+      }
+    }
+
+    function placeMines(firstR, firstC) {
+      let placed = 0;
+      while (placed < MS_TOTAL_MINES) {
+        const rr = Math.floor(Math.random() * MS_ROWS);
+        const cc = Math.floor(Math.random() * MS_COLS);
+        // Do not place on the first clicked cell
+        if (!msBoard[rr][cc].mine && !(rr === firstR && cc === firstC)) {
+          msBoard[rr][cc].mine = true;
+          placed++;
+        }
+      }
+
+      // Compute neighbor counts
+      for (let r = 0; r < MS_ROWS; r++) {
+        for (let c = 0; c < MS_COLS; c++) {
+          if (!msBoard[r][c].mine) {
+            let count = 0;
+            for (let dr = -1; dr <= 1; dr++) {
+              for (let dc = -1; dc <= 1; dc++) {
+                const nr = r + dr;
+                const nc = c + dc;
+                if (nr >= 0 && nr < MS_ROWS && nc >= 0 && nc < MS_COLS && msBoard[nr][nc].mine) {
+                  count++;
+                }
+              }
+            }
+            msBoard[r][c].count = count;
+          }
+        }
+      }
+    }
+
+    function renderMsGrid() {
+      const container = document.getElementById('minesweeper-board');
+      container.innerHTML = '';
+
+      for (let r = 0; r < MS_ROWS; r++) {
+        for (let c = 0; c < MS_COLS; c++) {
+          const cell = msBoard[r][c];
+          const btn = document.createElement('button');
+          btn.className = "w-9 h-9 sm:w-10 sm:h-10 rounded-lg font-mono text-sm font-bold flex items-center justify-center transition shadow";
+          
+          if (cell.revealed) {
+            if (cell.mine) {
+              btn.className += " bg-rose-600 text-white";
+              btn.innerText = "💣";
+            } else {
+              btn.className += " bg-slate-800 text-slate-200 border border-slate-700/50";
+              if (cell.count > 0) {
+                const colors = ['', 'text-cyan-400', 'text-emerald-400', 'text-amber-400', 'text-indigo-400', 'text-rose-400', 'text-purple-400'];
+                btn.innerHTML = `<span class="${colors[cell.count] || 'text-white'}">${cell.count}</span>`;
+              }
+            }
+          } else if (cell.flagged) {
+            btn.className += " bg-slate-900 border border-slate-800 text-amber-400";
+            btn.innerText = "🚩";
+          } else {
+            btn.className += " bg-slate-900 hover:bg-slate-800 border border-slate-800 active:bg-slate-700 text-transparent";
+          }
+
+          btn.onclick = (e) => handleMsCellClick(r, c);
+          btn.oncontextmenu = (e) => {
+            e.preventDefault();
+            handleMsFlag(r, c);
+          };
+
+          container.appendChild(btn);
+        }
+      }
+    }
+
+    function handleMsCellClick(r, c) {
+      if (msGameOver) return;
+      if (msFlagMode) {
+        handleMsFlag(r, c);
+        return;
+      }
+
+      const cell = msBoard[r][c];
+      if (cell.flagged || cell.revealed) return;
+
+      if (msFirstClick) {
+        msFirstClick = false;
+        placeMines(r, c);
+        msTimerInterval = setInterval(() => {
+          msTimer++;
+          document.getElementById('ms-timer-display').innerText = String(Math.min(999, msTimer)).padStart(3, '0');
+        }, 1000);
+      }
+
+      // Check for mine
+      if (cell.mine) {
+        cell.revealed = true;
+        msGameOver = true;
+        clearInterval(msTimerInterval);
+        document.getElementById('ms-face-btn').innerText = "💀";
+        document.getElementById('ms-status-text').innerText = "BOOM! You triggered a mine.";
+        revealAllMines();
+        logMsScore("Stepped on a Mine");
+        renderMsGrid();
+        return;
+      }
+
+      revealCell(r, c);
+
+      // IMPOSSIBLE TWIST: If player clears 55 of 56 cells (about to win), TRIGGER THE YETI!
+      if (msClearedSafeCount >= MS_TOTAL_SAFE - 1) {
+        triggerYetiEncounter();
+        return;
+      }
+
+      renderMsGrid();
+    }
+
+    function revealCell(r, c) {
+      const cell = msBoard[r][c];
+      if (cell.revealed || cell.flagged) return;
+
+      cell.revealed = true;
+      msClearedSafeCount++;
+
+      // Flood fill if count is 0
+      if (cell.count === 0 && !cell.mine) {
+        for (let dr = -1; dr <= 1; dr++) {
+          for (let dc = -1; dc <= 1; dc++) {
+            const nr = r + dr;
+            const nc = c + dc;
+            if (nr >= 0 && nr < MS_ROWS && nc >= 0 && nc < MS_COLS) {
+              revealCell(nr, nc);
+            }
+          }
+        }
+      }
+    }
+
+    function handleMsFlag(r, c) {
+      if (msGameOver) return;
+      const cell = msBoard[r][c];
+      if (cell.revealed) return;
+
+      cell.flagged = !cell.flagged;
+      msFlagsLeft += cell.flagged ? -1 : 1;
+      document.getElementById('mines-left-display').innerText = String(Math.max(0, msFlagsLeft)).padStart(2, '0');
+      renderMsGrid();
+    }
+
+    function revealAllMines() {
+      for (let r = 0; r < MS_ROWS; r++) {
+        for (let c = 0; c < MS_COLS; c++) {
+          if (msBoard[r][c].mine) msBoard[r][c].revealed = true;
+        }
+      }
+    }
+
+    function triggerYetiEncounter() {
+      msGameOver = true;
+      clearInterval(msTimerInterval);
+      document.getElementById('ms-face-btn').innerText = "👹";
+      document.getElementById('ms-status-text').innerText = "❄️ A ROAR ECHOES FROM THE MOUNTAIN...";
+      
+      // Synthesize deep Yeti roar audio using Web Audio API
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(110, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(35, audioCtx.currentTime + 1.2);
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 1.2);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 1.2);
+      } catch(e) {}
+
+      document.getElementById('yeti-modal').classList.remove('hidden');
+      logMsScore("Obliterated by Yeti (98.2%)");
+    }
+
+    function closeYetiModal() {
+      document.getElementById('yeti-modal').classList.add('hidden');
+      initMinesweeper();
+    }
+
+    function logMsScore(fate) {
+      const player = document.getElementById('minesweeper-player-select').value || "Challenger";
+      const pct = ((msClearedSafeCount / MS_TOTAL_SAFE) * 100).toFixed(1);
+      const scores = JSON.parse(localStorage.getItem('cfb_ms_leaderboard') || '[]');
+      
+      scores.unshift({
+        player: player,
+        pct: pct,
+        time: msTimer,
+        fate: fate,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      });
+
+      localStorage.setItem('cfb_ms_leaderboard', JSON.stringify(scores.slice(0, 15)));
+      renderMsLeaderboard();
+    }
+
+    function renderMsLeaderboard() {
+      const container = document.getElementById('ms-leaderboard-list');
+      if (!container) return;
+      const scores = JSON.parse(localStorage.getItem('cfb_ms_leaderboard') || '[]');
+
+      if (scores.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-6 text-slate-500">
+            <span class="text-2xl block mb-1">🏔️</span>
+            <p class="italic">No ascents recorded yet this week.<br>Pick your name and test the grid!</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = scores.map((s, idx) => `
+        <div class="p-2.5 rounded-xl border border-slate-800 bg-slate-950/80 flex justify-between items-center">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-white text-xs">${s.player}</span>
+              <span class="text-[9px] font-mono text-cyan-400 bg-cyan-950/80 border border-cyan-800/60 px-1.5 py-0.2 rounded font-bold">${s.pct}% Cleared</span>
+            </div>
+            <p class="text-[10px] text-rose-400 font-mono mt-0.5">${s.fate} • ${s.time}s</p>
+          </div>
+          <span class="text-[10px] text-slate-500 font-mono">${s.timestamp}</span>
+        </div>
+      `).join('');
+    }
+
+    function resetMsLeaderboard() {
+      if (confirm("Reset Minesweeper arcade records?")) {
+        localStorage.removeItem('cfb_ms_leaderboard');
+        renderMsLeaderboard();
       }
     }
 
@@ -1107,3 +1721,4 @@
   </script>
 </body>
 </html>
+```
