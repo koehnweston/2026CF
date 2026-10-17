@@ -39,17 +39,17 @@
               CFB POOL <span class="bg-gradient-to-r from-indigo-400 via-fuchsia-400 to-cyan-400 bg-clip-text text-transparent">2026</span>
             </h1>
             <span class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold uppercase tracking-wider bg-gradient-to-r from-indigo-500/20 to-purple-500/20 border border-indigo-500/30 text-indigo-300 shadow-inner">
-              Week <span id="week-display">2</span>
+              Week <span id="week-display">7</span>
             </span>
           </div>
-          <p class="text-slate-400 text-xs mt-0.5 font-medium">10 Owners • 80 Drafted Teams • Pick 6 to Win Weekly</p>
+          <p class="text-slate-400 text-xs mt-0.5 font-medium">10 Owners • 80 Drafted Teams • Pick to Win Weekly • Retroactive Catch-Up Enabled</p>
         </div>
       </div>
 
       <div class="flex flex-wrap items-center gap-3">
         <button onclick="openLoginModal()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white font-bold text-xs shadow-lg shadow-indigo-600/30 flex items-center gap-2 transition hover:scale-[1.02]">
           <span>🔑</span>
-          <span>Make Picks</span>
+          <span>Make / Edit Picks</span>
         </button>
 
         <div class="flex items-center bg-slate-900/90 border border-slate-800 rounded-xl p-1 shadow-inner">
@@ -87,10 +87,10 @@
       <div id="podium-cards" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8"></div>
 
       <div class="rounded-3xl border border-slate-800/90 bg-slate-900/40 backdrop-blur-xl shadow-2xl overflow-hidden mb-6">
-        <div class="px-6 py-4 border-b border-slate-800/80 flex justify-between items-center bg-slate-900/60">
+        <div class="px-6 py-4 border-b border-slate-800/80 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 bg-slate-900/60">
           <div>
             <h2 class="text-sm font-bold uppercase tracking-wider text-slate-300">Official Leaderboard</h2>
-            <p class="text-xs text-slate-500">Live Season Standings (All Completed Weeks + Week 0)</p>
+            <p class="text-xs text-slate-500">Live Season Standings (All Completed Weeks + Week 0 Bank)</p>
           </div>
           <span class="text-xs font-mono bg-indigo-950/80 text-indigo-400 border border-indigo-800/50 px-3 py-1 rounded-full font-bold">
             Live Verified Record
@@ -171,7 +171,7 @@
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 bg-slate-900/50 border border-slate-800/80 p-5 rounded-2xl backdrop-blur-md">
         <div>
           <h2 class="text-xl font-black text-white flex items-center gap-2">Weekly Pick Grid</h2>
-          <p class="text-xs text-slate-400 mt-0.5">Showing all 6 active teams picked to win with verified live outcome.</p>
+          <p class="text-xs text-slate-400 mt-0.5">Showing all active teams picked to win with verified outcome. You can browse prior weeks to catch up on missed picks.</p>
         </div>
         
         <div class="flex items-center gap-3">
@@ -204,8 +204,8 @@
             </div>
             <h2 class="text-2xl sm:text-3xl font-black text-white">Construction Materials Testing Certification</h2>
             <p class="text-xs sm:text-sm text-slate-300 mt-1 max-w-2xl">
-              Now that <strong class="text-indigo-400">Kentucky actually beat Texas A&M</strong>, Aaron has spent the entire week running his mouth, gloating to <strong class="text-amber-400">Paul</strong>, and acting like he personally called the plays—all while completely failing to submit his own picks! 
-              Before Aaron is permitted to lock in his Week 2 picks, he must prove his field competency with a passing grade (<strong>80% or higher</strong>) and formalize where he's buying lunch.
+              Now that <strong class="text-indigo-400">Kentucky actually beat Texas A&M</strong>, Aaron has spent the entire season running his mouth, gloating to <strong class="text-amber-400">Paul</strong>, and acting like he personally called the plays—all while completely failing to submit his own picks! 
+              Before Aaron is permitted to lock in picks for any week, he must prove his field competency with a passing grade (<strong>80% or higher</strong>) and formalize where he's buying lunch.
             </p>
           </div>
           <div class="bg-slate-950/80 border border-amber-500/40 rounded-2xl p-4 text-center min-w-[170px]">
@@ -270,7 +270,7 @@
 
   </div>
 
-  <!-- LOGIN MODAL -->
+  <!-- LOGIN MODAL (With Week Selector for Prior & Current Weeks) -->
   <div id="login-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
     <div class="bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-800 rounded-3xl max-w-sm w-full p-6 shadow-2xl relative">
       <div class="flex justify-between items-center mb-5 pb-3 border-b border-slate-800">
@@ -284,6 +284,11 @@
         <div>
           <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">Select Your Name</label>
           <select id="login-user-select" class="w-full bg-slate-950 border border-slate-800 text-white rounded-xl p-3 text-sm focus:outline-none focus:border-indigo-500 cursor-pointer"></select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">Select Week to Pick / View</label>
+          <select id="login-week-select" class="w-full bg-slate-950 border border-slate-800 text-indigo-300 font-bold rounded-xl p-3 text-sm focus:outline-none focus:border-indigo-500 cursor-pointer"></select>
         </div>
 
         <div>
@@ -379,7 +384,6 @@
       "Paul": { "teams": ["Georgia", "Texas A&M", "East Carolina", "Iowa", "Wisconsin", "Army", "Georgia Tech", "Syracuse"], "proj_wins": 56.4, "avg_fpi": 7.9 }
     };
 
-    // 10 Construction Materials Testing Quiz Questions (With Question 10 Lunch Requirement)
     const CMT_QUESTIONS = [
       {
         q: "1. Under ASTM C143 (Slump Test), in how many equal volume layers must the cone be filled, and how many strokes of the tamping rod are applied per layer?",
@@ -485,7 +489,7 @@
 
     let leagueData = null;
     let cachedSheetPicks = [];
-    let selectedWeek = 2;
+    let selectedWeek = 7;
     let currentZoom = 1.0;
 
     function getVerifiedPickStatus(p, weekNum) {
@@ -503,6 +507,12 @@
       return "PENDING";
     }
 
+    function isBankedWeek0Bye(team, weekNum) {
+      const w = String(weekNum);
+      const match = leagueData?.season_schedule?.[w]?.find(m => m.team && m.team.toLowerCase() === team.toLowerCase());
+      return match && (match.is_bye || match.opponent === 'BYE' || match.game_time === 'BYE WEEK');
+    }
+
     function openLoginModal() {
       const select = document.getElementById('login-user-select');
       select.innerHTML = '';
@@ -512,6 +522,21 @@
         opt.innerText = owner;
         select.appendChild(opt);
       });
+
+      const weekSelect = document.getElementById('login-week-select');
+      weekSelect.innerHTML = '';
+      const curWk = leagueData?.current_week || 7;
+      for (let w = 1; w <= 15; w++) {
+        const opt = document.createElement('option');
+        opt.value = w;
+        let lbl = `Week ${w}`;
+        if (w === curWk) lbl += ` (Current)`;
+        else if (w < curWk) lbl += ` (Prior)`;
+        opt.innerText = lbl;
+        if (w === selectedWeek) opt.selected = true;
+        weekSelect.appendChild(opt);
+      }
+
       document.getElementById('login-password-input').value = '';
       document.getElementById('login-error').classList.add('hidden');
       document.getElementById('login-modal').classList.remove('hidden');
@@ -524,12 +549,13 @@
     function handleLoginSubmit(e) {
       e.preventDefault();
       const user = document.getElementById('login-user-select').value;
+      const targetWk = document.getElementById('login-week-select').value;
       const pass = document.getElementById('login-password-input').value.trim();
       const expected = USER_CREDENTIALS[user];
 
       if (expected && expected.toLowerCase() === pass.toLowerCase()) {
         sessionStorage.setItem('cfb_auth_user', user);
-        window.location.href = `pick.html?user=${encodeURIComponent(user)}`;
+        window.location.href = `pick.html?user=${encodeURIComponent(user)}&week=${encodeURIComponent(targetWk)}`;
       } else {
         document.getElementById('login-error').classList.remove('hidden');
       }
@@ -611,7 +637,10 @@
       for (let w = 1; w <= 15; w++) {
         const opt = document.createElement('option');
         opt.value = w;
-        opt.innerText = `Week ${w} ${w === currentWeek ? '(Current)' : ''}`;
+        let label = `Week ${w}`;
+        if (w === currentWeek) label += ` (Current)`;
+        else if (w < currentWeek) label += ` (Prior)`;
+        opt.innerText = label;
         if (w === selectedWeek) opt.selected = true;
         select.appendChild(opt);
       }
@@ -631,10 +660,10 @@
         }
       } catch (e) {
         console.warn("Using default league data", e);
-        leagueData = { current_week: 2, members: LEAGUE_ROSTERS, week_matchups: [], season_schedule: {} };
+        leagueData = { current_week: 7, members: LEAGUE_ROSTERS, week_matchups: [], season_schedule: {} };
       }
 
-      const curWeek = leagueData?.current_week || 2;
+      const curWeek = leagueData?.current_week || 7;
       selectedWeek = curWeek;
       document.getElementById('week-display').innerText = curWeek;
 
@@ -657,13 +686,30 @@
       renderAaronAttemptBoard();
     }
 
-    function renderStandings(picks) {
+    function getDeduplicatedPicks(rawPicks) {
+      // Keeps the latest pick submission for each owner, week, and team
+      const deduplicated = [];
+      const seen = new Set();
+      for (let i = (rawPicks || []).length - 1; i >= 0; i--) {
+        const p = rawPicks[i];
+        if (!p || !p.owner || !p.team || !p.week) continue;
+        const key = `${p.owner.toLowerCase()}_w${p.week}_${p.team.toLowerCase()}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          deduplicated.unshift(p);
+        }
+      }
+      return deduplicated;
+    }
+
+    function renderStandings(rawPicks) {
       const tbody = document.getElementById('standings-body');
       const podium = document.getElementById('podium-cards');
       tbody.innerHTML = '';
       podium.innerHTML = '';
 
-      const currentWk = leagueData?.current_week || 2;
+      const currentWk = leagueData?.current_week || 7;
+      const picks = getDeduplicatedPicks(rawPicks);
 
       const memberStats = Object.keys(LEAGUE_ROSTERS).map(name => {
         let verifiedWins = 0;
@@ -674,8 +720,13 @@
             const pWeek = parseInt(p.week, 10);
             if (pWeek <= currentWk) {
               const status = getVerifiedPickStatus(p, pWeek);
-              if (status === "WIN") verifiedWins++;
-              if (status === "LOSS") verifiedLosses++;
+              // Avoid double counting banked week 0 bye picks because they are already in WEEK_0_STANDINGS_BASE
+              const isBankedByePick = isBankedWeek0Bye(p.team, pWeek) && BANKED_WEEK_0_PICKS.some(b => b.owner.toLowerCase() === name.toLowerCase() && b.team.toLowerCase() === p.team.toLowerCase());
+              
+              if (!isBankedByePick) {
+                if (status === "WIN") verifiedWins++;
+                if (status === "LOSS") verifiedLosses++;
+              }
             }
           }
         });
@@ -757,10 +808,11 @@
       });
     }
 
-    function renderLivePicksGrid(picks, week) {
+    function renderLivePicksGrid(rawPicks, week) {
       const grid = document.getElementById('weekly-picks-grid');
       grid.innerHTML = '';
 
+      const picks = getDeduplicatedPicks(rawPicks);
       let submittedCount = 0;
       const targetWeek = parseInt(week, 10);
       
@@ -772,27 +824,44 @@
       }
 
       Object.keys(LEAGUE_ROSTERS).forEach(owner => {
-        const ownerPicks = (picks || []).filter(p => p.owner && p.owner.toLowerCase() === owner.toLowerCase() && parseInt(p.week, 10) === targetWeek);
+        const ownerRoster = LEAGUE_ROSTERS[owner]?.teams || [];
+        const ownerPicks = picks.filter(p => p.owner && p.owner.toLowerCase() === owner.toLowerCase() && parseInt(p.week, 10) === targetWeek);
         
+        // Calculate eligible playable teams count for this owner
+        let eligibleCount = 0;
+        ownerRoster.forEach(team => {
+          const game = weekSchedule.find(m => m.team && m.team.toLowerCase() === team.toLowerCase());
+          const isBye = !game || game.is_bye || game.opponent === 'BYE' || game.game_time === 'BYE WEEK';
+          const bankedObj = BANKED_WEEK_0_PICKS.find(b => b.owner.toLowerCase() === owner.toLowerCase() && b.team.toLowerCase() === team.toLowerCase());
+          if (!isBye || bankedObj) eligibleCount++;
+        });
+
+        // Dynamic quota for owners with bye weeks
+        const requiredPicks = Math.min(6, eligibleCount);
+
         const displayPicks = [...ownerPicks];
         BANKED_WEEK_0_PICKS.forEach(banked => {
           if (banked.owner.toLowerCase() === owner.toLowerCase()) {
             const game = weekSchedule.find(m => m.team && m.team.toLowerCase() === banked.team.toLowerCase());
             if (game && (game.is_bye || game.opponent === 'BYE' || game.game_time === 'BYE WEEK')) {
-              displayPicks.unshift({
-                week: targetWeek,
-                team: banked.team,
-                pick: "WIN",
-                result: banked.result,
-                note: `Auto-Slotted from Week 0 (${banked.team} BYE)`
-              });
+              // Ensure not duplicated
+              if (!displayPicks.some(dp => dp.team.toLowerCase() === banked.team.toLowerCase())) {
+                displayPicks.unshift({
+                  week: targetWeek,
+                  team: banked.team,
+                  pick: "WIN",
+                  result: banked.result,
+                  note: `Auto-Slotted from Week 0 (${banked.team} BYE)`
+                });
+              }
             }
           }
         });
 
+        const isComplete = (displayPicks.length >= requiredPicks && requiredPicks > 0);
+        if (isComplete) submittedCount++;
+
         const card = document.createElement('div');
-        if (ownerPicks.length === 6) submittedCount++;
-        const isComplete = ownerPicks.length === 6;
         card.className = `p-5 rounded-3xl border ${isComplete ? 'border-slate-800 bg-slate-900/60 shadow-xl' : 'border-slate-800/60 bg-slate-950/40'} backdrop-blur-md flex flex-col justify-between transition hover:border-slate-700`;
 
         let picksListHtml = '';
@@ -801,6 +870,9 @@
             <div class="py-8 text-center">
               <span class="text-2xl opacity-40 block mb-1">⏳</span>
               <p class="text-xs text-slate-500 italic">No picks submitted for Week ${targetWeek}.</p>
+              <a href="pick.html?user=${encodeURIComponent(owner)}&week=${targetWeek}" class="inline-block mt-3 px-3 py-1.5 rounded-xl bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 hover:bg-indigo-600 hover:text-white text-[11px] font-bold transition">
+                + Make Week ${targetWeek} Picks
+              </a>
             </div>`;
         } else {
           picksListHtml = `<ul class="space-y-2.5 mt-4">` + displayPicks.map(p => {
@@ -839,10 +911,18 @@
         card.innerHTML = `
           <div>
             <div class="flex justify-between items-center pb-3 border-b border-slate-800">
-              <button onclick="openModal('${owner}')" class="font-black text-white text-base hover:text-indigo-400 transition">${owner}</button>
-              <span class="text-xs font-mono font-extrabold px-2.5 py-1 rounded-full ${isComplete ? 'bg-emerald-950/80 text-emerald-400 border border-emerald-800/50' : 'bg-amber-950/80 text-amber-400 border border-amber-800/50'}">
-                ${ownerPicks.length}/6 Picks
-              </span>
+              <div>
+                <button onclick="openModal('${owner}')" class="font-black text-white text-base hover:text-indigo-400 transition">${owner}</button>
+                ${requiredPicks < 6 ? `<span class="block text-[10px] font-mono text-amber-400">(${6 - requiredPicks} Bye Team${6 - requiredPicks === 1 ? '' : 's'})</span>` : ''}
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-mono font-extrabold px-2.5 py-1 rounded-full ${isComplete ? 'bg-emerald-950/80 text-emerald-400 border border-emerald-800/50' : 'bg-amber-950/80 text-amber-400 border border-amber-800/50'}">
+                  ${displayPicks.length}/${requiredPicks} Picks
+                </span>
+                <a href="pick.html?user=${encodeURIComponent(owner)}&week=${targetWeek}" title="Edit Picks for Week ${targetWeek}" class="p-1 rounded-lg bg-slate-800 hover:bg-indigo-600 text-slate-400 hover:text-white transition text-xs">
+                  ✏️
+                </a>
+              </div>
             </div>
             ${picksListHtml}
           </div>
@@ -921,8 +1001,8 @@
         banner.innerHTML = `
           <h4 class="text-lg font-black uppercase tracking-wider">🎉 CONGRATULATIONS AARON! YOU PASSED!</h4>
           <p class="text-xs text-emerald-200 mt-1">Score: ${score} / 10 (${score * 10}%). You passed the exam and formally agreed to buy Paul dry-aged Wagyu steaks.</p>
-          <a href="pick.html?user=Aaron" class="inline-block mt-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs px-5 py-2.5 rounded-xl uppercase tracking-wider transition">
-            Proceed to Submit Week 2 Picks ➔
+          <a href="pick.html?user=Aaron&week=${selectedWeek}" class="inline-block mt-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs px-5 py-2.5 rounded-xl uppercase tracking-wider transition">
+            Proceed to Submit Week ${selectedWeek} Picks ➔
           </a>
         `;
       } else {
