@@ -3,20 +3,32 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Make Picks (Pick 6 to Win) - CFB Pool</title>
+  <title>Make Picks - CFB Pool 2026</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen font-sans">
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans selection:bg-indigo-500 selection:text-white">
   <div class="max-w-3xl mx-auto px-4 py-8">
     
     <!-- Top Navigation -->
-    <div class="flex justify-between items-center mb-6">
-      <a href="index.html" class="text-sm font-medium text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition">
-        ← Back to Master Scoreboard
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6 pb-4 border-b border-slate-800">
+      <a href="index.html" class="text-sm font-semibold text-indigo-400 hover:text-indigo-300 flex items-center gap-1.5 transition">
+        <span>←</span> Back to Master Dashboard
       </a>
-      <div class="flex items-center gap-2 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg">
-        <span class="text-xs text-slate-400 uppercase font-semibold">User:</span>
-        <span id="locked-user-display" class="text-sm font-bold text-indigo-300">Loading...</span>
+      
+      <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+        <!-- Week Selector (Time Travel to Prior Weeks) -->
+        <div class="flex items-center gap-2 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-xl shadow-inner">
+          <label for="week-select" class="text-xs text-slate-400 uppercase font-bold tracking-wider">Week:</label>
+          <select id="week-select" onchange="onWeekDropdownChange()" class="bg-slate-950 border border-slate-700 text-indigo-300 font-bold text-xs rounded-lg px-2.5 py-1 focus:outline-none focus:border-indigo-500 cursor-pointer">
+            <!-- Dynamically populated -->
+          </select>
+        </div>
+
+        <!-- User Badge -->
+        <div class="flex items-center gap-2 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-xl">
+          <span class="text-xs text-slate-400 uppercase font-bold">User:</span>
+          <span id="locked-user-display" class="text-sm font-extrabold text-indigo-300">Loading...</span>
+        </div>
       </div>
     </div>
 
@@ -61,15 +73,21 @@
 
     <!-- Main Pick Portal Content -->
     <div id="pick-portal-content">
+      <!-- Week Notice Banner (Past vs Current Week) -->
+      <div id="week-mode-banner" class="hidden p-3.5 rounded-2xl mb-5 text-xs font-semibold flex items-center justify-between border"></div>
+
       <header class="bg-slate-900 border border-slate-800 rounded-2xl p-6 mb-6 shadow-xl">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <span class="text-xs font-bold text-indigo-400 uppercase tracking-widest">Personal Pick Sheet</span>
-            <h1 id="user-title" class="text-3xl font-extrabold text-white">Select Player</h1>
-            <p id="pick-subtitle" class="text-xs text-slate-400 mt-1">Select exactly <strong class="text-indigo-300">6 teams to WIN</strong> their matchups this week (All times Central).</p>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="text-xs font-bold text-indigo-400 uppercase tracking-widest">Personal Pick Sheet</span>
+              <span id="header-week-pill" class="text-[10px] font-mono font-bold bg-indigo-950 border border-indigo-800 text-indigo-300 px-2 py-0.5 rounded-full">Week 2</span>
+            </div>
+            <h1 id="user-title" class="text-2xl sm:text-3xl font-black text-white">Select Player</h1>
+            <p id="pick-subtitle" class="text-xs text-slate-400 mt-1.5">Select your winning teams for this week (All times Central).</p>
           </div>
-          <div class="bg-slate-950/80 border border-slate-800 px-5 py-3 rounded-xl text-center sm:text-right min-w-[120px]">
-            <span class="text-xs uppercase tracking-wider text-slate-400 font-semibold block">Pick Counter</span>
+          <div class="bg-slate-950/80 border border-slate-800 px-5 py-3 rounded-xl text-center sm:text-right min-w-[130px]">
+            <span class="text-[11px] uppercase tracking-wider text-slate-400 font-bold block">Pick Counter</span>
             <p id="pick-counter" class="text-2xl font-black text-amber-400">0 / 6</p>
           </div>
         </div>
@@ -81,7 +99,7 @@
         <div class="pt-6 space-y-3">
           <button id="submit-btn" type="button" onclick="submitPicksToBackend()" disabled 
             class="w-full bg-slate-800 text-slate-500 cursor-not-allowed font-bold py-3.5 px-6 rounded-xl transition duration-200 shadow-lg text-sm uppercase tracking-wider">
-            Select 6 Teams to Lock In Picks
+            Select Teams to Lock In Picks
           </button>
           <button type="button" onclick="copyPicks()" 
             class="w-full bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white font-medium py-2.5 px-4 rounded-xl border border-slate-800 text-xs transition">
@@ -133,29 +151,41 @@
         "Rian": { "teams": ["Indiana", "Kansas State", "Tulane", "Tennessee", "Wake Forest", "Missouri", "North Texas", "Florida Atlantic"] },
         "Paul": { "teams": ["Georgia", "Texas A&M", "East Carolina", "Iowa", "Wisconsin", "Army", "Georgia Tech", "Syracuse"] }
       },
+      season_schedule: {},
       week_matchups: []
     };
 
     let leagueData = DEFAULT_DATA;
     let currentUser = null;
-    const MAX_PICKS = 6;
+    let selectedWeek = 2;
+    let cachedSheetPicks = [];
+    let requiredPicksForUser = 6;
 
     async function init() {
+      // 1. Fetch league data
       try {
         const res = await fetch('league_data.json?t=' + new Date().getTime());
         if (res.ok) {
           leagueData = await res.json();
-          const cw = String(leagueData.current_week || 2);
-          if (leagueData.season_schedule && leagueData.season_schedule[cw]) {
-            leagueData.week_matchups = leagueData.season_schedule[cw];
-          }
         }
       } catch (err) {
-        console.warn("Using default data", err);
+        console.warn("Using default league data", err);
+      }
+
+      // 2. Fetch existing Google Sheet picks to pre-populate selections
+      try {
+        const resSheet = await fetch(GOOGLE_SCRIPT_URL);
+        const rawText = await resSheet.text();
+        if (!rawText.trim().startsWith('<')) {
+          cachedSheetPicks = JSON.parse(rawText);
+        }
+      } catch (err) {
+        console.warn("Could not fetch remote sheet picks", err);
       }
 
       const params = new URLSearchParams(window.location.search);
       const requestedUser = params.get('user');
+      const requestedWeek = params.get('week');
 
       const memberNames = Object.keys(leagueData.members);
       if (requestedUser) {
@@ -165,9 +195,16 @@
         currentUser = memberNames[0];
       }
 
-      document.getElementById('locked-user-display').innerText = currentUser;
+      const currentLeagueWeek = leagueData.current_week || 2;
+      selectedWeek = requestedWeek ? parseInt(requestedWeek, 10) : currentLeagueWeek;
+      if (isNaN(selectedWeek) || selectedWeek < 1 || selectedWeek > 15) {
+        selectedWeek = currentLeagueWeek;
+      }
 
-      // PRANK CHECK: Aaron must pass the CMT Exam first
+      document.getElementById('locked-user-display').innerText = currentUser;
+      populateWeekSelect(currentLeagueWeek);
+
+      // Aaron Remediation Check
       if (currentUser.toLowerCase() === "aaron") {
         const hasPassedCMT = localStorage.getItem('aaron_cmt_passed') === 'true';
         if (!hasPassedCMT) {
@@ -184,6 +221,33 @@
       } else {
         lockPortal();
       }
+    }
+
+    function populateWeekSelect(currentWk) {
+      const select = document.getElementById('week-select');
+      select.innerHTML = '';
+      for (let w = 1; w <= 15; w++) {
+        const opt = document.createElement('option');
+        opt.value = w;
+        let label = `Week ${w}`;
+        if (w === currentWk) label += ` (Current)`;
+        else if (w < currentWk) label += ` (Prior)`;
+        opt.innerText = label;
+        if (w === selectedWeek) opt.selected = true;
+        select.appendChild(opt);
+      }
+    }
+
+    function onWeekDropdownChange() {
+      const select = document.getElementById('week-select');
+      selectedWeek = parseInt(select.value, 10);
+      
+      // Update URL without page reload
+      const url = new URL(window.location);
+      url.searchParams.set('week', selectedWeek);
+      window.history.replaceState({}, '', url);
+
+      renderTeams();
     }
 
     function lockPortal() {
@@ -238,19 +302,86 @@
       const userObj = leagueData.members[currentUser];
       if (!userObj) return;
 
-      const activeWk = leagueData.current_week || 2;
-      document.getElementById('user-title').innerText = `${currentUser}'s Week ${activeWk} Picks`;
+      const currentLeagueWeek = leagueData.current_week || 2;
+      document.getElementById('header-week-pill').innerText = `Week ${selectedWeek}`;
+      document.getElementById('user-title').innerText = `${currentUser}'s Week ${selectedWeek} Picks`;
+
+      // Prior Week banner
+      const banner = document.getElementById('week-mode-banner');
+      if (selectedWeek < currentLeagueWeek) {
+        banner.className = "p-3.5 rounded-2xl mb-5 text-xs font-semibold flex items-center justify-between border border-amber-500/50 bg-amber-950/40 text-amber-300";
+        banner.innerHTML = `
+          <div class="flex items-center gap-2">
+            <span>⏳</span>
+            <span><strong>Prior Week Catch-Up Mode:</strong> You are submitting or viewing picks for <strong>Week ${selectedWeek}</strong>. Any submitted picks will automatically apply to official season standings.</span>
+          </div>
+          <span class="text-[10px] font-mono uppercase bg-amber-500 text-slate-950 px-2 py-0.5 rounded font-bold">Past Week</span>
+        `;
+        banner.classList.remove('hidden');
+      } else if (selectedWeek === currentLeagueWeek) {
+        banner.className = "p-3.5 rounded-2xl mb-5 text-xs font-semibold flex items-center justify-between border border-indigo-500/40 bg-indigo-950/30 text-indigo-200";
+        banner.innerHTML = `
+          <div class="flex items-center gap-2">
+            <span>🏈</span>
+            <span><strong>Active Pool Week:</strong> Week ${selectedWeek} is the active live game slate.</span>
+          </div>
+          <span class="text-[10px] font-mono uppercase bg-indigo-600 text-white px-2 py-0.5 rounded font-bold">Active Week</span>
+        `;
+        banner.classList.remove('hidden');
+      } else {
+        banner.className = "p-3.5 rounded-2xl mb-5 text-xs font-semibold flex items-center justify-between border border-slate-700 bg-slate-900/60 text-slate-300";
+        banner.innerHTML = `
+          <div class="flex items-center gap-2">
+            <span>📅</span>
+            <span><strong>Future Week ${selectedWeek}:</strong> Lines and times may update closer to kickoff.</span>
+          </div>
+          <span class="text-[10px] font-mono uppercase bg-slate-800 text-slate-400 px-2 py-0.5 rounded font-bold">Advance Week</span>
+        `;
+        banner.classList.remove('hidden');
+      }
+
+      // Schedule for the selected week
+      let weekSchedule = [];
+      if (leagueData.season_schedule && leagueData.season_schedule[String(selectedWeek)]) {
+        weekSchedule = leagueData.season_schedule[String(selectedWeek)];
+      } else if (selectedWeek === currentLeagueWeek && leagueData.week_matchups) {
+        weekSchedule = leagueData.week_matchups;
+      }
+
+      // Find user's existing picks for this week
+      const priorUserPicks = cachedSheetPicks.filter(p => 
+        p.owner && p.owner.toLowerCase() === currentUser.toLowerCase() && 
+        parseInt(p.week, 10) === selectedWeek
+      );
+
       const container = document.getElementById('matchups-container');
       container.innerHTML = '';
 
+      // Determine available & eligible teams for this user
+      let playableCount = 0;
       let lockedBankedTeam = null;
 
       userObj.teams.forEach(team => {
-        const game = (leagueData.week_matchups || []).find(m => m.team && m.team.toLowerCase() === team.toLowerCase()) || {
+        const game = weekSchedule.find(m => m.team && m.team.toLowerCase() === team.toLowerCase());
+        const isBye = !game || game.is_bye || game.opponent === 'BYE' || game.game_time === 'BYE WEEK';
+        const bankedObj = BANKED_WEEK_0_PICKS.find(b => b.owner.toLowerCase() === currentUser.toLowerCase() && b.team.toLowerCase() === team.toLowerCase());
+        
+        if (!isBye || bankedObj) {
+          playableCount++;
+        }
+      });
+
+      // KEY FIX: If owner has only 5 (or fewer) playable teams, adjust required picks dynamically!
+      requiredPicksForUser = Math.min(6, playableCount);
+
+      userObj.teams.forEach(team => {
+        const game = weekSchedule.find(m => m.team && m.team.toLowerCase() === team.toLowerCase()) || {
           opponent: "BYE",
           spread: "",
           over_under: "",
           game_time: "BYE WEEK",
+          status: "STATUS_SCHEDULED",
+          result: "BYE",
           is_bye: true
         };
 
@@ -260,9 +391,22 @@
         const bankedObj = BANKED_WEEK_0_PICKS.find(b => b.owner.toLowerCase() === currentUser.toLowerCase() && b.team.toLowerCase() === team.toLowerCase());
         const isAutoLockedWeek0Bye = isBye && bankedObj;
 
+        // Has this team been previously selected?
+        const isPreviouslyPicked = priorUserPicks.some(p => p.team && p.team.toLowerCase() === team.toLowerCase());
+
         const ml = getMoneyline(game.spread);
         const card = document.createElement('div');
         card.id = `card_${safeId}`;
+
+        // Verified past game outcome badge if FINAL
+        let finalOutcomeBadge = '';
+        if (game.status === 'STATUS_FINAL') {
+          if (game.result === 'WIN') {
+            finalOutcomeBadge = `<span class="text-[10px] font-mono font-black uppercase px-2 py-0.5 rounded bg-emerald-500 text-slate-950">FINAL: WON ✓</span>`;
+          } else if (game.result === 'LOSS') {
+            finalOutcomeBadge = `<span class="text-[10px] font-mono font-black uppercase px-2 py-0.5 rounded bg-rose-600 text-white">FINAL: LOST ✕</span>`;
+          }
+        }
 
         if (isAutoLockedWeek0Bye) {
           lockedBankedTeam = bankedObj;
@@ -279,7 +423,7 @@
                   </span>
                 </div>
                 <p class="text-xs text-slate-300 mt-0.5">${bankedObj.desc}</p>
-                <p class="text-[11px] font-mono text-indigo-400 mt-1">🔒 Auto-Applied on Bye Week (Pick 1 of 6)</p>
+                <p class="text-[11px] font-mono text-indigo-400 mt-1">🔒 Auto-Applied on Bye Week (Pick 1 of ${requiredPicksForUser})</p>
               </div>
               <div class="hidden sm:block">
                 <span class="text-xs font-black uppercase tracking-wider px-3 py-1.5 rounded-lg border ${bankedObj.result === 'WIN' ? 'border-emerald-500 bg-emerald-500 text-slate-950' : 'border-rose-600 bg-rose-600 text-white'}">
@@ -306,14 +450,15 @@
           card.innerHTML = `
             <div class="flex items-center gap-4 w-full">
               ${!isBye ? `
-                <input type="checkbox" id="check_${safeId}" onchange="updateState()" 
+                <input type="checkbox" id="check_${safeId}" onchange="updateState()" ${isPreviouslyPicked ? 'checked' : ''}
                   class="team-checkbox w-6 h-6 rounded-lg border-slate-700 bg-slate-950 text-indigo-600 focus:ring-0 cursor-pointer">
               ` : `
                 <div class="w-6 h-6 flex items-center justify-center text-slate-600 text-xs font-mono font-bold">✕</div>
               `}
               <div class="flex-1">
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2 flex-wrap">
                   <h3 class="font-bold text-white text-base">${team}</h3>
+                  ${finalOutcomeBadge}
                   ${game.spread && game.spread !== 'N/A' && game.spread !== 'Line TBD' && !isBye ? `
                     <span class="text-xs font-mono font-semibold bg-indigo-950 text-indigo-300 border border-indigo-800/60 px-2 py-0.5 rounded">
                       ${game.spread}
@@ -345,11 +490,16 @@
         container.appendChild(card);
       });
 
-      if (lockedBankedTeam) {
-        document.getElementById('pick-subtitle').innerHTML = `★ <strong>${lockedBankedTeam.team}</strong> (Week 0 Bye) is auto-locked. Select <strong class="text-indigo-300">5 more teams to WIN</strong>.`;
+      // Header subtitle feedback
+      let subtitleText = '';
+      if (playableCount < 6) {
+        subtitleText = `⚠️ <strong class="text-amber-400">Notice:</strong> You only have ${playableCount} active/playable teams in Week ${selectedWeek}. Select all <strong class="text-indigo-300">${requiredPicksForUser} available teams to WIN</strong>.`;
+      } else if (lockedBankedTeam) {
+        subtitleText = `★ <strong>${lockedBankedTeam.team}</strong> (Week 0 Bye) is auto-locked. Select <strong class="text-indigo-300">${requiredPicksForUser - 1} more teams to WIN</strong> (${requiredPicksForUser} total).`;
       } else {
-        document.getElementById('pick-subtitle').innerHTML = `Select exactly <strong class="text-indigo-300">6 teams to WIN</strong> their matchups this week (All times Central).`;
+        subtitleText = `Select exactly <strong class="text-indigo-300">${requiredPicksForUser} teams to WIN</strong> their matchups for Week ${selectedWeek}.`;
       }
+      document.getElementById('pick-subtitle').innerHTML = subtitleText;
 
       updateState();
     }
@@ -360,14 +510,15 @@
       const count = checkedBoxes.length;
 
       const counter = document.getElementById('pick-counter');
-      counter.innerText = `${count} / ${MAX_PICKS}`;
-      counter.className = count === MAX_PICKS ? "text-2xl font-black text-emerald-400" : "text-2xl font-black text-amber-400";
+      counter.innerText = `${count} / ${requiredPicksForUser}`;
+      counter.className = count === requiredPicksForUser ? "text-2xl font-black text-emerald-400" : "text-2xl font-black text-amber-400";
 
       checkboxes.forEach(cb => {
         if (cb.disabled && cb.checked) return;
 
         const safeId = cb.id.replace('check_', '');
         const card = document.getElementById(`card_${safeId}`);
+        if (!card) return;
         const indicator = card.querySelector('.pick-indicator');
 
         if (cb.checked) {
@@ -380,7 +531,7 @@
         } else {
           card.classList.remove('border-emerald-500/70', 'bg-emerald-950/20');
           card.classList.add('bg-slate-900', 'border-slate-800');
-          cb.disabled = (count >= MAX_PICKS);
+          cb.disabled = (count >= requiredPicksForUser);
           if (indicator) {
             indicator.className = "pick-indicator text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-950 text-slate-500 transition";
             indicator.innerText = "PICK TO WIN";
@@ -389,21 +540,22 @@
       });
 
       const submitBtn = document.getElementById('submit-btn');
-      if (count === MAX_PICKS) {
+      if (count === requiredPicksForUser) {
         submitBtn.disabled = false;
         submitBtn.className = "w-full bg-indigo-600 hover:bg-indigo-500 text-white cursor-pointer font-bold py-3.5 px-6 rounded-xl transition duration-200 shadow-lg shadow-indigo-600/30 text-sm uppercase tracking-wider";
-        submitBtn.innerText = "🚀 Lock in 6 Picks to Win";
+        submitBtn.innerText = `🚀 Lock in ${requiredPicksForUser} Picks for Week ${selectedWeek}`;
       } else {
         submitBtn.disabled = true;
         submitBtn.className = "w-full bg-slate-800 text-slate-500 cursor-not-allowed font-bold py-3.5 px-6 rounded-xl transition duration-200 shadow-lg text-sm uppercase tracking-wider";
-        submitBtn.innerText = `Select ${MAX_PICKS - count} more team${MAX_PICKS - count === 1 ? '' : 's'} to Win (${count}/6)`;
+        const remaining = requiredPicksForUser - count;
+        submitBtn.innerText = `Select ${remaining} more team${remaining === 1 ? '' : 's'} to Lock In (${count}/${requiredPicksForUser})`;
       }
     }
 
     async function submitPicksToBackend() {
       const submitBtn = document.getElementById('submit-btn');
       submitBtn.disabled = true;
-      submitBtn.innerText = "Saving Picks...";
+      submitBtn.innerText = "Saving Picks to Database...";
 
       const userObj = leagueData.members[currentUser];
       const picks = [];
@@ -418,15 +570,13 @@
         }
       });
 
-      const activeWk = leagueData.current_week || 2;
-
       try {
         await fetch(GOOGLE_SCRIPT_URL, {
           method: 'POST',
           mode: 'no-cors',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            week: activeWk,
+            week: selectedWeek,
             owner: currentUser,
             picks: picks
           })
@@ -436,25 +586,29 @@
       }
 
       const msg = document.getElementById('status-msg');
-      msg.innerText = `✓ ${currentUser}'s Week ${activeWk} picks are locked in! Redirecting...`;
+      msg.innerText = `✓ ${currentUser}'s Week ${selectedWeek} picks are locked in! Standings will update automatically.`;
       msg.classList.remove('hidden');
 
       setTimeout(() => {
-        window.location.href = 'index.html';
+        window.location.href = `index.html`;
       }, 1500);
     }
 
     function copyPicks() {
       const userObj = leagueData.members[currentUser];
-      const activeWk = leagueData.current_week || 2;
-      let summary = `🏈 ${currentUser}'s Week ${activeWk} Picks (6 Picks):\n`;
+      let summary = `🏈 ${currentUser}'s Week ${selectedWeek} Picks (${requiredPicksForUser} Picks):\n`;
       summary += `─────────────────────────\n`;
+
+      let weekSchedule = [];
+      if (leagueData.season_schedule && leagueData.season_schedule[String(selectedWeek)]) {
+        weekSchedule = leagueData.season_schedule[String(selectedWeek)];
+      }
 
       userObj.teams.forEach(team => {
         const safeId = team.replace(/[^a-zA-Z0-9]/g, '_');
         const cb = document.getElementById(`check_${safeId}`);
         if (cb && cb.checked) {
-          const game = (leagueData.week_matchups || []).find(m => m.team && m.team.toLowerCase() === team.toLowerCase());
+          const game = weekSchedule.find(m => m.team && m.team.toLowerCase() === team.toLowerCase());
           let lineDetails = '';
           if (game && !game.is_bye && game.opponent !== 'BYE') {
             lineDetails = ` (vs ${game.opponent}${game.spread ? ` [${game.spread}]` : ''})`;
